@@ -38,6 +38,13 @@
   font-weight: 600;
   text-transform: uppercase;
   color: #a78bfa;
+  margin-bottom: 8px;
+}
+
+.connection-status {
+  display: block;
+  font-size: 12px;
+  text-align: center;
 }
 
 .dashboard-main {

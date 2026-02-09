@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import API from '../config.js';
 import './Dashboard.css';
 
 export default function Dashboard({ mode, avatar }) {
@@ -7,6 +8,7 @@ export default function Dashboard({ mode, avatar }) {
   ]);
   const [input, setInput] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -17,6 +19,22 @@ export default function Dashboard({ mode, avatar }) {
     scrollToBottom();
   }, [messages]);
 
+  // Check backend connection on mount
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const response = await fetch(API.health);
+        if (response.ok) {
+          setIsConnected(true);
+        }
+      } catch (err) {
+        console.log('Backend unavailable:', err.message);
+        setIsConnected(false);
+      }
+    };
+    checkHealth();
+  }, []);
+
   const handleSendText = async () => {
     if (!input.trim()) return;
 
@@ -26,18 +44,55 @@ export default function Dashboard({ mode, avatar }) {
       type: 'user',
       text: input
     };
-    setMessages([...messages, userMsg]);
+    setMessages(prev => [...prev, userMsg]);
     setInput('');
 
-    // Simulate MC response (in real app, this hits backend)
-    setTimeout(() => {
-      const mcResponse = {
-        id: messages.length + 2,
-        type: 'mc',
-        text: 'Processing: ' + input.substring(0, 50) + '...'
-      };
-      setMessages(prev => [...prev, mcResponse]);
-    }, 500);
+    // Parse command or send to MC
+    const response = await processCommand(input);
+    
+    const mcResponse = {
+      id: messages.length + 2,
+      type: 'mc',
+      text: response
+    };
+    setMessages(prev => [...prev, mcResponse]);
+  };
+
+  const processCommand = async (text) => {
+    try {
+      // Check for task creation
+      if (text.toLowerCase().startsWith('task:') || text.toLowerCase().startsWith('add task')) {
+        const title = text.replace(/^(task:|add task)/i, '').trim();
+        const response = await fetch(API.tasks.create, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, priority: 'normal' })
+        });
+        const task = await response.json();
+        return `✅ Task created: "${task.title}"`;
+      }
+      
+      // Check for task list
+      if (text.toLowerCase() === 'tasks' || text.toLowerCase() === 'list tasks') {
+        const response = await fetch(API.tasks.list);
+        const tasks = await response.json();
+        if (tasks.length === 0) return 'No tasks yet.';
+        return `📋 Tasks:\n${tasks.map(t => `• ${t.title}`).join('\n')}`;
+      }
+      
+      // Check for upcoming events
+      if (text.toLowerCase() === 'events' || text.toLowerCase() === 'calendar') {
+        const response = await fetch(API.calendar.upcoming);
+        const events = await response.json();
+        if (events.length === 0) return 'No upcoming events.';
+        return `📅 Upcoming:\n${events.map(e => `• ${e.title}`).join('\n')}`;
+      }
+      
+      // Default response
+      return `Processing: "${text}"`;
+    } catch (err) {
+      return `Error: ${err.message}`;
+    }
   };
 
   const handleVoiceInput = () => {
@@ -67,6 +122,9 @@ export default function Dashboard({ mode, avatar }) {
         </div>
         <div className="mode-indicator">
           <span className="mode-badge">{mode}</span>
+          <span className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
+            {isConnected ? '🟢' : '🔴'}
+          </span>
         </div>
       </div>
 

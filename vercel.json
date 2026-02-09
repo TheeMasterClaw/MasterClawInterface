@@ -2,12 +2,8 @@
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "VITE_API_URL": "@vite_api_url"
   },
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://mc-api.onrender.com/api/:path*"
-    }
-  ]
+  "envPrefix": "VITE_"
 }
