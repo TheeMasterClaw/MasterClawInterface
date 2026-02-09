@@ -24,14 +24,17 @@ export default function App() {
   const playWelcome = async () => {
     // Will call backend to synthesize "Welcome, Rex. Let's take over the world together."
     try {
-      const response = await fetch('/api/tts', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${API_URL}/tts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: 'Welcome, Rex. Let\'s take over the world together.' })
       });
-      const { audioUrl } = await response.json();
-      const audio = new Audio(audioUrl);
-      audio.play();
+      const data = await response.json();
+      if (data.audioUrl) {
+        const audio = new Audio(data.audioUrl);
+        audio.play();
+      }
     } catch (err) {
       console.log('TTS unavailable, proceeding with silent greeting');
     }
