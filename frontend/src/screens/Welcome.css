@@ -1,0 +1,105 @@
+.welcome-screen {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: white;
+}
+
+.welcome-container {
+  text-align: center;
+  max-width: 500px;
+  padding: 40px 20px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.avatar-wrapper {
+  margin-bottom: 40px;
+  animation: slideDown 0.8s ease-out;
+}
+
+.welcome-title {
+  font-size: 48px;
+  font-weight: 900;
+  margin: 0 0 8px 0;
+  background: linear-gradient(120deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcome-subtitle {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #94a3b8;
+  margin: 0 0 40px 0;
+  font-weight: 600;
+}
+
+.welcome-message {
+  margin-bottom: 40px;
+  line-height: 1.8;
+}
+
+.welcome-message p {
+  font-size: 18px;
+  margin: 12px 0;
+  color: #e2e8f0;
+}
+
+.welcome-message p:first-child {
+  color: #cbd5e1;
+}
+
+.welcome-button {
+  padding: 14px 40px;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(120deg, #6366f1, #ec4899);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 24px;
+}
+
+.welcome-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(99, 102, 241, 0.4);
+}
+
+.welcome-button:active {
+  transform: translateY(0);
+}
+
+.welcome-privacy {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+  margin-top: 20px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
