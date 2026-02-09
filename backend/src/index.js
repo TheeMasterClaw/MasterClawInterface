@@ -5,6 +5,7 @@ import { initDb } from './db.js';
 import { calendarRouter } from './routes/calendar.js';
 import { tasksRouter } from './routes/tasks.js';
 import { ttsRouter } from './routes/tts.js';
+import { chatRouter } from './routes/chat.js';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ await initDb();
 app.use('/tasks', tasksRouter);
 app.use('/calendar', calendarRouter);
 app.use('/tts', ttsRouter);
+app.use('/chat', chatRouter);
 
 // Health check
 app.get('/health', (req, res) => {

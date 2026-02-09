@@ -38,60 +38,40 @@ export default function Dashboard({ mode, avatar }) {
   const handleSendText = async () => {
     if (!input.trim()) return;
 
+    const userText = input;
+
     // Add user message
     const userMsg = {
       id: messages.length + 1,
       type: 'user',
-      text: input
+      text: userText
     };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
 
-    // Parse command or send to MC
-    const response = await processCommand(input);
-    
-    const mcResponse = {
-      id: messages.length + 2,
-      type: 'mc',
-      text: response
-    };
-    setMessages(prev => [...prev, mcResponse]);
-  };
-
-  const processCommand = async (text) => {
+    // Send to MC via backend
     try {
-      // Check for task creation
-      if (text.toLowerCase().startsWith('task:') || text.toLowerCase().startsWith('add task')) {
-        const title = text.replace(/^(task:|add task)/i, '').trim();
-        const response = await fetch(API.tasks.create, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, priority: 'normal' })
-        });
-        const task = await response.json();
-        return `✅ Task created: "${task.title}"`;
-      }
+      const response = await fetch(`${API.BASE_URL}/chat/message`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userText })
+      });
+
+      const data = await response.json();
       
-      // Check for task list
-      if (text.toLowerCase() === 'tasks' || text.toLowerCase() === 'list tasks') {
-        const response = await fetch(API.tasks.list);
-        const tasks = await response.json();
-        if (tasks.length === 0) return 'No tasks yet.';
-        return `📋 Tasks:\n${tasks.map(t => `• ${t.title}`).join('\n')}`;
-      }
-      
-      // Check for upcoming events
-      if (text.toLowerCase() === 'events' || text.toLowerCase() === 'calendar') {
-        const response = await fetch(API.calendar.upcoming);
-        const events = await response.json();
-        if (events.length === 0) return 'No upcoming events.';
-        return `📅 Upcoming:\n${events.map(e => `• ${e.title}`).join('\n')}`;
-      }
-      
-      // Default response
-      return `Processing: "${text}"`;
+      const mcResponse = {
+        id: userMsg.id + 1,
+        type: 'mc',
+        text: data.response || data.error || 'No response from MC'
+      };
+      setMessages(prev => [...prev, mcResponse]);
     } catch (err) {
-      return `Error: ${err.message}`;
+      const errorMsg = {
+        id: userMsg.id + 1,
+        type: 'mc',
+        text: `Error: ${err.message}`
+      };
+      setMessages(prev => [...prev, errorMsg]);
     }
   };
 

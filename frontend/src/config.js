@@ -4,6 +4,11 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 export const API = {
   BASE_URL: API_BASE,
   
+  chat: {
+    message: `${API_BASE}/chat/message`,
+    history: `${API_BASE}/chat/history`
+  },
+  
   tasks: {
     list: `${API_BASE}/tasks`,
     get: (id) => `${API_BASE}/tasks/${id}`,
