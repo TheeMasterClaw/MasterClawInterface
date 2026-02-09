@@ -1,0 +1,8 @@
+{
+  "buildCommand": "cd backend && npm install",
+  "startCommand": "cd backend && npm start",
+  "environmentVariables": {
+    "NODE_ENV": "production",
+    "PORT": "3001"
+  }
+}

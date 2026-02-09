@@ -29,7 +29,7 @@ app.get('/health', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MC Backend running on port ${PORT}`);
   console.log(`🔒 Privacy-first. Self-hosted. Yours alone.`);
 });
