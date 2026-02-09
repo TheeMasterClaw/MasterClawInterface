@@ -12,24 +12,37 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*',
+  credentials: true
+}));
 app.use(express.json());
 
 // Initialize database
 await initDb();
 
 // Routes
-app.use('/calendar', calendarRouter);
 app.use('/tasks', tasksRouter);
+app.use('/calendar', calendarRouter);
 app.use('/tts', ttsRouter);
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'MC Backend API',
+    status: 'running',
+    endpoints: ['/tasks', '/calendar', '/tts', '/health']
+  });
 });
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MC Backend running on port ${PORT}`);
   console.log(`🔒 Privacy-first. Self-hosted. Yours alone.`);
+  console.log(`📍 URL: http://localhost:${PORT}`);
 });
