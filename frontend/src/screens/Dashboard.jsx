@@ -49,20 +49,45 @@ export default function Dashboard({ mode, avatar }) {
     setMessages(prev => [...prev, userMsg]);
     setInput('');
 
-    // Send to MC via backend
+    // For now, store locally and show confirmation
+    // Real-time chat requires WebSocket connection to OpenClaw
     try {
-      const response = await fetch(`${API.BASE_URL}/chat/message`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userText })
-      });
-
-      const data = await response.json();
+      // Store task if it looks like one
+      if (userText.toLowerCase().startsWith('task:') || userText.toLowerCase().startsWith('add task')) {
+        const title = userText.replace(/^(task:|add task)/i, '').trim();
+        const response = await fetch(`${API.BASE_URL}/tasks`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, priority: 'normal' })
+        });
+        const task = await response.json();
+        const mcResponse = {
+          id: userMsg.id + 1,
+          type: 'mc',
+          text: `✅ Task created: "${task.title}"`
+        };
+        setMessages(prev => [...prev, mcResponse]);
+        return;
+      }
       
+      // List tasks
+      if (userText.toLowerCase() === 'tasks' || userText.toLowerCase() === 'list tasks') {
+        const response = await fetch(`${API.BASE_URL}/tasks`);
+        const tasks = await response.json();
+        const mcResponse = {
+          id: userMsg.id + 1,
+          type: 'mc',
+          text: tasks.length === 0 ? 'No tasks yet.' : `📋 Tasks:\n${tasks.map(t => `• ${t.title}`).join('\n')}`
+        };
+        setMessages(prev => [...prev, mcResponse]);
+        return;
+      }
+
+      // Default: acknowledge message
       const mcResponse = {
         id: userMsg.id + 1,
         type: 'mc',
-        text: data.response || data.error || 'No response from MC'
+        text: `📝 Noted: "${userText}"\n\n(Direct chat with MC coming soon. Use Telegram for now.)`
       };
       setMessages(prev => [...prev, mcResponse]);
     } catch (err) {
