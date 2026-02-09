@@ -17,9 +17,10 @@ export class GatewayClient {
   connect() {
     return new Promise((resolve, reject) => {
       try {
-        // WebSocket URL - try both ws and wss
+        // WebSocket URL - convert http/https to ws/wss
         const wsUrl = this.url
-          .replace(/^https?/, 'ws')
+          .replace(/^https/, 'wss')  // HTTPS → WSS
+          .replace(/^http/, 'ws')    // HTTP → WS
           .replace(/\/$/, '') + `?token=${this.token}`;
 
         console.log('Connecting to gateway:', wsUrl);
