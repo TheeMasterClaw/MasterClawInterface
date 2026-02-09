@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import API from '../config.js';
+import GatewayClient from '../lib/gateway.js';
 import './Dashboard.css';
 
 export default function Dashboard({ mode, avatar }) {
@@ -9,7 +10,10 @@ export default function Dashboard({ mode, avatar }) {
   const [input, setInput] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState('connecting');
   const messagesEndRef = useRef(null);
+  const gatewayRef = useRef(null);
+  const messageCountRef = useRef(1);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -19,38 +23,90 @@ export default function Dashboard({ mode, avatar }) {
     scrollToBottom();
   }, [messages]);
 
-  // Check backend connection on mount
+  // Connect to OpenClaw gateway on mount
   useEffect(() => {
-    const checkHealth = async () => {
+    const initGateway = async () => {
       try {
-        const response = await fetch(API.health);
-        if (response.ok) {
+        const gatewayUrl = import.meta.env.VITE_GATEWAY_URL || 'https://tawny-diatropic-rurally.ngrok-free.dev';
+        const gatewayToken = import.meta.env.VITE_GATEWAY_TOKEN || '1be194421c99a45e77ef46f58ee88045c51c14fa10554cd8';
+
+        const client = new GatewayClient(gatewayUrl, gatewayToken);
+
+        // Handle connection
+        client.onConnect(() => {
+          console.log('Gateway connected');
           setIsConnected(true);
-        }
+          setConnectionStatus('connected');
+        });
+
+        // Handle messages from MC
+        client.onMessage((data) => {
+          const mcResponse = {
+            id: ++messageCountRef.current,
+            type: 'mc',
+            text: data.message || data.response || JSON.stringify(data)
+          };
+          setMessages(prev => [...prev, mcResponse]);
+        });
+
+        // Handle errors
+        client.onError((err) => {
+          console.error('Gateway error:', err);
+          setIsConnected(false);
+          setConnectionStatus('error');
+        });
+
+        await client.connect();
+        gatewayRef.current = client;
       } catch (err) {
-        console.log('Backend unavailable:', err.message);
+        console.error('Failed to connect to gateway:', err);
+        setConnectionStatus('offline');
         setIsConnected(false);
+
+        // Fallback: at least use the backend
+        try {
+          const response = await fetch(API.health);
+          if (response.ok) {
+            setConnectionStatus('backend-only');
+          }
+        } catch (e) {
+          console.log('Backend also unavailable');
+        }
       }
     };
-    checkHealth();
+
+    initGateway();
+
+    // Cleanup on unmount
+    return () => {
+      if (gatewayRef.current) {
+        gatewayRef.current.disconnect();
+      }
+    };
   }, []);
 
   const handleSendText = async () => {
     if (!input.trim()) return;
 
     const userText = input;
+    messageCountRef.current++;
 
     // Add user message
     const userMsg = {
-      id: messages.length + 1,
+      id: messageCountRef.current,
       type: 'user',
       text: userText
     };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
 
-    // For now, store locally and show confirmation
-    // Real-time chat requires WebSocket connection to OpenClaw
+    // If connected to gateway, send directly
+    if (isConnected && gatewayRef.current) {
+      gatewayRef.current.send(userText);
+      return;
+    }
+
+    // Fallback: local task management
     try {
       // Store task if it looks like one
       if (userText.toLowerCase().startsWith('task:') || userText.toLowerCase().startsWith('add task')) {
@@ -61,8 +117,9 @@ export default function Dashboard({ mode, avatar }) {
           body: JSON.stringify({ title, priority: 'normal' })
         });
         const task = await response.json();
+        messageCountRef.current++;
         const mcResponse = {
-          id: userMsg.id + 1,
+          id: messageCountRef.current,
           type: 'mc',
           text: `✅ Task created: "${task.title}"`
         };
@@ -74,8 +131,9 @@ export default function Dashboard({ mode, avatar }) {
       if (userText.toLowerCase() === 'tasks' || userText.toLowerCase() === 'list tasks') {
         const response = await fetch(`${API.BASE_URL}/tasks`);
         const tasks = await response.json();
+        messageCountRef.current++;
         const mcResponse = {
-          id: userMsg.id + 1,
+          id: messageCountRef.current,
           type: 'mc',
           text: tasks.length === 0 ? 'No tasks yet.' : `📋 Tasks:\n${tasks.map(t => `• ${t.title}`).join('\n')}`
         };
@@ -84,15 +142,17 @@ export default function Dashboard({ mode, avatar }) {
       }
 
       // Default: acknowledge message
+      messageCountRef.current++;
       const mcResponse = {
-        id: userMsg.id + 1,
+        id: messageCountRef.current,
         type: 'mc',
-        text: `📝 Noted: "${userText}"\n\n(Direct chat with MC coming soon. Use Telegram for now.)`
+        text: `📝 Message acknowledged. (Awaiting direct connection to MC)`
       };
       setMessages(prev => [...prev, mcResponse]);
     } catch (err) {
+      messageCountRef.current++;
       const errorMsg = {
-        id: userMsg.id + 1,
+        id: messageCountRef.current,
         type: 'mc',
         text: `Error: ${err.message}`
       };
@@ -127,9 +187,32 @@ export default function Dashboard({ mode, avatar }) {
         </div>
         <div className="mode-indicator">
           <span className="mode-badge">{mode}</span>
-          <span className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
-            {isConnected ? '🟢' : '🔴'}
-          </span>
+          <div className={`connection-status ${connectionStatus}`}>
+            {connectionStatus === 'connected' && (
+              <>
+                <span>🟢</span>
+                <small>Direct</small>
+              </>
+            )}
+            {connectionStatus === 'backend-only' && (
+              <>
+                <span>🟡</span>
+                <small>Backend</small>
+              </>
+            )}
+            {connectionStatus === 'connecting' && (
+              <>
+                <span>⏳</span>
+                <small>Connecting...</small>
+              </>
+            )}
+            {(connectionStatus === 'error' || connectionStatus === 'offline') && (
+              <>
+                <span>🔴</span>
+                <small>Offline</small>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

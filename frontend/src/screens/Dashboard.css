@@ -42,9 +42,63 @@
 }
 
 .connection-status {
-  display: block;
-  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
   text-align: center;
+  margin-top: 8px;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.connection-status span:first-child {
+  font-size: 16px;
+}
+
+.connection-status small {
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.connection-status.connected {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.connection-status.connected small {
+  color: #86efac;
+}
+
+.connection-status.backend-only {
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.connection-status.backend-only small {
+  color: #fbbf24;
+}
+
+.connection-status.connecting {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.connection-status.connecting small {
+  color: #93c5fd;
+}
+
+.connection-status.error,
+.connection-status.offline {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.connection-status.error small,
+.connection-status.offline small {
+  color: #fca5a5;
 }
 
 .dashboard-main {
