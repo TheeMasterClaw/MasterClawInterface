@@ -15,10 +15,14 @@ chatRouter.post('/message', async (req, res) => {
     const gatewayUrl = process.env.OPENCLAW_GATEWAY_URL || 'http://localhost:3000';
     const gatewayToken = process.env.OPENCLAW_GATEWAY_TOKEN;
 
+    console.log('Chat request:', { gatewayUrl, hasToken: !!gatewayToken });
+
     if (!gatewayToken) {
+      console.warn('Gateway token not configured');
       return res.status(500).json({ 
         error: 'OpenClaw gateway not configured',
-        response: 'MC is offline. Configure OPENCLAW_GATEWAY_TOKEN in environment.'
+        response: 'MC is offline. Configure OPENCLAW_GATEWAY_TOKEN in environment.',
+        debug: { gatewayUrl, hasToken: false }
       });
     }
 
@@ -30,6 +34,8 @@ chatRouter.post('/message', async (req, res) => {
     });
 
     // Send to OpenClaw gateway (sessions_send endpoint)
+    console.log(`Sending to gateway: ${gatewayUrl}/sessions/send`);
+    
     const response = await fetch(`${gatewayUrl}/sessions/send`, {
       method: 'POST',
       headers: {
@@ -43,10 +49,13 @@ chatRouter.post('/message', async (req, res) => {
     });
 
     if (!response.ok) {
-      throw new Error(`Gateway error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Gateway error:', response.status, errorText);
+      throw new Error(`Gateway error: ${response.status} ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('Gateway response:', data);
     
     res.json({
       status: 'sent',
@@ -57,7 +66,8 @@ chatRouter.post('/message', async (req, res) => {
     console.error('Chat error:', error);
     res.status(500).json({
       error: 'Failed to send message to MC',
-      message: error.message
+      message: error.message,
+      debug: process.env.NODE_ENV === 'development'
     });
   }
 });
