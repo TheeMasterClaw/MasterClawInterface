@@ -18,10 +18,16 @@ export class GatewayClient {
     return new Promise((resolve, reject) => {
       try {
         // WebSocket URL - convert http/https to ws/wss
-        const wsUrl = this.url
+        let wsUrl = this.url
           .replace(/^https/, 'wss')  // HTTPS → WSS
           .replace(/^http/, 'ws')    // HTTP → WS
-          .replace(/\/$/, '') + `?token=${this.token}`;
+          .replace(/\/$/, '');
+        
+        // Try with token first (for remote gateways)
+        // Local gateways may not require tokens
+        if (this.token) {
+          wsUrl += `?token=${this.token}`;
+        }
 
         console.log('Connecting to gateway:', wsUrl);
 
@@ -41,12 +47,15 @@ export class GatewayClient {
 
             // Handle authentication challenge
             if (data.event === 'connect.challenge' && data.payload?.nonce) {
-              console.log('🔐 Auth challenge received, responding...');
+              console.log('🔐 Auth challenge received, nonce:', data.payload.nonce);
+              // For now, just acknowledge. The token in the URL might be enough.
+              // If this fails, the gateway auth might require HMAC signing of the nonce.
               this.ws.send(JSON.stringify({
                 type: 'event',
                 event: 'connect.challenge.response',
                 payload: {
-                  nonce: data.payload.nonce
+                  nonce: data.payload.nonce,
+                  token: this.token
                 }
               }));
               return;
