@@ -38,6 +38,21 @@ export class GatewayClient {
           try {
             const data = JSON.parse(event.data);
             console.log('📬 Message from gateway:', data);
+
+            // Handle authentication challenge
+            if (data.event === 'connect.challenge' && data.payload?.nonce) {
+              console.log('🔐 Auth challenge received, responding...');
+              this.ws.send(JSON.stringify({
+                type: 'event',
+                event: 'connect.challenge.response',
+                payload: {
+                  nonce: data.payload.nonce
+                }
+              }));
+              return;
+            }
+
+            // Handle regular messages
             this.messageHandlers.forEach(h => h(data));
           } catch (err) {
             console.error('Failed to parse message:', event.data);
