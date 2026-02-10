@@ -47,9 +47,9 @@ export class GatewayClient {
 
             // Handle authentication challenge
             if (data.event === 'connect.challenge') {
-              console.log('🔐 Auth challenge received');
-              // Simply echo back the challenge to complete auth
-              this.ws.send(JSON.stringify(data));
+              console.log('🔐 Auth challenge received - gateway may auto-auth with URL token');
+              // Don't respond to challenge - token in URL might be sufficient
+              // If gateway disconnects, the token auth might not be working
               return;
             }
 
