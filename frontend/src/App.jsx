@@ -3,6 +3,7 @@ import Avatar from './components/Avatar';
 import Welcome from './screens/Welcome';
 import Dashboard from './screens/Dashboard';
 import ModeSelector from './components/ModeSelector';
+import Settings from './components/Settings';
 import './App.css';
 
 export default function App() {
@@ -10,6 +11,7 @@ export default function App() {
   const [mode, setMode] = useState(null);
   const [hasGreeted, setHasGreeted] = useState(false);
   const [theme, setTheme] = useState('dark');
+  const [showSettings, setShowSettings] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -80,6 +82,23 @@ export default function App() {
 
   return (
     <div className={`app app--${theme}`}>
+      {/* Settings button - always visible */}
+      <button 
+        className="global-settings-btn" 
+        onClick={() => setShowSettings(true)}
+        title="Settings"
+      >
+        ⚙️
+      </button>
+
+      {showSettings && (
+        <Settings 
+          onClose={() => setShowSettings(false)} 
+          onSave={() => window.location.reload()}
+          connectionStatus="unknown"
+        />
+      )}
+
       {/* Back button for non-welcome screens */}
       {phase !== 'welcome' && (
         <button 
