@@ -2,8 +2,15 @@ import React, { useState, useEffect } from 'react';
 import './Settings.css';
 
 // Default values from build-time env vars
-const DEFAULT_GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL || '';
-const DEFAULT_GATEWAY_TOKEN = import.meta.env.VITE_GATEWAY_TOKEN || '';
+const DEFAULT_GATEWAY_URL = typeof import.meta.env !== 'undefined' && import.meta.env.VITE_GATEWAY_URL 
+  ? import.meta.env.VITE_GATEWAY_URL 
+  : '';
+const DEFAULT_GATEWAY_TOKEN = typeof import.meta.env !== 'undefined' && import.meta.env.VITE_GATEWAY_TOKEN 
+  ? import.meta.env.VITE_GATEWAY_TOKEN 
+  : '';
+
+// Check if we're in browser
+const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
 
 export default function Settings({ onClose, onSave, connectionStatus = 'unknown' }) {
   const [settings, setSettings] = useState({
@@ -16,18 +23,19 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
   });
 
   const [saved, setSaved] = useState(false);
-  const [showDefaults, setShowDefaults] = useState(false);
 
-  // Load settings from localStorage on mount
+  // Load settings from localStorage on mount (browser only)
   useEffect(() => {
-    const stored = localStorage.getItem('mc-settings');
-    if (stored) {
-      try {
+    if (!isBrowser) return;
+    
+    try {
+      const stored = localStorage.getItem('mc-settings');
+      if (stored) {
         const parsed = JSON.parse(stored);
         setSettings(prev => ({ ...prev, ...parsed }));
-      } catch (e) {
-        console.error('Failed to parse settings:', e);
       }
+    } catch (e) {
+      console.error('Failed to parse settings:', e);
     }
   }, []);
 
@@ -37,14 +45,24 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
   };
 
   const handleSave = () => {
-    localStorage.setItem('mc-settings', JSON.stringify(settings));
-    setSaved(true);
-    if (onSave) onSave(settings);
-    setTimeout(() => setSaved(false), 2000);
+    if (!isBrowser) return;
+    
+    try {
+      localStorage.setItem('mc-settings', JSON.stringify(settings));
+      setSaved(true);
+      if (onSave) onSave(settings);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (e) {
+      console.error('Failed to save settings:', e);
+    }
   };
 
   const handleReset = () => {
-    if (typeof window !== 'undefined' && window.confirm && window.confirm('Reset all settings to defaults? This will clear your custom gateway configuration.')) {
+    if (!isBrowser) return;
+    
+    const confirmed = typeof window.confirm === 'function' && window.confirm('Reset all settings to defaults?');
+    
+    if (confirmed) {
       localStorage.removeItem('mc-settings');
       setSettings({
         ttsProvider: 'openai',
@@ -64,10 +82,11 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
   };
 
   const getEffectiveValue = (key) => {
-    return settings[key] || {
+    const defaults = {
       gatewayUrl: DEFAULT_GATEWAY_URL,
       gatewayToken: DEFAULT_GATEWAY_TOKEN
-    }[key] || '';
+    };
+    return settings[key] || defaults[key] || '';
   };
 
   const ttsVoices = {
@@ -98,6 +117,8 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
     unconfigured: '#94a3b8'
   };
 
+  const effectiveGatewayUrl = getEffectiveValue('gatewayUrl');
+
   return (
     <div className="settings-overlay" onClick={onClose}>
       <div className="settings-panel" onClick={e => e.stopPropagation()}>
@@ -111,23 +132,26 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
           <section className="settings-section">
             <h3>🔌 Connection Status</h3>
             <div className="connection-info">
-              <div className="status-badge" style={{ 
-                backgroundColor: `${statusColors[connectionStatus]}20`,
-                borderColor: `${statusColors[connectionStatus]}50`,
-                color: statusColors[connectionStatus]
-              }}>
+              <div 
+                className="status-badge" 
+                style={{ 
+                  backgroundColor: statusColors[connectionStatus] ? `${statusColors[connectionStatus]}20` : '#94a3b820',
+                  borderColor: statusColors[connectionStatus] ? `${statusColors[connectionStatus]}50` : '#94a3b850',
+                  color: statusColors[connectionStatus] || '#94a3b8'
+                }}
+              >
                 {connectionStatus === 'connected' && '🟢 Connected'}
                 {connectionStatus === 'reconnecting' && '🔄 Reconnecting...'}
                 {connectionStatus === 'connecting' && '⏳ Connecting...'}
                 {connectionStatus === 'offline' && '🔴 Offline'}
                 {connectionStatus === 'error' && '❌ Error'}
                 {connectionStatus === 'unconfigured' && '⚙️ Not Configured'}
-                {connectionStatus === 'unknown' && '⚪ Unknown'}
+                {(connectionStatus === 'unknown' || !statusColors[connectionStatus]) && '⚪ Unknown'}
               </div>
               
               <div className="current-endpoint">
                 <small>Active Gateway:</small>
-                <code>{getEffectiveValue('gatewayUrl') || 'Not set'}</code>
+                <code>{effectiveGatewayUrl || 'Not set'}</code>
               </div>
             </div>
           </section>
@@ -162,11 +186,10 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
               </small>
             </div>
 
-            {(!DEFAULT_GATEWAY_URL || showDefaults) && (
+            {!DEFAULT_GATEWAY_URL && (
               <div className="settings-note">
                 <small>
-                  💡 <strong>No default gateway configured.</strong> Set your gateway URL above or 
-                  rebuild with VITE_GATEWAY_URL environment variable.
+                  💡 <strong>No default gateway configured.</strong> Set your gateway URL above.
                 </small>
               </div>
             )}

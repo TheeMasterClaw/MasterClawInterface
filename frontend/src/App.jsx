@@ -6,6 +6,9 @@ import ModeSelector from './components/ModeSelector';
 import Settings from './components/Settings';
 import './App.css';
 
+// Browser detection
+const isBrowser = typeof window !== 'undefined';
+
 export default function App() {
   const [phase, setPhase] = useState('welcome');
   const [mode, setMode] = useState(null);
@@ -15,33 +18,44 @@ export default function App() {
 
   // Load theme on mount
   useEffect(() => {
-    const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
-    const savedTheme = settings.theme || 'dark';
+    if (!isBrowser) return;
     
-    if (savedTheme === 'auto') {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setTheme(prefersDark ? 'dark' : 'light');
-    } else {
-      setTheme(savedTheme);
+    try {
+      const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
+      const savedTheme = settings.theme || 'dark';
+      
+      if (savedTheme === 'auto') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setTheme(prefersDark ? 'dark' : 'light');
+      } else {
+        setTheme(savedTheme);
+      }
+    } catch (e) {
+      console.error('Failed to load theme:', e);
     }
   }, []);
 
   // Apply theme class to body
   useEffect(() => {
+    if (!isBrowser) return;
     document.body.className = theme === 'light' ? 'theme-light' : '';
   }, [theme]);
 
   // Trigger welcome greeting on mount
   useEffect(() => {
-    if (!hasGreeted) {
-      setTimeout(() => {
-        setHasGreeted(true);
-        playWelcome();
-      }, 500);
-    }
+    if (!isBrowser || hasGreeted) return;
+    
+    const timer = setTimeout(() => {
+      setHasGreeted(true);
+      playWelcome();
+    }, 500);
+    
+    return () => clearTimeout(timer);
   }, [hasGreeted]);
 
   const playWelcome = async () => {
+    if (!isBrowser) return;
+    
     try {
       const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
       const provider = settings.ttsProvider || 'openai';
@@ -80,6 +94,12 @@ export default function App() {
     }
   };
 
+  const handleSaveSettings = () => {
+    if (isBrowser) {
+      window.location.reload();
+    }
+  };
+
   return (
     <div className={`app app--${theme}`}>
       {/* Settings button - always visible */}
@@ -94,7 +114,7 @@ export default function App() {
       {showSettings && (
         <Settings 
           onClose={() => setShowSettings(false)} 
-          onSave={() => window.location.reload()}
+          onSave={handleSaveSettings}
           connectionStatus="unknown"
         />
       )}
