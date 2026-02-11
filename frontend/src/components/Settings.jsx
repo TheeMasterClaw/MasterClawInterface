@@ -44,7 +44,7 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
   };
 
   const handleReset = () => {
-    if (confirm('Reset all settings to defaults? This will clear your custom gateway configuration.')) {
+    if (typeof window !== 'undefined' && window.confirm && window.confirm('Reset all settings to defaults? This will clear your custom gateway configuration.')) {
       localStorage.removeItem('mc-settings');
       setSettings({
         ttsProvider: 'openai',
