@@ -2,11 +2,14 @@ import React from 'react';
 import './Welcome.css';
 
 export default function Welcome({ onContinue, avatar }) {
+  // Clone avatar with large size and idle state
+  const AvatarLarge = avatar ? React.cloneElement(avatar, { state: 'idle', size: 'large' }) : null;
+  
   return (
     <div className="welcome-screen">
       <div className="welcome-container">
         <div className="avatar-wrapper">
-          {avatar}
+          {AvatarLarge}
         </div>
 
         <h1 className="welcome-title">MC</h1>

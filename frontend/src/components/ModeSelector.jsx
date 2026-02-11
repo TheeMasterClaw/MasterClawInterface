@@ -29,11 +29,14 @@ const modes = [
 ];
 
 export default function ModeSelector({ onSelect, avatar }) {
+  // Clone avatar with medium size and idle state
+  const AvatarMedium = avatar ? React.cloneElement(avatar, { state: 'idle', size: 'medium' }) : null;
+  
   return (
     <div className="mode-selector-screen">
       <div className="mode-selector-container">
         <div className="avatar-wrapper-small">
-          {avatar}
+          {AvatarMedium}
         </div>
 
         <h2 className="mode-title">How should we work together?</h2>
