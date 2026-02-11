@@ -384,6 +384,7 @@ export default function Dashboard({ mode, avatar }) {
         <Settings 
           onClose={() => setShowSettings(false)} 
           onSave={() => window.location.reload()}
+          connectionStatus={connectionStatus}
         />
       )}
 

@@ -145,10 +145,27 @@
 .settings-footer {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 12px;
   padding: 16px 24px;
   border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.settings-reset-btn {
+  padding: 10px 16px;
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #fca5a5;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-reset-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.5);
 }
 
 .settings-saved {
@@ -173,6 +190,61 @@
 .settings-save-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* Connection info */
+.connection-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.current-endpoint {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.current-endpoint small {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.current-endpoint code {
+  font-family: 'SF Mono', 'Monaco', monospace;
+  font-size: 11px;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: #cbd5e1;
+  word-break: break-all;
+}
+
+/* Settings note */
+.settings-note {
+  padding: 12px;
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.2);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.settings-note small {
+  color: #fbbf24;
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 @keyframes fadeIn {
