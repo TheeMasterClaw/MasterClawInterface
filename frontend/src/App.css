@@ -40,3 +40,55 @@ button:focus,
 input:focus {
   outline: none;
 }
+
+/* Back button */
+.back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  padding: 8px 12px;
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background: rgba(148, 163, 184, 0.2);
+  color: #e2e8f0;
+}
+
+/* Light theme support */
+body.theme-light {
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+body.theme-light .dashboard {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+body.theme-light .dashboard-sidebar {
+  background: rgba(255, 255, 255, 0.8);
+  border-right-color: rgba(148, 163, 184, 0.2);
+}
+
+body.theme-light .message-mc .message-content {
+  background: white;
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #334155;
+}
+
+body.theme-light .text-input {
+  background: white;
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #1e293b;
+}
+
+body.theme-light .text-input::placeholder {
+  color: #94a3b8;
+}

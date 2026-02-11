@@ -132,8 +132,41 @@ export function createMemory(memory) {
   return newMemory;
 }
 
-export function queryMemories(filter = {}) {
-  let memories = db.memories;
-  if (filter.type) memories = memories.filter(m => m.type === filter.type);
-  return memories;
+// Helper functions for chat history
+export function createChatMessage(message) {
+  const newMessage = {
+    id: genId(),
+    createdAt: new Date().toISOString(),
+    ...message
+  };
+  if (!db.chat_history) db.chat_history = [];
+  db.chat_history.push(newMessage);
+  
+  // Keep only last 1000 messages
+  if (db.chat_history.length > 1000) {
+    db.chat_history = db.chat_history.slice(-1000);
+  }
+  
+  saveDb();
+  return newMessage;
+}
+
+export function queryChatHistory(limit = 100, before = null) {
+  if (!db.chat_history) return [];
+  
+  let messages = [...db.chat_history].sort((a, b) => 
+    new Date(a.createdAt) - new Date(b.createdAt)
+  );
+  
+  if (before) {
+    const beforeDate = new Date(before);
+    messages = messages.filter(m => new Date(m.createdAt) < beforeDate);
+  }
+  
+  return messages.slice(-limit);
+}
+
+export function clearChatHistory() {
+  db.chat_history = [];
+  saveDb();
 }

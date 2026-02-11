@@ -1,13 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import API from '../config.js';
 import GatewayClient from '../lib/gateway.js';
 import Settings from '../components/Settings';
 import './Dashboard.css';
 
 export default function Dashboard({ mode, avatar }) {
-  const [messages, setMessages] = useState([
-    { id: 1, type: 'mc', text: 'Ready. What do you need?' }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -15,69 +13,130 @@ export default function Dashboard({ mode, avatar }) {
   const [avatarState, setAvatarState] = useState('idle');
   const [showSettings, setShowSettings] = useState(false);
   const [alerts, setAlerts] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const messagesEndRef = useRef(null);
   const gatewayRef = useRef(null);
-  const messageCountRef = useRef(1);
+  const messageCountRef = useRef(0);
   const audioRef = useRef(null);
+  const inputRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Load chat history on mount
+  useEffect(() => {
+    loadChatHistory();
+    requestNotificationPermission();
+  }, []);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // Connect to OpenClaw gateway on mount
+  const loadChatHistory = async () => {
+    try {
+      const response = await fetch(`${API.chat.history}?limit=50`);
+      const data = await response.json();
+      
+      if (data.messages && data.messages.length > 0) {
+        const formatted = data.messages.map(m => ({
+          id: m.id || ++messageCountRef.current,
+          type: m.role === 'user' ? 'user' : 'mc',
+          text: m.content,
+          timestamp: m.createdAt,
+          command: m.command
+        }));
+        setMessages(formatted);
+        messageCountRef.current = formatted.length;
+      } else {
+        // Initial welcome message
+        setMessages([{ 
+          id: ++messageCountRef.current, 
+          type: 'mc', 
+          text: 'Ready. What do you need? Type /help for commands.' 
+        }]);
+      }
+    } catch (err) {
+      console.error('Failed to load chat history:', err);
+      setMessages([{ 
+        id: ++messageCountRef.current, 
+        type: 'mc', 
+        text: 'Ready. What do you need? Type /help for commands.' 
+      }]);
+    }
+  };
+
+  const requestNotificationPermission = () => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  };
+
+  const sendNotification = (title, body) => {
+    const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
+    if (settings.notifications !== false && 'Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, { 
+        body,
+        icon: '/favicon.ico'
+      });
+    }
+  };
+
+  // Connect to OpenClaw gateway
   useEffect(() => {
     const initGateway = async () => {
       try {
         const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
         const gatewayUrl = settings.gatewayUrl || import.meta.env.VITE_GATEWAY_URL || 'https://tawny-diatropic-rurally.ngrok-free.dev';
-        const gatewayToken = settings.gatewayToken || import.meta.env.VITE_GATEWAY_TOKEN || '1be194421c99a45e77ef46f58ee88045c51c14fa10554cd8';
+        const gatewayToken = settings.gatewayToken || import.meta.env.VITE_GATEWAY_TOKEN;
 
-        const client = new GatewayClient(gatewayUrl, gatewayToken);
+        if (!gatewayToken) {
+          setConnectionStatus('unconfigured');
+          return;
+        }
+
+        const client = new GatewayClient(gatewayUrl, gatewayToken, {
+          maxReconnectAttempts: 10,
+          reconnectDelay: 2000
+        });
 
         client.onConnect(() => {
-          console.log('Gateway connected');
           setIsConnected(true);
           setConnectionStatus('connected');
         });
 
+        client.onDisconnect(() => {
+          setIsConnected(false);
+          setConnectionStatus('reconnecting');
+        });
+
         client.onMessage((data) => {
+          const responseText = data.message || data.response || JSON.stringify(data);
           const mcResponse = {
             id: ++messageCountRef.current,
             type: 'mc',
-            text: data.message || data.response || JSON.stringify(data)
+            text: responseText,
+            timestamp: new Date().toISOString()
           };
           setMessages(prev => [...prev, mcResponse]);
+          setIsTyping(false);
           setAvatarState('idle');
-          
-          // Auto-play TTS for MC responses
-          playTTS(mcResponse.text);
+          sendNotification('MC', responseText.substring(0, 100));
+          playTTS(responseText);
         });
 
         client.onError((err) => {
-          console.error('Gateway error:', err);
-          setIsConnected(false);
           setConnectionStatus('error');
         });
 
         await client.connect();
         gatewayRef.current = client;
       } catch (err) {
-        console.error('Failed to connect to gateway:', err);
+        console.error('Gateway connection failed:', err);
         setConnectionStatus('offline');
-        setIsConnected(false);
-
-        try {
-          const response = await fetch(API.health);
-          if (response.ok) {
-            setConnectionStatus('backend-only');
-          }
-        } catch (e) {
-          console.log('Backend also unavailable');
-        }
       }
     };
 
@@ -123,7 +182,50 @@ export default function Dashboard({ mode, avatar }) {
     return () => clearInterval(interval);
   }, [mode]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Cmd/Ctrl + Enter to send
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleSendText();
+      }
+      
+      // Cmd/Ctrl + . to toggle settings
+      if ((e.metaKey || e.ctrlKey) && e.key === '.') {
+        e.preventDefault();
+        setShowSettings(prev => !prev);
+      }
+      
+      // Cmd/Ctrl + / to toggle help
+      if ((e.metaKey || e.ctrlKey) && e.key === '/') {
+        e.preventDefault();
+        setShowHelp(prev => !prev);
+      }
+      
+      // Escape to close modals
+      if (e.key === 'Escape') {
+        setShowSettings(false);
+        setShowHelp(false);
+      }
+      
+      // Focus input on any key (unless in input or modal)
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const tagName = document.activeElement?.tagName;
+        if (tagName !== 'INPUT' && tagName !== 'TEXTAREA' && !showSettings) {
+          inputRef.current?.focus();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSettings]);
+
   const playTTS = async (text) => {
+    // Don't play TTS for very long messages
+    if (text.length > 500) return;
+    
     try {
       const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
       const provider = settings.ttsProvider || 'openai';
@@ -148,82 +250,83 @@ export default function Dashboard({ mode, avatar }) {
     }
   };
 
-  const handleSendText = async () => {
+  const handleSendText = useCallback(async () => {
     if (!input.trim()) return;
 
-    const userText = input;
+    const userText = input.trim();
     messageCountRef.current++;
 
     const userMsg = {
       id: messageCountRef.current,
       type: 'user',
-      text: userText
+      text: userText,
+      timestamp: new Date().toISOString()
     };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
+    setIsTyping(true);
     setAvatarState('thinking');
 
+    // Handle /clear command locally
+    if (userText === '/clear' || userText === '/cls') {
+      try {
+        await fetch(API.chat.history, { method: 'DELETE' });
+        setMessages([{ 
+          id: ++messageCountRef.current, 
+          type: 'mc', 
+          text: 'Chat history cleared.' 
+        }]);
+        setIsTyping(false);
+        setAvatarState('idle');
+        return;
+      } catch (err) {
+        console.error('Failed to clear history:', err);
+      }
+    }
+
+    // If connected to gateway, send via WebSocket
     if (isConnected && gatewayRef.current) {
       gatewayRef.current.send(userText);
       return;
     }
 
-    // Fallback: local task management
+    // Otherwise use REST API
     try {
-      if (userText.toLowerCase().startsWith('task:') || userText.toLowerCase().startsWith('add task')) {
-        const title = userText.replace(/^(task:|add task)/i, '').trim();
-        const response = await fetch(API.tasks.create, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, priority: 'normal' })
-        });
-        const task = await response.json();
-        messageCountRef.current++;
-        const mcResponse = {
-          id: messageCountRef.current,
-          type: 'mc',
-          text: `✅ Task created: "${task.title}"`
-        };
-        setMessages(prev => [...prev, mcResponse]);
-        setAvatarState('idle');
-        playTTS(mcResponse.text);
-        return;
-      }
-      
-      if (userText.toLowerCase() === 'tasks' || userText.toLowerCase() === 'list tasks') {
-        const response = await fetch(API.tasks.list);
-        const tasks = await response.json();
-        messageCountRef.current++;
-        const mcResponse = {
-          id: messageCountRef.current,
-          type: 'mc',
-          text: tasks.length === 0 ? 'No tasks yet.' : `📋 Tasks:\n${tasks.map(t => `• ${t.title}`).join('\n')}`
-        };
-        setMessages(prev => [...prev, mcResponse]);
-        setAvatarState('idle');
-        playTTS(mcResponse.text);
-        return;
-      }
+      const response = await fetch(API.chat.message, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userText })
+      });
 
+      const data = await response.json();
+      
       messageCountRef.current++;
       const mcResponse = {
         id: messageCountRef.current,
         type: 'mc',
-        text: `📝 Message acknowledged. (Gateway connection unavailable - configure in Settings)`
+        text: data.text || data.message || 'No response',
+        timestamp: new Date().toISOString(),
+        command: data.command
       };
+      
       setMessages(prev => [...prev, mcResponse]);
+      setIsTyping(false);
       setAvatarState('idle');
+      playTTS(mcResponse.text);
     } catch (err) {
       messageCountRef.current++;
       const errorMsg = {
         id: messageCountRef.current,
         type: 'mc',
-        text: `Error: ${err.message}`
+        text: `❌ Error: ${err.message}. Make sure the backend is running.`,
+        timestamp: new Date().toISOString(),
+        error: true
       };
       setMessages(prev => [...prev, errorMsg]);
+      setIsTyping(false);
       setAvatarState('idle');
     }
-  };
+  }, [input, isConnected]);
 
   const handleVoiceInput = () => {
     if (!isListening) {
@@ -233,32 +336,45 @@ export default function Dashboard({ mode, avatar }) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        
         recognition.onresult = (event) => {
           const transcript = Array.from(event.results)
             .map(r => r[0].transcript)
             .join('');
           setInput(transcript);
-          setIsListening(false);
-          setAvatarState('idle');
+          
+          // Auto-send on final result
+          if (event.results[0].isFinal) {
+            setTimeout(() => {
+              setIsListening(false);
+              setAvatarState('idle');
+              handleSendText();
+            }, 500);
+          }
         };
+        
         recognition.onerror = () => {
           setIsListening(false);
           setAvatarState('idle');
         };
+        
         recognition.onend = () => {
           setIsListening(false);
           setAvatarState('idle');
         };
+        
         recognition.start();
       }
     }
   };
 
   // Clone avatar element and pass state
-  const AvatarWithState = React.cloneElement(avatar, { 
+  const AvatarWithState = avatar ? React.cloneElement(avatar, { 
     state: avatarState,
     size: 'small'
-  });
+  }) : null;
 
   return (
     <div className="dashboard">
@@ -269,6 +385,41 @@ export default function Dashboard({ mode, avatar }) {
           onClose={() => setShowSettings(false)} 
           onSave={() => window.location.reload()}
         />
+      )}
+
+      {showHelp && (
+        <div className="help-overlay" onClick={() => setShowHelp(false)}>
+          <div className="help-panel" onClick={e => e.stopPropagation()}>
+            <div className="help-header">
+              <h3>📖 Keyboard Shortcuts & Commands</h3>
+              <button className="help-close" onClick={() => setShowHelp(false)}>×</button>
+            </div>
+            <div className="help-content">
+              <section>
+                <h4>Keyboard Shortcuts</h4>
+                <ul>
+                  <li><strong>⌘/Ctrl + Enter</strong> — Send message</li>
+                  <li><strong>⌘/Ctrl + .</strong> — Toggle settings</li>
+                  <li><strong>⌘/Ctrl + /</strong> — Show help</li>
+                  <li><strong>Escape</strong> — Close modals</li>
+                  <li><strong>Type any key</strong> — Focus input</li>
+                </ul>
+              </section>
+              <section>
+                <h4>Commands</h4>
+                <ul>
+                  <li><strong>/task <title> [high|low]</strong> — Create task</li>
+                  <li><strong>/tasks</strong> — List all tasks</li>
+                  <li><strong>/done <id></strong> — Complete task</li>
+                  <li><strong>/event "<title>" <when></strong> — Create event</li>
+                  <li><strong>/events</strong> — Upcoming events</li>
+                  <li><strong>/clear</strong> — Clear chat</li>
+                  <li><strong>/help</strong> — Show this help</li>
+                </ul>
+              </section>
+            </div>
+          </div>
+        </div>
       )}
 
       <div className="dashboard-sidebar">
@@ -283,19 +434,31 @@ export default function Dashboard({ mode, avatar }) {
             {connectionStatus === 'connected' && (
               <>
                 <span>🟢</span>
-                <small>Direct</small>
+                <small>Live</small>
+              </>
+            )}
+            {connectionStatus === 'reconnecting' && (
+              <>
+                <span>🔄</span>
+                <small>Reconnecting...</small>
               </>
             )}
             {connectionStatus === 'backend-only' && (
               <>
                 <span>🟡</span>
-                <small>Backend</small>
+                <small>API</small>
               </>
             )}
             {connectionStatus === 'connecting' && (
               <>
                 <span>⏳</span>
                 <small>Connecting...</small>
+              </>
+            )}
+            {connectionStatus === 'unconfigured' && (
+              <>
+                <span>⚙️</span>
+                <small>Setup</small>
               </>
             )}
             {(connectionStatus === 'error' || connectionStatus === 'offline') && (
@@ -307,9 +470,17 @@ export default function Dashboard({ mode, avatar }) {
           </div>
           
           <button 
-            className="settings-btn"
+            className="icon-btn"
+            onClick={() => setShowHelp(true)}
+            title="Help (⌘/)"
+          >
+            ❓
+          </button>
+          
+          <button 
+            className="icon-btn"
             onClick={() => setShowSettings(true)}
-            title="Settings"
+            title="Settings (⌘.)"
           >
             ⚙️
           </button>
@@ -332,10 +503,29 @@ export default function Dashboard({ mode, avatar }) {
           {messages.map((msg) => (
             <div key={msg.id} className={`message message-${msg.type}`}>
               <div className="message-content">
+                {msg.command && <span className="command-badge">/{msg.command}</span>}
                 {msg.text}
               </div>
+              {msg.timestamp && (
+                <div className="message-time">
+                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              )}
             </div>
           ))}
+          
+          {isTyping && (
+            <div className="message message-mc typing">
+              <div className="message-content">
+                <span className="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </span>
+              </div>
+            </div>
+          )}
+          
           <div ref={messagesEndRef} />
         </div>
 
@@ -343,14 +533,15 @@ export default function Dashboard({ mode, avatar }) {
           {(mode === 'text' || mode === 'hybrid') && (
             <div className="text-input-group">
               <input
+                ref={inputRef}
                 type="text"
                 className="text-input"
-                placeholder="What's on your mind?"
+                placeholder="Type /help for commands or just ask..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendText()}
+                onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendText()}
               />
-              <button className="send-button" onClick={handleSendText}>
+              <button className="send-button" onClick={handleSendText} title="Send (⌘Enter)">
                 →
               </button>
             </div>
@@ -371,6 +562,10 @@ export default function Dashboard({ mode, avatar }) {
               <p>I'll alert you to what matters.</p>
             </div>
           )}
+          
+          <div className="input-hints">
+            <span>Press <strong>⌘Enter</strong> to send · <strong>/</strong> for commands</span>
+          </div>
         </div>
       </div>
     </div>

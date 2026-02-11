@@ -6,14 +6,32 @@ import ModeSelector from './components/ModeSelector';
 import './App.css';
 
 export default function App() {
-  const [phase, setPhase] = useState('welcome'); // welcome, mode-select, dashboard
-  const [mode, setMode] = useState(null); // text, voice, hybrid, context
+  const [phase, setPhase] = useState('welcome');
+  const [mode, setMode] = useState(null);
   const [hasGreeted, setHasGreeted] = useState(false);
+  const [theme, setTheme] = useState('dark');
+
+  // Load theme on mount
+  useEffect(() => {
+    const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
+    const savedTheme = settings.theme || 'dark';
+    
+    if (savedTheme === 'auto') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setTheme(prefersDark ? 'dark' : 'light');
+    } else {
+      setTheme(savedTheme);
+    }
+  }, []);
+
+  // Apply theme class to body
+  useEffect(() => {
+    document.body.className = theme === 'light' ? 'theme-light' : '';
+  }, [theme]);
 
   // Trigger welcome greeting on mount
   useEffect(() => {
     if (!hasGreeted) {
-      // Small delay to ensure DOM is ready
       setTimeout(() => {
         setHasGreeted(true);
         playWelcome();
@@ -22,17 +40,24 @@ export default function App() {
   }, [hasGreeted]);
 
   const playWelcome = async () => {
-    // Will call backend to synthesize "Welcome, Rex. Let's take over the world together."
     try {
+      const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
+      const provider = settings.ttsProvider || 'openai';
+      const voice = settings.ttsVoice || 'alloy';
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      
       const response = await fetch(`${API_URL}/tts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: 'Welcome, Rex. Let\'s take over the world together.' })
+        body: JSON.stringify({ 
+          text: 'Welcome, Rex. Let\'s take over the world together.',
+          provider,
+          voice
+        })
       });
       const data = await response.json();
       if (data.audioUrl) {
-        const audio = new Audio(data.audioUrl);
+        const audio = new Audio(`${API_URL.replace(/\/$/, '')}${data.audioUrl}`);
         audio.play();
       }
     } catch (err) {
@@ -45,8 +70,27 @@ export default function App() {
     setPhase('dashboard');
   };
 
+  const handleBack = () => {
+    if (phase === 'dashboard') {
+      setPhase('mode-select');
+    } else if (phase === 'mode-select') {
+      setPhase('welcome');
+    }
+  };
+
   return (
-    <div className="app">
+    <div className={`app app--${theme}`}>
+      {/* Back button for non-welcome screens */}
+      {phase !== 'welcome' && (
+        <button 
+          className="back-button" 
+          onClick={handleBack}
+          title="Go back"
+        >
+          ←
+        </button>
+      )}
+
       {phase === 'welcome' && (
         <Welcome
           onContinue={() => setPhase('mode-select')}
