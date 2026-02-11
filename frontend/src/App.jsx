@@ -4,6 +4,7 @@ import Welcome from './screens/Welcome';
 import Dashboard from './screens/Dashboard';
 import ModeSelector from './components/ModeSelector';
 import Settings from './components/Settings';
+import HealthMonitor from './components/HealthMonitor';
 import './App.css';
 
 // Browser detection
@@ -15,15 +16,16 @@ export default function App() {
   const [hasGreeted, setHasGreeted] = useState(false);
   const [theme, setTheme] = useState('dark');
   const [showSettings, setShowSettings] = useState(false);
+  const [showHealthMonitor, setShowHealthMonitor] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
     if (!isBrowser) return;
-    
+
     try {
       const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
       const savedTheme = settings.theme || 'dark';
-      
+
       if (savedTheme === 'auto') {
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         setTheme(prefersDark ? 'dark' : 'light');
@@ -44,28 +46,28 @@ export default function App() {
   // Trigger welcome greeting on mount
   useEffect(() => {
     if (!isBrowser || hasGreeted) return;
-    
+
     const timer = setTimeout(() => {
       setHasGreeted(true);
       playWelcome();
     }, 500);
-    
+
     return () => clearTimeout(timer);
   }, [hasGreeted]);
 
   const playWelcome = async () => {
     if (!isBrowser) return;
-    
+
     try {
       const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
       const provider = settings.ttsProvider || 'openai';
       const voice = settings.ttsVoice || 'alloy';
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-      
+
       const response = await fetch(`${API_URL}/tts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           text: 'Welcome, Rex. Let\'s take over the world together.',
           provider,
           voice
@@ -103,26 +105,42 @@ export default function App() {
   return (
     <div className={`app app--${theme}`}>
       {/* Settings button - always visible */}
-      <button 
-        className="global-settings-btn" 
+      <button
+        className="global-settings-btn"
         onClick={() => setShowSettings(true)}
         title="Settings"
       >
         ⚙️
       </button>
 
+      {/* Health Monitor button - always visible */}
+      <button
+        className="global-health-btn"
+        onClick={() => setShowHealthMonitor(true)}
+        title="Health Monitor"
+      >
+        🏥
+      </button>
+
       {showSettings && (
-        <Settings 
-          onClose={() => setShowSettings(false)} 
+        <Settings
+          onClose={() => setShowSettings(false)}
           onSave={handleSaveSettings}
           connectionStatus="unknown"
         />
       )}
 
+      {showHealthMonitor && (
+        <HealthMonitor
+          isOpen={showHealthMonitor}
+          onClose={() => setShowHealthMonitor(false)}
+        />
+      )}
+
       {/* Back button for non-welcome screens */}
       {phase !== 'welcome' && (
-        <button 
-          className="back-button" 
+        <button
+          className="back-button"
           onClick={handleBack}
           title="Go back"
         >

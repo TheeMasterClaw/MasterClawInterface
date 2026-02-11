@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import API from '../config.js';
 import GatewayClient from '../lib/gateway.js';
 import Settings from '../components/Settings';
+import HealthMonitor from '../components/HealthMonitor';
 import './Dashboard.css';
 
 // Browser detection
@@ -15,6 +16,7 @@ export default function Dashboard({ mode, avatar }) {
   const [connectionStatus, setConnectionStatus] = useState('connecting');
   const [avatarState, setAvatarState] = useState('idle');
   const [showSettings, setShowSettings] = useState(false);
+  const [showHealthMonitor, setShowHealthMonitor] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -43,7 +45,7 @@ export default function Dashboard({ mode, avatar }) {
     try {
       const response = await fetch(`${API.chat.history}?limit=50`);
       const data = await response.json();
-      
+
       if (data.messages && data.messages.length > 0) {
         const formatted = data.messages.map(m => ({
           id: m.id || ++messageCountRef.current,
@@ -55,18 +57,18 @@ export default function Dashboard({ mode, avatar }) {
         setMessages(formatted);
         messageCountRef.current = formatted.length;
       } else {
-        setMessages([{ 
-          id: ++messageCountRef.current, 
-          type: 'mc', 
-          text: 'Ready. What do you need? Type /help for commands.' 
+        setMessages([{
+          id: ++messageCountRef.current,
+          type: 'mc',
+          text: 'Ready. What do you need? Type /help for commands.'
         }]);
       }
     } catch (err) {
       console.error('Failed to load chat history:', err);
-      setMessages([{ 
-        id: ++messageCountRef.current, 
-        type: 'mc', 
-        text: 'Ready. What do you need? Type /help for commands.' 
+      setMessages([{
+        id: ++messageCountRef.current,
+        type: 'mc',
+        text: 'Ready. What do you need? Type /help for commands.'
       }]);
     }
   };
@@ -89,7 +91,7 @@ export default function Dashboard({ mode, avatar }) {
   // Connect to OpenClaw gateway
   useEffect(() => {
     if (!isBrowser) return;
-    
+
     const initGateway = async () => {
       try {
         const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
@@ -160,7 +162,7 @@ export default function Dashboard({ mode, avatar }) {
       try {
         const response = await fetch(API.calendar.upcoming);
         const events = await response.json();
-        
+
         const now = new Date();
         const upcomingAlerts = events
           .filter(e => {
@@ -188,28 +190,28 @@ export default function Dashboard({ mode, avatar }) {
   // Keyboard shortcuts
   useEffect(() => {
     if (!isBrowser) return;
-    
+
     const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
         handleSendText();
       }
-      
+
       if ((e.metaKey || e.ctrlKey) && e.key === '.') {
         e.preventDefault();
         setShowSettings(prev => !prev);
       }
-      
+
       if ((e.metaKey || e.ctrlKey) && e.key === '/') {
         e.preventDefault();
         setShowHelp(prev => !prev);
       }
-      
+
       if (e.key === 'Escape') {
         setShowSettings(false);
         setShowHelp(false);
       }
-      
+
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         const tagName = document.activeElement?.tagName;
         if (tagName !== 'INPUT' && tagName !== 'TEXTAREA' && !showSettings) {
@@ -224,7 +226,7 @@ export default function Dashboard({ mode, avatar }) {
 
   const playTTS = async (text) => {
     if (!isBrowser || text.length > 500) return;
-    
+
     try {
       const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
       const provider = settings.ttsProvider || 'openai';
@@ -269,10 +271,10 @@ export default function Dashboard({ mode, avatar }) {
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
-        setMessages([{ 
-          id: ++messageCountRef.current, 
-          type: 'mc', 
-          text: 'Chat history cleared.' 
+        setMessages([{
+          id: ++messageCountRef.current,
+          type: 'mc',
+          text: 'Chat history cleared.'
         }]);
         setIsTyping(false);
         setAvatarState('idle');
@@ -295,7 +297,7 @@ export default function Dashboard({ mode, avatar }) {
       });
 
       const data = await response.json();
-      
+
       messageCountRef.current++;
       const mcResponse = {
         id: messageCountRef.current,
@@ -304,7 +306,7 @@ export default function Dashboard({ mode, avatar }) {
         timestamp: new Date().toISOString(),
         command: data.command
       };
-      
+
       setMessages(prev => [...prev, mcResponse]);
       setIsTyping(false);
       setAvatarState('idle');
@@ -326,22 +328,22 @@ export default function Dashboard({ mode, avatar }) {
 
   const handleVoiceInput = () => {
     if (!isBrowser || !isListening) return;
-    
+
     setIsListening(true);
     setAvatarState('listening');
-    
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = true;
-      
+
       recognition.onresult = (event) => {
         const transcript = Array.from(event.results)
           .map(r => r[0].transcript)
           .join('');
         setInput(transcript);
-        
+
         if (event.results[0].isFinal) {
           setTimeout(() => {
             setIsListening(false);
@@ -350,17 +352,17 @@ export default function Dashboard({ mode, avatar }) {
           }, 500);
         }
       };
-      
+
       recognition.onerror = () => {
         setIsListening(false);
         setAvatarState('idle');
       };
-      
+
       recognition.onend = () => {
         setIsListening(false);
         setAvatarState('idle');
       };
-      
+
       recognition.start();
     }
   };
@@ -371,7 +373,7 @@ export default function Dashboard({ mode, avatar }) {
     }
   };
 
-  const AvatarWithState = avatar ? React.cloneElement(avatar, { 
+  const AvatarWithState = avatar ? React.cloneElement(avatar, {
     state: avatarState,
     size: 'small'
   }) : null;
@@ -379,12 +381,19 @@ export default function Dashboard({ mode, avatar }) {
   return (
     <div className="dashboard">
       <audio ref={audioRef} style={{ display: 'none' }} />
-      
+
       {showSettings && (
-        <Settings 
-          onClose={() => setShowSettings(false)} 
+        <Settings
+          onClose={() => setShowSettings(false)}
           onSave={handleSaveSettings}
           connectionStatus={connectionStatus}
+        />
+      )}
+
+      {showHealthMonitor && (
+        <HealthMonitor
+          isOpen={showHealthMonitor}
+          onClose={() => setShowHealthMonitor(false)}
         />
       )}
 
@@ -399,22 +408,22 @@ export default function Dashboard({ mode, avatar }) {
               <section>
                 <h4>Keyboard Shortcuts</h4>
                 <ul>
-                  <li><strong>⌘/Ctrl + Enter</strong> — Send message</li>
-                  <li><strong>⌘/Ctrl + .</strong> — Toggle settings</li>
-                  <li><strong>⌘/Ctrl + /</strong> — Show help</li>
-                  <li><strong>Escape</strong> — Close modals</li>
+                  <li><strong>⌘/Ctrl + Enter</strong> - Send message</li>
+                  <li><strong>⌘/Ctrl + .</strong> - Toggle settings</li>
+                  <li><strong>⌘/Ctrl + /</strong> - Show help</li>
+                  <li><strong>Escape</strong> - Close modals</li>
                 </ul>
               </section>
               <section>
                 <h4>Commands</h4>
                 <ul>
-                  <li><strong>/task <title></strong> — Create task</li>
-                  <li><strong>/tasks</strong> — List tasks</li>
-                  <li><strong>/done <id></strong> — Complete task</li>
-                  <li><strong>/event "<title>" <when></strong> — Create event</li>
-                  <li><strong>/events</strong> — Upcoming events</li>
-                  <li><strong>/clear</strong> — Clear chat</li>
-                  <li><strong>/help</strong> — Show help</li>
+                  <li><strong>/task <title></strong> - Create task</li>
+                  <li><strong>/tasks</strong> - List tasks</li>
+                  <li><strong>/done <id></strong> - Complete task</li>
+                  <li><strong>/event "<title>" <when></strong> - Create event</li>
+                  <li><strong>/events</strong> - Upcoming events</li>
+                  <li><strong>/clear</strong> - Clear chat</li>
+                  <li><strong>/help</strong> - Show help</li>
                 </ul>
               </section>
             </div>
@@ -426,10 +435,10 @@ export default function Dashboard({ mode, avatar }) {
         <div className="mc-avatar-sidebar">
           {AvatarWithState}
         </div>
-        
+
         <div className="mode-indicator">
           <span className="mode-badge">{mode}</span>
-          
+
           <div className={`connection-status ${connectionStatus}`}>
             {connectionStatus === 'connected' && <span className="status-indicator">🟢 Live</span>}
             {connectionStatus === 'reconnecting' && <span className="status-indicator">🔄 Reconnecting...</span>}
@@ -438,9 +447,10 @@ export default function Dashboard({ mode, avatar }) {
             {connectionStatus === 'unconfigured' && <span className="status-indicator">⚙️ Setup</span>}
             {(connectionStatus === 'error' || connectionStatus === 'offline') && <span className="status-indicator">🔴 Offline</span>}
           </div>
-          
+
           <button className="icon-btn" onClick={() => setShowHelp(true)} title="Help">❓</button>
           <button className="icon-btn" onClick={() => setShowSettings(true)} title="Settings">⚙️</button>
+          <button className="icon-btn" onClick={() => setShowHealthMonitor(true)} title="Health Monitor">🏥</button>
         </div>
       </div>
 
@@ -467,7 +477,7 @@ export default function Dashboard({ mode, avatar }) {
               )}
             </div>
           ))}
-          
+
           {isTyping && (
             <div className="message message-mc typing">
               <div className="message-content">
@@ -477,7 +487,7 @@ export default function Dashboard({ mode, avatar }) {
               </div>
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </div>
 
@@ -512,7 +522,7 @@ export default function Dashboard({ mode, avatar }) {
               <p>I'll alert you to what matters.</p>
             </div>
           )}
-          
+
           <div className="input-hints">
             <span>Press <strong>⌘Enter</strong> to send · <strong>/</strong> for commands</span>
           </div>
