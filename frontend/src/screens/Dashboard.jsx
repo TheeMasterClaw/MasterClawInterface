@@ -210,6 +210,7 @@ export default function Dashboard({ mode, avatar }) {
       if (e.key === 'Escape') {
         setShowSettings(false);
         setShowHelp(false);
+        setShowHealthMonitor(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
