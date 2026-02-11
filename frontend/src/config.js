@@ -1,5 +1,12 @@
-// API Configuration
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+// API Configuration - lazy evaluation to avoid SSR issues
+const getApiBase = () => {
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  return 'http://localhost:3001';
+};
+
+const API_BASE = getApiBase();
 
 export const API = {
   BASE_URL: API_BASE,

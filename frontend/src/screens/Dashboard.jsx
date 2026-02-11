@@ -431,12 +431,12 @@ export default function Dashboard({ mode, avatar }) {
           <span className="mode-badge">{mode}</span>
           
           <div className={`connection-status ${connectionStatus}`}>
-            {connectionStatus === 'connected' && (<><span>🟢</span><small>Live</small></>)}
-            {connectionStatus === 'reconnecting' && (<><span>🔄</span><small>Reconnecting...</small></>)}
-            {connectionStatus === 'backend-only' && (<><span>🟡</span><small>API</small></>)}
-            {connectionStatus === 'connecting' && (<><span>⏳</span><small>Connecting...</small></>)}
-            {connectionStatus === 'unconfigured' && (<><span>⚙️</span><small>Setup</small></>)}
-            {(connectionStatus === 'error' || connectionStatus === 'offline') && (<><span>🔴</span><small>Offline</small></>)}
+            {connectionStatus === 'connected' && <span className="status-indicator">🟢 Live</span>}
+            {connectionStatus === 'reconnecting' && <span className="status-indicator">🔄 Reconnecting...</span>}
+            {connectionStatus === 'backend-only' && <span className="status-indicator">🟡 API</span>}
+            {connectionStatus === 'connecting' && <span className="status-indicator">⏳ Connecting...</span>}
+            {connectionStatus === 'unconfigured' && <span className="status-indicator">⚙️ Setup</span>}
+            {(connectionStatus === 'error' || connectionStatus === 'offline') && <span className="status-indicator">🔴 Offline</span>}
           </div>
           
           <button className="icon-btn" onClick={() => setShowHelp(true)} title="Help">❓</button>
