@@ -418,13 +418,13 @@ export default function Dashboard({ mode, avatar }) {
               <section>
                 <h4>Commands</h4>
                 <ul>
-                  <li><strong>/task [title]</strong> - Create task</li>
-                  <li><strong>/tasks</strong> - List tasks</li>
-                  <li><strong>/done [id]</strong> - Complete task</li>
-                  <li><strong>/event "[title]" [when]</strong> - Create event</li>
-                  <li><strong>/events</strong> - Upcoming events</li>
-                  <li><strong>/clear</strong> - Clear chat</li>
-                  <li><strong>/help</strong> - Show help</li>
+                  <li><strong>/task [title]</strong> – Create task</li>
+                  <li><strong>/tasks</strong> – List all tasks</li>
+                  <li><strong>/done [id]</strong> – Complete task</li>
+                  <li><strong>/event "[title]" [when]</strong> – Create event</li>
+                  <li><strong>/events</strong> – Upcoming events</li>
+                  <li><strong>/clear</strong> – Clear chat history</li>
+                  <li><strong>/help</strong> – Show this help</li>
                 </ul>
               </section>
             </div>
