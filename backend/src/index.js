@@ -6,6 +6,7 @@ import { calendarRouter } from './routes/calendar.js';
 import { tasksRouter } from './routes/tasks.js';
 import { ttsRouter } from './routes/tts.js';
 import { chatRouter } from './routes/chat.js';
+import { errorHandler, sanitizeBody } from './middleware/security.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use(sanitizeBody); // Apply body sanitization globally
 
 // Initialize database
 await initDb();
@@ -41,6 +43,9 @@ app.get('/', (req, res) => {
     endpoints: ['/tasks', '/calendar', '/tts', '/health']
   });
 });
+
+// Global error handler - must be last
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {

@@ -4,17 +4,30 @@ import {
   getEvent, 
   createEvent 
 } from '../db.js';
+import { 
+  validateEventExists,
+  asyncHandler 
+} from '../middleware/security.js';
 
 export const calendarRouter = express.Router();
 
 // Get all calendar events
-calendarRouter.get('/events', (req, res) => {
-  const events = queryEvents();
-  res.json(events);
-});
+calendarRouter.get('/events', asyncHandler(async (req, res) => {
+  const { after, before } = req.query;
+  const filter = {};
+  
+  if (after) filter.after = after;
+  if (before) filter.before = before;
+  
+  const events = queryEvents(filter);
+  res.json({ 
+    events, 
+    count: events.length 
+  });
+}));
 
 // Get upcoming events (next 7 days)
-calendarRouter.get('/upcoming', (req, res) => {
+calendarRouter.get('/upcoming', asyncHandler(async (req, res) => {
   const now = new Date();
   const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
@@ -23,34 +36,110 @@ calendarRouter.get('/upcoming', (req, res) => {
     before: nextWeek.toISOString()
   });
 
-  res.json(events);
+  res.json({ 
+    events, 
+    period: {
+      from: now.toISOString(),
+      to: nextWeek.toISOString()
+    }
+  });
+}));
+
+// Get single event by ID
+calendarRouter.get('/events/:id', validateEventExists, (req, res) => {
+  res.json({ event: req.event });
 });
 
 // Sync with Google Calendar (stub)
-calendarRouter.post('/sync', async (req, res) => {
-  res.json({ synced: 0, message: 'Google Calendar sync not yet implemented' });
-});
+calendarRouter.post('/sync', asyncHandler(async (req, res) => {
+  res.json({ 
+    synced: 0, 
+    message: 'Google Calendar sync not yet implemented' 
+  });
+}));
 
-// Create local calendar event
-calendarRouter.post('/events', (req, res) => {
+// Create local calendar event - with improved validation
+calendarRouter.post('/events', asyncHandler(async (req, res) => {
   const { title, description, startTime, endTime, location, attendees } = req.body;
 
-  if (!title || !startTime || !endTime) {
-    return res.status(400).json({ error: 'Title, startTime, and endTime are required' });
-  }
-
-  try {
-    const event = createEvent({
-      title,
-      description: description || null,
-      startTime,
-      endTime,
-      location: location || null,
-      attendees: attendees || null
+  // Validate required fields
+  if (!title || typeof title !== 'string' || title.trim().length === 0) {
+    return res.status(400).json({ 
+      error: 'Title is required and must be a non-empty string',
+      code: 'INVALID_TITLE'
     });
-
-    res.status(201).json(event);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
   }
-});
+  
+  if (title.length > 200) {
+    return res.status(400).json({
+      error: 'Title must not exceed 200 characters',
+      code: 'TITLE_TOO_LONG'
+    });
+  }
+
+  if (!startTime || !endTime) {
+    return res.status(400).json({ 
+      error: 'startTime and endTime are required',
+      code: 'MISSING_TIMES'
+    });
+  }
+  
+  // Validate date formats
+  const startDate = new Date(startTime);
+  const endDate = new Date(endTime);
+  
+  if (isNaN(startDate.getTime())) {
+    return res.status(400).json({
+      error: 'Invalid startTime format',
+      code: 'INVALID_START_TIME'
+    });
+  }
+  
+  if (isNaN(endDate.getTime())) {
+    return res.status(400).json({
+      error: 'Invalid endTime format',
+      code: 'INVALID_END_TIME'
+    });
+  }
+  
+  if (endDate <= startDate) {
+    return res.status(400).json({
+      error: 'endTime must be after startTime',
+      code: 'INVALID_TIME_RANGE'
+    });
+  }
+  
+  // Validate location length if provided
+  if (location && location.length > 500) {
+    return res.status(400).json({
+      error: 'Location must not exceed 500 characters',
+      code: 'LOCATION_TOO_LONG'
+    });
+  }
+  
+  // Validate attendees if provided
+  let validatedAttendees = null;
+  if (attendees) {
+    if (Array.isArray(attendees)) {
+      validatedAttendees = attendees
+        .filter(a => typeof a === 'string' && a.trim().length > 0)
+        .slice(0, 50); // Max 50 attendees
+    } else if (typeof attendees === 'string') {
+      validatedAttendees = [attendees];
+    }
+  }
+
+  const event = createEvent({
+    title: title.trim(),
+    description: description?.trim() || null,
+    startTime,
+    endTime,
+    location: location?.trim() || null,
+    attendees: validatedAttendees
+  });
+
+  res.status(201).json({
+    message: 'Event created successfully',
+    event
+  });
+}));
