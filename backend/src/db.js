@@ -166,6 +166,128 @@ export function createMemory(memory) {
   return newMemory;
 }
 
+// Helper functions for time tracking
+export function queryTimeEntries(filter = {}) {
+  if (!db.time_entries) db.time_entries = [];
+  let entries = db.time_entries;
+  
+  if (filter.project) entries = entries.filter(e => e.project === filter.project);
+  if (filter.taskId) entries = entries.filter(e => e.taskId === filter.taskId);
+  if (filter.after) entries = entries.filter(e => new Date(e.startTime) >= new Date(filter.after));
+  if (filter.before) entries = entries.filter(e => new Date(e.startTime) <= new Date(filter.before));
+  if (filter.running) entries = entries.filter(e => !e.endTime);
+  
+  return entries.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+}
+
+export function getTimeEntry(id) {
+  if (!db.time_entries) db.time_entries = [];
+  return db.time_entries.find(e => e.id === id);
+}
+
+export function getRunningTimeEntry() {
+  if (!db.time_entries) db.time_entries = [];
+  return db.time_entries.find(e => !e.endTime);
+}
+
+export function createTimeEntry(entry) {
+  if (!db.time_entries) db.time_entries = [];
+  
+  // Stop any running entry first
+  const running = getRunningTimeEntry();
+  if (running) {
+    running.endTime = new Date().toISOString();
+    running.updatedAt = new Date().toISOString();
+  }
+  
+  const newEntry = {
+    id: genId(),
+    startTime: new Date().toISOString(),
+    endTime: null,
+    duration: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    ...entry
+  };
+  
+  db.time_entries.push(newEntry);
+  saveDb();
+  return newEntry;
+}
+
+export function updateTimeEntry(id, updates) {
+  if (!db.time_entries) db.time_entries = [];
+  const entry = getTimeEntry(id);
+  if (!entry) return null;
+  
+  // Calculate duration if endTime is being set
+  if (updates.endTime && !entry.endTime) {
+    const endTime = new Date(updates.endTime);
+    const startTime = new Date(entry.startTime);
+    updates.duration = Math.floor((endTime - startTime) / 1000); // duration in seconds
+  }
+  
+  Object.assign(entry, updates, { updatedAt: new Date().toISOString() });
+  saveDb();
+  return entry;
+}
+
+export function deleteTimeEntry(id) {
+  if (!db.time_entries) db.time_entries = [];
+  db.time_entries = db.time_entries.filter(e => e.id !== id);
+  saveDb();
+}
+
+export function getTimeStats(period = 'today') {
+  if (!db.time_entries) db.time_entries = [];
+  
+  const now = new Date();
+  let startOfPeriod;
+  
+  switch (period) {
+    case 'today':
+      startOfPeriod = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      break;
+    case 'week':
+      startOfPeriod = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+      break;
+    case 'month':
+      startOfPeriod = new Date(now.getFullYear(), now.getMonth(), 1);
+      break;
+    default:
+      startOfPeriod = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  }
+  
+  const entries = db.time_entries.filter(e => 
+    new Date(e.startTime) >= startOfPeriod && e.endTime
+  );
+  
+  const totalDuration = entries.reduce((acc, e) => acc + (e.duration || 0), 0);
+  
+  // Group by project
+  const byProject = entries.reduce((acc, e) => {
+    const project = e.project || 'Uncategorized';
+    acc[project] = (acc[project] || 0) + (e.duration || 0);
+    return acc;
+  }, {});
+  
+  // Group by day for week/month view
+  const byDay = entries.reduce((acc, e) => {
+    const day = new Date(e.startTime).toDateString();
+    acc[day] = (acc[day] || 0) + (e.duration || 0);
+    return acc;
+  }, {});
+  
+  return {
+    period,
+    totalDuration,
+    entryCount: entries.length,
+    byProject,
+    byDay,
+    averageSessionLength: entries.length > 0 ? Math.round(totalDuration / entries.length) : 0
+  };
+}
+
 // Helper functions for chat history
 export function createChatMessage(message) {
   const newMessage = {

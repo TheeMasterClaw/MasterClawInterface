@@ -11,6 +11,7 @@ import FocusTimer from './components/FocusTimer';
 import WeatherPanel from './components/WeatherPanel';
 import HabitTracker from './components/HabitTracker';
 import DailyQuote from './components/DailyQuote';
+import TimeTracker from './components/TimeTracker';
 import './App.css';
 
 // Browser detection
@@ -29,6 +30,7 @@ export default function App() {
   const [showWeatherPanel, setShowWeatherPanel] = useState(false);
   const [showHabitTracker, setShowHabitTracker] = useState(false);
   const [showDailyQuote, setShowDailyQuote] = useState(false);
+  const [showTimeTracker, setShowTimeTracker] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -188,6 +190,15 @@ export default function App() {
         💬
       </button>
 
+      {/* Time Tracker button - always visible */}
+      <button
+        className="global-time-btn"
+        onClick={() => setShowTimeTracker(true)}
+        title="Time Tracker"
+      >
+        ⏱️
+      </button>
+
       {showSettings && (
         <Settings
           onClose={() => setShowSettings(false)}
@@ -242,6 +253,13 @@ export default function App() {
         <DailyQuote
           isOpen={showDailyQuote}
           onClose={() => setShowDailyQuote(false)}
+        />
+      )}
+
+      {showTimeTracker && (
+        <TimeTracker
+          isOpen={showTimeTracker}
+          onClose={() => setShowTimeTracker(false)}
         />
       )}
 

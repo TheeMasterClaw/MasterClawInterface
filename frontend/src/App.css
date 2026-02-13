@@ -278,6 +278,33 @@ input:focus {
   transform: scale(1.05);
 }
 
+/* Global time tracker button - always visible */
+.global-time-btn {
+  position: fixed;
+  top: 20px;
+  right: 436px;
+  z-index: 100;
+  padding: 10px;
+  background: rgba(14, 165, 233, 0.2);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  border-radius: 10px;
+  color: #7dd3fc;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.global-time-btn:hover {
+  background: rgba(14, 165, 233, 0.3);
+  color: #e2e8f0;
+  transform: scale(1.05);
+}
+
 /* Light theme support */
 body.theme-light {
   background: #f8fafc;

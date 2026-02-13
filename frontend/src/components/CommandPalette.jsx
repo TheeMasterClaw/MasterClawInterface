@@ -19,6 +19,7 @@ const COMMANDS = [
   { id: 'weather', label: 'Weather', icon: '🌤️', shortcut: '/weather', action: 'panel', target: 'weather' },
   { id: 'habits', label: 'Habit Tracker', icon: '🎯', shortcut: '/habits', action: 'panel', target: 'habits' },
   { id: 'quotes', label: 'Daily Quotes', icon: '💬', shortcut: '/quotes', action: 'panel', target: 'quotes' },
+  { id: 'time', label: 'Time Tracker', icon: '⏱️', shortcut: '/time', action: 'panel', target: 'time' },
   { id: 'theme-dark', label: 'Switch to Dark Theme', icon: '🌙', shortcut: 'theme dark', action: 'theme', value: 'dark' },
   { id: 'theme-light', label: 'Switch to Light Theme', icon: '☀️', shortcut: 'theme light', action: 'theme', value: 'light' },
   { id: 'voice', label: 'Voice Input', icon: '🎤', shortcut: 'voice', action: 'voice' },

@@ -30,7 +30,18 @@ export const API = {
     create: `${API_BASE}/calendar/events`,
     sync: `${API_BASE}/calendar/sync`
   },
-  
+
+  time: {
+    list: `${API_BASE}/time`,
+    stats: `${API_BASE}/time/stats`,
+    running: `${API_BASE}/time/running`,
+    start: `${API_BASE}/time`,
+    stop: `${API_BASE}/time/stop`,
+    get: (id) => `${API_BASE}/time/${id}`,
+    update: (id) => `${API_BASE}/time/${id}`,
+    delete: (id) => `${API_BASE}/time/${id}`
+  },
+
   tts: {
     synthesize: `${API_BASE}/tts`
   },

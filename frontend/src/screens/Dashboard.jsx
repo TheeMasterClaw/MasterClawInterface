@@ -13,6 +13,7 @@ import FocusTimer from '../components/FocusTimer';
 import WeatherPanel from '../components/WeatherPanel';
 import HabitTracker from '../components/HabitTracker';
 import DailyQuote from '../components/DailyQuote';
+import TimeTracker from '../components/TimeTracker';
 import './Dashboard.css';
 
 // Browser detection
@@ -36,6 +37,7 @@ export default function Dashboard({ mode, avatar }) {
   const [showWeatherPanel, setShowWeatherPanel] = useState(false);
   const [showHabitTracker, setShowHabitTracker] = useState(false);
   const [showDailyQuote, setShowDailyQuote] = useState(false);
+  const [showTimeTracker, setShowTimeTracker] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -235,6 +237,7 @@ export default function Dashboard({ mode, avatar }) {
         setShowCommandPalette(false);
         setShowFocusTimer(false);
         setShowHabitTracker(false);
+        setShowTimeTracker(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -309,6 +312,18 @@ export default function Dashboard({ mode, avatar }) {
         type: 'command',
         title: 'Command executed',
         description: 'Opened Daily Quotes panel'
+      });
+      return;
+    }
+
+    if (userText === '/time') {
+      setShowTimeTracker(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Time Tracker panel'
       });
       return;
     }
@@ -461,6 +476,9 @@ export default function Dashboard({ mode, avatar }) {
           case 'quotes':
             setShowDailyQuote(true);
             break;
+          case 'time':
+            setShowTimeTracker(true);
+            break;
         }
         break;
       case 'settings':
@@ -570,6 +588,13 @@ export default function Dashboard({ mode, avatar }) {
         />
       )}
 
+      {showTimeTracker && (
+        <TimeTracker
+          isOpen={showTimeTracker}
+          onClose={() => setShowTimeTracker(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -609,6 +634,7 @@ export default function Dashboard({ mode, avatar }) {
                   <li><strong>/weather</strong> – Open Weather</li>
                   <li><strong>/habits</strong> – Open Habit Tracker</li>
                   <li><strong>/quotes</strong> – Open Daily Quotes</li>
+                  <li><strong>/time</strong> – Open Time Tracker</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -648,6 +674,7 @@ export default function Dashboard({ mode, avatar }) {
           <button className="icon-btn" onClick={() => setShowWeatherPanel(true)} title="Weather">🌤️</button>
           <button className="icon-btn" onClick={() => setShowHabitTracker(true)} title="Habit Tracker">🎯</button>
           <button className="icon-btn" onClick={() => setShowDailyQuote(true)} title="Daily Quote">💬</button>
+          <button className="icon-btn" onClick={() => setShowTimeTracker(true)} title="Time Tracker">⏱️</button>
         </div>
       </div>
 

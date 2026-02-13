@@ -9,6 +9,7 @@ import { calendarRouter } from './routes/calendar.js';
 import { tasksRouter } from './routes/tasks.js';
 import { ttsRouter } from './routes/tts.js';
 import { chatRouter } from './routes/chat.js';
+import { timeRouter } from './routes/time.js';
 import { errorHandler, sanitizeBody, authenticateApiToken } from './middleware/security.js';
 import { requestTimeout, timeoutFor } from './middleware/timeout.js';
 import { createSocketServer } from './socket.js';
@@ -95,6 +96,7 @@ app.use('/chat', chatLimiter);
 
 app.use('/tasks', tasksRouter);
 app.use('/calendar', calendarRouter);
+app.use('/time', timeRouter);
 app.use('/tts', ttsRouter);
 app.use('/chat', chatRouter);
 
@@ -118,7 +120,7 @@ app.get('/', (req, res) => {
   res.json({
     message: 'MC Backend API',
     status: 'running',
-    endpoints: ['/tasks', '/calendar', '/tts', '/health', '/chat'],
+    endpoints: ['/tasks', '/calendar', '/time', '/tts', '/health', '/chat'],
     realtime: 'socket.io enabled',
     security: {
       rateLimiting: true,
