@@ -3,6 +3,9 @@ import API from '../config.js';
 import GatewayClient from '../lib/gateway.js';
 import Settings from '../components/Settings';
 import HealthMonitor from '../components/HealthMonitor';
+import TaskPanel from '../components/TaskPanel';
+import CalendarPanel from '../components/CalendarPanel';
+import NotesPanel from '../components/NotesPanel';
 import './Dashboard.css';
 
 // Browser detection
@@ -17,6 +20,9 @@ export default function Dashboard({ mode, avatar }) {
   const [avatarState, setAvatarState] = useState('idle');
   const [showSettings, setShowSettings] = useState(false);
   const [showHealthMonitor, setShowHealthMonitor] = useState(false);
+  const [showTaskPanel, setShowTaskPanel] = useState(false);
+  const [showCalendarPanel, setShowCalendarPanel] = useState(false);
+  const [showNotesPanel, setShowNotesPanel] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -398,6 +404,27 @@ export default function Dashboard({ mode, avatar }) {
         />
       )}
 
+      {showTaskPanel && (
+        <TaskPanel
+          isOpen={showTaskPanel}
+          onClose={() => setShowTaskPanel(false)}
+        />
+      )}
+
+      {showCalendarPanel && (
+        <CalendarPanel
+          isOpen={showCalendarPanel}
+          onClose={() => setShowCalendarPanel(false)}
+        />
+      )}
+
+      {showNotesPanel && (
+        <NotesPanel
+          isOpen={showNotesPanel}
+          onClose={() => setShowNotesPanel(false)}
+        />
+      )}
+
       {showHelp && (
         <div className="help-overlay" onClick={() => setShowHelp(false)}>
           <div className="help-panel" onClick={e => e.stopPropagation()}>
@@ -452,6 +479,9 @@ export default function Dashboard({ mode, avatar }) {
           <button className="icon-btn" onClick={() => setShowHelp(true)} title="Help">❓</button>
           <button className="icon-btn" onClick={() => setShowSettings(true)} title="Settings">⚙️</button>
           <button className="icon-btn" onClick={() => setShowHealthMonitor(true)} title="Health Monitor">🏥</button>
+          <button className="icon-btn" onClick={() => setShowTaskPanel(true)} title="Tasks">📋</button>
+          <button className="icon-btn" onClick={() => setShowCalendarPanel(true)} title="Calendar">📅</button>
+          <button className="icon-btn" onClick={() => setShowNotesPanel(true)} title="Notes">📝</button>
         </div>
       </div>
 
