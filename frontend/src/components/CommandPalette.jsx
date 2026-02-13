@@ -8,6 +8,8 @@ const COMMANDS = [
   { id: 'events', label: 'Open Calendar Panel', icon: '📅', shortcut: '/events', action: 'panel', target: 'calendar' },
   { id: 'note', label: 'Create Note', icon: '📝', shortcut: 'new note', action: 'panel', target: 'notes' },
   { id: 'notes', label: 'Open Notes Panel', icon: '📝', shortcut: '/notes', action: 'panel', target: 'notes' },
+  { id: 'quicklinks', label: 'Open Quick Links', icon: '🔗', shortcut: '/links', action: 'panel', target: 'quicklinks' },
+  { id: 'link', label: 'Add Quick Link', icon: '➕', shortcut: '/link', action: 'input', value: '/link ' },
   { id: 'clear', label: 'Clear Chat History', icon: '🧹', shortcut: '/clear', action: 'input', value: '/clear' },
   { id: 'help', label: 'Show Help', icon: '❓', shortcut: '/help', action: 'help' },
   { id: 'settings', label: 'Open Settings', icon: '⚙️', shortcut: 'Cmd+,', action: 'settings' },

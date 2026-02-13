@@ -5,6 +5,7 @@ import Dashboard from './screens/Dashboard';
 import ModeSelector from './components/ModeSelector';
 import Settings from './components/Settings';
 import HealthMonitor from './components/HealthMonitor';
+import QuickLinksPanel from './components/QuickLinksPanel';
 import './App.css';
 
 // Browser detection
@@ -17,6 +18,7 @@ export default function App() {
   const [theme, setTheme] = useState('dark');
   const [showSettings, setShowSettings] = useState(false);
   const [showHealthMonitor, setShowHealthMonitor] = useState(false);
+  const [showQuickLinksPanel, setShowQuickLinksPanel] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -122,6 +124,15 @@ export default function App() {
         🏥
       </button>
 
+      {/* Quick Links button - always visible */}
+      <button
+        className="global-links-btn"
+        onClick={() => setShowQuickLinksPanel(true)}
+        title="Quick Links"
+      >
+        🔗
+      </button>
+
       {showSettings && (
         <Settings
           onClose={() => setShowSettings(false)}
@@ -134,6 +145,13 @@ export default function App() {
         <HealthMonitor
           isOpen={showHealthMonitor}
           onClose={() => setShowHealthMonitor(false)}
+        />
+      )}
+
+      {showQuickLinksPanel && (
+        <QuickLinksPanel
+          isOpen={showQuickLinksPanel}
+          onClose={() => setShowQuickLinksPanel(false)}
         />
       )}
 

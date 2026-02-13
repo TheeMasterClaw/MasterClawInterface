@@ -6,6 +6,7 @@ import HealthMonitor from '../components/HealthMonitor';
 import TaskPanel from '../components/TaskPanel';
 import CalendarPanel from '../components/CalendarPanel';
 import NotesPanel from '../components/NotesPanel';
+import QuickLinksPanel from '../components/QuickLinksPanel';
 import CommandPalette from '../components/CommandPalette';
 import './Dashboard.css';
 
@@ -24,6 +25,7 @@ export default function Dashboard({ mode, avatar }) {
   const [showTaskPanel, setShowTaskPanel] = useState(false);
   const [showCalendarPanel, setShowCalendarPanel] = useState(false);
   const [showNotesPanel, setShowNotesPanel] = useState(false);
+  const [showQuickLinksPanel, setShowQuickLinksPanel] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -219,6 +221,7 @@ export default function Dashboard({ mode, avatar }) {
         setShowSettings(false);
         setShowHelp(false);
         setShowHealthMonitor(false);
+        setShowQuickLinksPanel(false);
         setShowCommandPalette(false);
       }
 
@@ -400,6 +403,9 @@ export default function Dashboard({ mode, avatar }) {
           case 'notes':
             setShowNotesPanel(true);
             break;
+          case 'quicklinks':
+            setShowQuickLinksPanel(true);
+            break;
           case 'health':
             setShowHealthMonitor(true);
             break;
@@ -470,6 +476,13 @@ export default function Dashboard({ mode, avatar }) {
         />
       )}
 
+      {showQuickLinksPanel && (
+        <QuickLinksPanel
+          isOpen={showQuickLinksPanel}
+          onClose={() => setShowQuickLinksPanel(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -503,6 +516,7 @@ export default function Dashboard({ mode, avatar }) {
                   <li><strong>/done [id]</strong> – Complete task</li>
                   <li><strong>/event "[title]" [when]</strong> – Create event</li>
                   <li><strong>/events</strong> – Upcoming events</li>
+                  <li><strong>/links</strong> – Open Quick Links</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -536,6 +550,7 @@ export default function Dashboard({ mode, avatar }) {
           <button className="icon-btn" onClick={() => setShowTaskPanel(true)} title="Tasks">📋</button>
           <button className="icon-btn" onClick={() => setShowCalendarPanel(true)} title="Calendar">📅</button>
           <button className="icon-btn" onClick={() => setShowNotesPanel(true)} title="Notes">📝</button>
+          <button className="icon-btn" onClick={() => setShowQuickLinksPanel(true)} title="Quick Links">🔗</button>
         </div>
       </div>
 
