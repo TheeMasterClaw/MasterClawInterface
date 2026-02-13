@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { logFocusSession } from './ProductivityAnalytics';
 import './FocusTimer.css';
 
 const PRESETS = {
@@ -78,6 +79,9 @@ export default function FocusTimer({ isOpen, onClose }) {
       const updatedHistory = [...sessionHistory, newSession];
       setSessionHistory(updatedHistory);
       saveSessionHistory(updatedHistory);
+
+      // Also log to Productivity Analytics
+      logFocusSession(currentSettings.work, true);
 
       // Switch to break or long break
       if (newCompleted % currentSettings.sessions === 0) {

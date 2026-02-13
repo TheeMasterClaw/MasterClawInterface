@@ -14,6 +14,7 @@ import DailyQuote from './components/DailyQuote';
 import TimeTracker from './components/TimeTracker';
 import MoodTracker from './components/MoodTracker';
 import BreathingExercise from './components/BreathingExercise';
+import ProductivityAnalytics from './components/ProductivityAnalytics';
 import './App.css';
 
 // Browser detection
@@ -35,6 +36,7 @@ export default function App() {
   const [showTimeTracker, setShowTimeTracker] = useState(false);
   const [showMoodTracker, setShowMoodTracker] = useState(false);
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
+  const [showProductivityAnalytics, setShowProductivityAnalytics] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -221,6 +223,15 @@ export default function App() {
         🫁
       </button>
 
+      {/* Productivity Analytics button - always visible */}
+      <button
+        className="global-productivity-btn"
+        onClick={() => setShowProductivityAnalytics(true)}
+        title="Productivity Analytics"
+      >
+        📈
+      </button>
+
       {showSettings && (
         <Settings
           onClose={() => setShowSettings(false)}
@@ -296,6 +307,13 @@ export default function App() {
         <BreathingExercise
           isOpen={showBreathingExercise}
           onClose={() => setShowBreathingExercise(false)}
+        />
+      )}
+
+      {showProductivityAnalytics && (
+        <ProductivityAnalytics
+          isOpen={showProductivityAnalytics}
+          onClose={() => setShowProductivityAnalytics(false)}
         />
       )}
 

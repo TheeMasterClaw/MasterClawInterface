@@ -16,6 +16,7 @@ import DailyQuote from '../components/DailyQuote';
 import TimeTracker from '../components/TimeTracker';
 import MoodTracker from '../components/MoodTracker';
 import BreathingExercise from '../components/BreathingExercise';
+import ProductivityAnalytics from '../components/ProductivityAnalytics';
 import './Dashboard.css';
 
 // Browser detection
@@ -42,6 +43,7 @@ export default function Dashboard({ mode, avatar }) {
   const [showTimeTracker, setShowTimeTracker] = useState(false);
   const [showMoodTracker, setShowMoodTracker] = useState(false);
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
+  const [showProductivityAnalytics, setShowProductivityAnalytics] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -244,6 +246,7 @@ export default function Dashboard({ mode, avatar }) {
         setShowTimeTracker(false);
         setShowMoodTracker(false);
         setShowBreathingExercise(false);
+        setShowProductivityAnalytics(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -354,6 +357,18 @@ export default function Dashboard({ mode, avatar }) {
         type: 'command',
         title: 'Command executed',
         description: 'Opened Breathing Exercise panel'
+      });
+      return;
+    }
+
+    if (userText === '/productivity') {
+      setShowProductivityAnalytics(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Productivity Analytics panel'
       });
       return;
     }
@@ -515,6 +530,9 @@ export default function Dashboard({ mode, avatar }) {
           case 'breathing':
             setShowBreathingExercise(true);
             break;
+          case 'productivity':
+            setShowProductivityAnalytics(true);
+            break;
         }
         break;
       case 'settings':
@@ -645,6 +663,13 @@ export default function Dashboard({ mode, avatar }) {
         />
       )}
 
+      {showProductivityAnalytics && (
+        <ProductivityAnalytics
+          isOpen={showProductivityAnalytics}
+          onClose={() => setShowProductivityAnalytics(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -687,6 +712,7 @@ export default function Dashboard({ mode, avatar }) {
                   <li><strong>/time</strong> – Open Time Tracker</li>
                   <li><strong>/mood</strong> – Open Mood Tracker</li>
                   <li><strong>/breathe</strong> – Open Breathing Exercise</li>
+                  <li><strong>/productivity</strong> – Open Productivity Analytics</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -729,6 +755,7 @@ export default function Dashboard({ mode, avatar }) {
           <button className="icon-btn" onClick={() => setShowTimeTracker(true)} title="Time Tracker">⏱️</button>
           <button className="icon-btn" onClick={() => setShowMoodTracker(true)} title="Mood Tracker">🧠</button>
           <button className="icon-btn" onClick={() => setShowBreathingExercise(true)} title="Breathing Exercise">🫁</button>
+          <button className="icon-btn" onClick={() => setShowProductivityAnalytics(true)} title="Productivity Analytics">📈</button>
         </div>
       </div>
 
