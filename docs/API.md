@@ -2,6 +2,63 @@
 
 Base URL: `http://localhost:3001`
 
+## Authentication
+
+All API endpoints (except `/health`) require authentication via an API token.
+
+### Setting up API Token
+
+1. Generate a secure token:
+   ```bash
+   openssl rand -hex 32
+   ```
+
+2. Set the environment variable:
+   ```bash
+   export MASTERCLAW_API_TOKEN="your-generated-token"
+   ```
+
+3. Or add to your `.env` file:
+   ```
+   MASTERCLAW_API_TOKEN=your-generated-token
+   ```
+
+### Using the API Token
+
+Include the token in the `X-API-Token` header for all requests:
+
+```bash
+curl -H "X-API-Token: your-token-here" http://localhost:3001/tasks
+```
+
+### Security Notes
+
+- Tokens are compared using constant-time comparison to prevent timing attacks
+- In production (`NODE_ENV=production`), the API will reject requests if `MASTERCLAW_API_TOKEN` is not set
+- In development, missing tokens generate a warning but requests are allowed
+- The `/health` endpoint is intentionally public for monitoring purposes
+
+### Error Responses
+
+**401 Unauthorized** — Missing or invalid token:
+```json
+{
+  "error": "Authentication required",
+  "code": "AUTH_REQUIRED",
+  "message": "Provide API token in X-API-Token header"
+}
+```
+
+**401 Unauthorized** — Invalid token:
+```json
+{
+  "error": "Invalid API token",
+  "code": "AUTH_FAILED"
+}
+```
+
+---
+
 ## Health Check
 
 ### `GET /health`
@@ -26,7 +83,7 @@ Response:
 Get all tasks, sorted by due date.
 
 ```bash
-curl http://localhost:3001/tasks
+curl -H "X-API-Token: your-token" http://localhost:3001/tasks
 ```
 
 Response:
@@ -50,7 +107,7 @@ Response:
 Get a specific task.
 
 ```bash
-curl http://localhost:3001/tasks/a1b2c3d4e5f6
+curl -H "X-API-Token: your-token" http://localhost:3001/tasks/a1b2c3d4e5f6
 ```
 
 ### `POST /tasks`
@@ -58,6 +115,7 @@ Create a new task.
 
 ```bash
 curl -X POST http://localhost:3001/tasks \
+  -H "X-API-Token: your-token" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Review calendar",
@@ -96,6 +154,7 @@ Update an existing task.
 
 ```bash
 curl -X PATCH http://localhost:3001/tasks/a1b2c3d4e5f6 \
+  -H "X-API-Token: your-token" \
   -H "Content-Type: application/json" \
   -d '{
     "status": "done",
@@ -119,7 +178,7 @@ Request Body: (all optional)
 Delete a task.
 
 ```bash
-curl -X DELETE http://localhost:3001/tasks/a1b2c3d4e5f6
+curl -X DELETE -H "X-API-Token: your-token" http://localhost:3001/tasks/a1b2c3d4e5f6
 ```
 
 Response:
@@ -137,7 +196,7 @@ Response:
 Get all calendar events.
 
 ```bash
-curl http://localhost:3001/calendar/events
+curl -H "X-API-Token: your-token" http://localhost:3001/calendar/events
 ```
 
 Response:
@@ -161,7 +220,7 @@ Response:
 Get events for the next 7 days.
 
 ```bash
-curl http://localhost:3001/calendar/upcoming
+curl -H "X-API-Token: your-token" http://localhost:3001/calendar/upcoming
 ```
 
 ### `POST /calendar/events`
@@ -169,6 +228,7 @@ Create a local calendar event (not synced to Google).
 
 ```bash
 curl -X POST http://localhost:3001/calendar/events \
+  -H "X-API-Token: your-token" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Focus Time",
@@ -195,7 +255,7 @@ Request Body:
 Sync with Google Calendar. Currently a stub; needs OAuth implementation.
 
 ```bash
-curl -X POST http://localhost:3001/calendar/sync
+curl -X POST -H "X-API-Token: your-token" http://localhost:3001/calendar/sync
 ```
 
 Response:
@@ -215,6 +275,7 @@ Synthesize text to speech.
 
 ```bash
 curl -X POST http://localhost:3001/tts \
+  -H "X-API-Token: your-token" \
   -H "Content-Type: application/json" \
   -d '{
     "text": "Welcome, Rex. Let'\''s take over the world together.",
@@ -275,15 +336,10 @@ curl -X POST http://localhost:3001/tasks -d '{}'
 
 ## Rate Limiting
 
-Currently: None. Add if needed for production.
-
----
-
-## Authentication
-
-Currently: None. Add OAuth/JWT if adding multi-user support.
-
----
+API endpoints have rate limiting enabled:
+- General endpoints: 100 requests per 15 minutes per IP
+- Chat endpoints: 10 requests per minute per IP
+- Health checks are exempt from rate limiting
 
 ## CORS
 

@@ -9,7 +9,7 @@ import { calendarRouter } from './routes/calendar.js';
 import { tasksRouter } from './routes/tasks.js';
 import { ttsRouter } from './routes/tts.js';
 import { chatRouter } from './routes/chat.js';
-import { errorHandler, sanitizeBody } from './middleware/security.js';
+import { errorHandler, sanitizeBody, authenticateApiToken } from './middleware/security.js';
 import { createSocketServer } from './socket.js';
 
 dotenv.config();
@@ -63,6 +63,9 @@ app.use(cors({
 app.use(express.json());
 app.use(sanitizeBody); // Apply body sanitization globally
 
+// Apply API token authentication to all routes except health
+app.use(authenticateApiToken);
+
 await initDb();
 
 // Apply stricter rate limiting to chat routes
@@ -97,7 +100,8 @@ app.get('/', (req, res) => {
     realtime: 'socket.io enabled',
     security: {
       rateLimiting: true,
-      securityHeaders: true
+      securityHeaders: true,
+      apiAuth: !!process.env.MASTERCLAW_API_TOKEN
     }
   });
 });

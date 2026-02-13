@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { getTask, getEvent } from '../db.js';
 
 /**
@@ -264,7 +265,7 @@ export function asyncHandler(fn) {
  */
 export function errorHandler(err, req, res, next) {
   console.error(`[Error] ${req.method} ${req.path}:`, err.message);
-  
+
   // Handle specific error types
   if (err.name === 'SyntaxError' && err.type === 'entity.parse.failed') {
     return res.status(400).json({
@@ -272,14 +273,14 @@ export function errorHandler(err, req, res, next) {
       code: 'INVALID_JSON'
     });
   }
-  
+
   if (err.code === 'ENOENT') {
     return res.status(404).json({
       error: 'Resource not found',
       code: 'NOT_FOUND'
     });
   }
-  
+
   // Default server error
   const isDev = process.env.NODE_ENV === 'development';
   res.status(err.status || 500).json({
@@ -288,3 +289,79 @@ export function errorHandler(err, req, res, next) {
     ...(isDev && { stack: err.stack })
   });
 }
+
+/**
+ * API Token Authentication Middleware
+ * Validates X-API-Token header against MASTERCLAW_API_TOKEN env var
+ * Protects all sensitive endpoints from unauthorized access
+ */
+export function authenticateApiToken(req, res, next) {
+  // Skip auth for health checks (monitoring needs this)
+  if (req.path === '/health') {
+    return next();
+  }
+
+  const configuredToken = process.env.MASTERCLAW_API_TOKEN;
+
+  // If no token is configured, warn but allow (backward compatibility for dev)
+  // In production, this should be enforced
+  if (!configuredToken) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[Security] MASTERCLAW_API_TOKEN not set in production!');
+      return res.status(500).json({
+        error: 'Server misconfiguration: API token not set',
+        code: 'SERVER_MISCONFIG'
+      });
+    }
+    // Development mode: warn but continue
+    console.warn('[Security] Warning: MASTERCLAW_API_TOKEN not set. API is unprotected!');
+    return next();
+  }
+
+  // Get token from header
+  const providedToken = req.headers['x-api-token'];
+
+  if (!providedToken) {
+    return res.status(401).json({
+      error: 'Authentication required',
+      code: 'AUTH_REQUIRED',
+      message: 'Provide API token in X-API-Token header'
+    });
+  }
+
+  // Constant-time comparison to prevent timing attacks
+  try {
+    const configuredBuffer = Buffer.from(configuredToken);
+    const providedBuffer = Buffer.from(providedToken);
+
+    if (configuredBuffer.length !== providedBuffer.length) {
+      return res.status(401).json({
+        error: 'Invalid API token',
+        code: 'AUTH_FAILED'
+      });
+    }
+
+    const match = crypto.timingSafeEqual(configuredBuffer, providedBuffer);
+
+    if (!match) {
+      console.warn(`[Security] Invalid API token attempt from ${req.ip} to ${req.path}`);
+      return res.status(401).json({
+        error: 'Invalid API token',
+        code: 'AUTH_FAILED'
+      });
+    }
+
+    // Token valid, attach minimal auth info to request
+    req.auth = { authenticated: true, timestamp: new Date().toISOString() };
+    next();
+  } catch (err) {
+    console.error('[Security] Token comparison error:', err.message);
+    return res.status(500).json({
+      error: 'Authentication error',
+      code: 'AUTH_ERROR'
+    });
+  }
+}
+
+// Import crypto for timingSafeEqual
+import crypto from 'crypto';
