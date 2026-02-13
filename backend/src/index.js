@@ -12,12 +12,17 @@ import { chatRouter } from './routes/chat.js';
 import { timeRouter } from './routes/time.js';
 import { errorHandler, sanitizeBody, authenticateApiToken } from './middleware/security.js';
 import { requestTimeout, timeoutFor } from './middleware/timeout.js';
+import { auditLogMiddleware, getRecentAuditLogs, getAuditStats, logSecurityEvent, SecurityEventType, Severity } from './middleware/auditLog.js';
 import { createSocketServer } from './socket.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Security Audit: Log all requests for security monitoring
+// Must be applied early to capture all requests
+app.use(auditLogMiddleware);
 
 // Security middleware: Helmet for security headers
 app.use(helmet({
@@ -116,6 +121,38 @@ app.get('/security/audit', (req, res) => {
   });
 });
 
+// Security audit log endpoints
+app.get('/security/audit/logs', (req, res) => {
+  const { lines = 100, eventType, severity, since } = req.query;
+  
+  const options = {
+    lines: parseInt(lines, 10) || 100,
+    eventType,
+    severity,
+    since
+  };
+  
+  const logs = getRecentAuditLogs(options);
+  res.json({
+    count: logs.length,
+    logs,
+    filters: { eventType, severity, since }
+  });
+});
+
+app.get('/security/audit/stats', (req, res) => {
+  const { since } = req.query;
+  const stats = getAuditStats(since);
+  res.json(stats);
+});
+
+// Log system startup for security audit
+logSecurityEvent(
+  SecurityEventType.SYSTEM_STARTUP,
+  Severity.INFO,
+  { port: PORT, version: process.env.npm_package_version || 'unknown' }
+);
+
 app.get('/', (req, res) => {
   res.json({
     message: 'MC Backend API',
@@ -127,7 +164,12 @@ app.get('/', (req, res) => {
       securityHeaders: true,
       apiAuth: !!process.env.MASTERCLAW_API_TOKEN,
       bodySizeLimit: GENERAL_BODY_LIMIT,
-      requestTimeout: REQUEST_TIMEOUT_MS
+      requestTimeout: REQUEST_TIMEOUT_MS,
+      auditLogging: true
+    },
+    audit: {
+      endpoints: ['/security/audit', '/security/audit/logs', '/security/audit/stats'],
+      description: 'Security audit logging and monitoring'
     }
   });
 });
