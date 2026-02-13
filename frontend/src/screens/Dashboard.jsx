@@ -101,13 +101,8 @@ export default function Dashboard({ mode, avatar }) {
     const initGateway = async () => {
       try {
         const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
-        const gatewayUrl = settings.gatewayUrl || import.meta.env.VITE_GATEWAY_URL || 'https://tawny-diatropic-rurally.ngrok-free.dev';
-        const gatewayToken = settings.gatewayToken || import.meta.env.VITE_GATEWAY_TOKEN;
-
-        if (!gatewayToken) {
-          setConnectionStatus('unconfigured');
-          return;
-        }
+        const gatewayUrl = settings.gatewayUrl || import.meta.env.VITE_API_URL || 'http://localhost:3001';
+        const gatewayToken = settings.gatewayToken || import.meta.env.VITE_GATEWAY_TOKEN || '';
 
         const client = new GatewayClient(gatewayUrl, gatewayToken, {
           maxReconnectAttempts: 10,
