@@ -363,5 +363,3 @@ export function authenticateApiToken(req, res, next) {
   }
 }
 
-// Import crypto for timingSafeEqual
-import crypto from 'crypto';
