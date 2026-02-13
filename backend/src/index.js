@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { createServer } from 'http';
 import { initDb } from './db.js';
@@ -15,6 +17,45 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Security middleware: Helmet for security headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+  crossOriginEmbedderPolicy: false, // Allow for development flexibility
+}));
+
+// Security middleware: Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'Too many requests, please try again later.',
+    code: 'RATE_LIMIT_EXCEEDED'
+  },
+  // Skip rate limiting for health checks
+  skip: (req) => req.path === '/health'
+});
+
+// Stricter rate limit for chat endpoints (more resource intensive)
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10, // 10 chat requests per minute
+  message: {
+    error: 'Chat rate limit exceeded. Please slow down.',
+    code: 'CHAT_RATE_LIMIT_EXCEEDED'
+  }
+});
+
+app.use(limiter);
+
 app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
   credentials: true
@@ -23,6 +64,9 @@ app.use(express.json());
 app.use(sanitizeBody); // Apply body sanitization globally
 
 await initDb();
+
+// Apply stricter rate limiting to chat routes
+app.use('/chat', chatLimiter);
 
 app.use('/tasks', tasksRouter);
 app.use('/calendar', calendarRouter);
@@ -38,11 +82,14 @@ app.get('/', (req, res) => {
     message: 'MC Backend API',
     status: 'running',
     endpoints: ['/tasks', '/calendar', '/tts', '/health', '/chat'],
-    realtime: 'socket.io enabled'
+    realtime: 'socket.io enabled',
+    security: {
+      rateLimiting: true,
+      securityHeaders: true
+    }
   });
 });
 
-<<<<<<< HEAD
 // Global error handler - must be last
 app.use(errorHandler);
 
