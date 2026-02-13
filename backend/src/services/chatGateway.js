@@ -1,0 +1,346 @@
+import { createChatMessage, createTask, createEvent } from '../db.js';
+
+export async function processChatMessage({ message, saveHistory = true }) {
+  if (!message || !message.trim()) {
+    const err = new Error('Message is required');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  if (saveHistory) {
+    createChatMessage({
+      type: 'user',
+      content: message,
+      role: 'user'
+    });
+  }
+
+  const commandResult = await handleSlashCommand(message.trim());
+  if (commandResult) {
+    if (saveHistory) {
+      createChatMessage({
+        type: 'mc',
+        content: commandResult.text,
+        role: 'assistant',
+        command: commandResult.command
+      });
+    }
+    return commandResult;
+  }
+
+  try {
+    const gatewayUrl = process.env.OPENCLAW_GATEWAY_URL || 'http://localhost:3000';
+    const gatewayToken = process.env.OPENCLAW_GATEWAY_TOKEN;
+
+    if (!gatewayToken) {
+      const response = {
+        error: 'OpenClaw gateway not configured',
+        text: 'MC is offline. Configure OPENCLAW_GATEWAY_TOKEN in environment.',
+        debug: { gatewayUrl, hasToken: false }
+      };
+      if (saveHistory) {
+        createChatMessage({
+          type: 'mc',
+          content: response.text,
+          role: 'assistant',
+          error: true
+        });
+      }
+      const err = new Error(response.text);
+      err.statusCode = 500;
+      err.payload = response;
+      throw err;
+    }
+
+    const response = await fetch(`${gatewayUrl}/v1/sessions/send`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${gatewayToken}`
+      },
+      body: JSON.stringify({
+        message,
+        label: 'MasterClawInterface'
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Gateway error: ${response.status} ${errorText}`);
+    }
+
+    const data = await response.json();
+    const responseText = data.response || 'Message delivered to MC';
+
+    if (saveHistory) {
+      createChatMessage({
+        type: 'mc',
+        content: responseText,
+        role: 'assistant',
+        gatewayResponse: true
+      });
+    }
+
+    return {
+      status: 'sent',
+      text: responseText,
+      message
+    };
+  } catch (error) {
+    if (error.payload || error.statusCode === 400) {
+      throw error;
+    }
+
+    const errorResponse = {
+      error: 'Failed to send message to MC',
+      text: `Error: ${error.message}`,
+      debug: process.env.NODE_ENV === 'development'
+    };
+
+    if (saveHistory) {
+      createChatMessage({
+        type: 'mc',
+        content: errorResponse.text,
+        role: 'assistant',
+        error: true
+      });
+    }
+
+    const err = new Error(errorResponse.text);
+    err.statusCode = 500;
+    err.payload = errorResponse;
+    throw err;
+  }
+}
+
+// Slash command handler
+async function handleSlashCommand(message) {
+  if (!message.startsWith('/')) return null;
+
+  const parts = message.slice(1).split(' ');
+  const command = parts[0].toLowerCase();
+  const args = parts.slice(1).join(' ');
+
+  switch (command) {
+    case 'task':
+    case 'addtask':
+    case 't': {
+      if (!args.trim()) {
+        return {
+          command,
+          text: '❌ Usage: /task Buy groceries | /task "Important task" high',
+          type: 'error'
+        };
+      }
+
+      let title = args;
+      let priority = 'normal';
+
+      if (args.toLowerCase().endsWith(' high')) {
+        title = args.slice(0, -5).trim();
+        priority = 'high';
+      } else if (args.toLowerCase().endsWith(' low')) {
+        title = args.slice(0, -4).trim();
+        priority = 'low';
+      }
+
+      try {
+        const task = createTask({ title, priority });
+        return {
+          command,
+          text: `✅ Task created: "${task.title}" (${priority})`,
+          type: 'success',
+          data: task
+        };
+      } catch (err) {
+        return {
+          command,
+          text: `❌ Failed to create task: ${err.message}`,
+          type: 'error'
+        };
+      }
+    }
+
+    case 'tasks':
+    case 'list': {
+      const { queryTasks } = await import('../db.js');
+      const tasks = queryTasks();
+      if (tasks.length === 0) {
+        return { command, text: '📋 No tasks yet.', type: 'info' };
+      }
+      const taskList = tasks.map((t) => {
+        const status = t.status === 'done' ? '✅' : t.status === 'in_progress' ? '⏳' : '⭕';
+        const priority = t.priority === 'high' ? '🔴' : t.priority === 'low' ? '🔵' : '⚪';
+        return `${status} ${priority} ${t.title}`;
+      }).join('\n');
+      return {
+        command,
+        text: `📋 Tasks (${tasks.length}):\n${taskList}`,
+        type: 'info',
+        data: tasks
+      };
+    }
+
+    case 'done':
+    case 'complete': {
+      const { getTask, updateTask, queryTasks } = await import('../db.js');
+      if (!args.trim()) {
+        return { command, text: '❌ Usage: /done <task-id> or /done <task-name>', type: 'error' };
+      }
+
+      let task = getTask(args);
+      if (!task) {
+        task = queryTasks().find((t) => t.title.toLowerCase().includes(args.toLowerCase()));
+      }
+
+      if (!task) {
+        return { command, text: `❌ Task not found: "${args}"`, type: 'error' };
+      }
+
+      updateTask(task.id, { status: 'done' });
+      return {
+        command,
+        text: `✅ Marked as done: "${task.title}"`,
+        type: 'success'
+      };
+    }
+
+    case 'event':
+    case 'calendar':
+    case 'cal': {
+      if (!args.trim()) {
+        return {
+          command,
+          text: '❌ Usage: /event "Meeting" today 3pm\n/event "Lunch" tomorrow 12:00\n/event "Call" 2024-02-15 15:00',
+          type: 'error'
+        };
+      }
+
+      try {
+        const parsed = parseEventInput(args);
+        const event = createEvent(parsed);
+        return {
+          command,
+          text: `📅 Event created: "${event.title}" on ${new Date(event.startTime).toLocaleString()}`,
+          type: 'success',
+          data: event
+        };
+      } catch (err) {
+        return {
+          command,
+          text: `❌ Failed to create event: ${err.message}`,
+          type: 'error'
+        };
+      }
+    }
+
+    case 'events':
+    case 'upcoming': {
+      const { queryEvents } = await import('../db.js');
+      const now = new Date();
+      const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const events = queryEvents({ after: now.toISOString(), before: nextWeek.toISOString() });
+
+      if (events.length === 0) {
+        return { command, text: '📅 No upcoming events.', type: 'info' };
+      }
+
+      const eventList = events.slice(0, 10).map((e) => {
+        const date = new Date(e.startTime);
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        return `📅 ${dateStr} ${timeStr} — ${e.title}`;
+      }).join('\n');
+
+      return {
+        command,
+        text: `📅 Upcoming events (${events.length}):\n${eventList}`,
+        type: 'info',
+        data: events
+      };
+    }
+
+    case 'clear':
+    case 'cls': {
+      const { clearChatHistory } = await import('../db.js');
+      clearChatHistory();
+      return { command, text: '🧹 Chat history cleared.', type: 'success' };
+    }
+
+    case 'help': {
+      return {
+        command,
+        text: `🤖 Available commands:\n\n/task [title] [priority] - Create task\n/tasks - List tasks\n/done [id] - Complete task\n/event [title] [when] - Create event\n/events - List upcoming events\n/clear - Clear chat history\n/help - Show this help`,
+        type: 'info'
+      };
+    }
+
+    default:
+      return {
+        command,
+        text: `❌ Unknown command: /${command}. Type /help for commands.`,
+        type: 'error'
+      };
+  }
+}
+
+function parseEventInput(input) {
+  const quotedMatch = input.match(/^"([^"]+)"\s+(.+)$/);
+  let title;
+  let when;
+
+  if (quotedMatch) {
+    title = quotedMatch[1];
+    when = quotedMatch[2];
+  } else {
+    const parts = input.split(' ');
+    title = parts.slice(0, -2).join(' ');
+    when = parts.slice(-2).join(' ');
+  }
+
+  const date = new Date();
+  const lowerWhen = when.toLowerCase();
+
+  if (lowerWhen.includes('tomorrow')) {
+    date.setDate(date.getDate() + 1);
+    const timeMatch = when.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+    if (timeMatch) {
+      let hours = parseInt(timeMatch[1]);
+      const minutes = parseInt(timeMatch[2] || '0');
+      const ampm = timeMatch[3]?.toLowerCase();
+
+      if (ampm === 'pm' && hours < 12) hours += 12;
+      if (ampm === 'am' && hours === 12) hours = 0;
+
+      date.setHours(hours, minutes, 0, 0);
+    }
+  } else if (lowerWhen.includes('today')) {
+    const timeMatch = when.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+    if (timeMatch) {
+      let hours = parseInt(timeMatch[1]);
+      const minutes = parseInt(timeMatch[2] || '0');
+      const ampm = timeMatch[3]?.toLowerCase();
+
+      if (ampm === 'pm' && hours < 12) hours += 12;
+      if (ampm === 'am' && hours === 12) hours = 0;
+
+      date.setHours(hours, minutes, 0, 0);
+    }
+  } else {
+    const parsed = new Date(when);
+    if (isNaN(parsed.getTime())) {
+      throw new Error('Invalid date format. Use: today 3pm, tomorrow 12:00, or YYYY-MM-DD HH:MM');
+    }
+    return {
+      title,
+      startTime: parsed.toISOString(),
+      source: 'manual'
+    };
+  }
+
+  return {
+    title,
+    startTime: date.toISOString(),
+    source: 'manual'
+  };
+}

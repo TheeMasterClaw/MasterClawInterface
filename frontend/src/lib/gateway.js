@@ -1,18 +1,7 @@
-/**
- * OpenClaw Gateway WebSocket Client
- * Connects via Claw Bot Bridge (handles auth/CORS)
- */
-
-const WS_STATES = {
-  CONNECTING: 0,
-  OPEN: 1,
-  CLOSING: 2,
-  CLOSED: 3
-};
+import { io } from 'socket.io-client';
 
 export class GatewayClient {
   constructor(options = {}, tokenOverride = '', connectionOptions = {}) {
-    // Backward compatibility: allow (url, token, options) signature.
     if (typeof options === 'string') {
       options = {
         url: options,
@@ -21,54 +10,40 @@ export class GatewayClient {
       };
     }
 
-    // Use Claw Bot bridge URL from env
-    this.url = this.normalizeWsUrl(options.url || this.getBridgeUrl());
+    this.url = this.normalizeHttpUrl(options.url || this.getBridgeUrl());
     this.sessionId = options.sessionId || this.generateSessionId();
     this.token = options.token || this.getToken();
-    
-    this.ws = null;
+
+    this.socket = null;
     this.isConnected = false;
     this.connectionState = 'disconnected';
     this.messageHandlers = [];
     this.errorHandlers = [];
     this.connectHandlers = [];
     this.disconnectHandlers = [];
-    this.reconnectAttempt = 0;
+    this.messageQueue = [];
     this.maxReconnectAttempts = options.maxReconnectAttempts || 10;
     this.reconnectDelay = options.reconnectDelay || 2000;
-    this.pingInterval = null;
-    this.messageQueue = [];
   }
 
   getBridgeUrl() {
-    // Get from environment or fallback
-    const bridgeUrl = import.meta.env.VITE_GATEWAY_URL || '';
-    
-    // Convert http/https to ws/wss
-    if (bridgeUrl.startsWith('https://')) {
-      return bridgeUrl.replace('https://', 'wss://');
-    }
-    if (bridgeUrl.startsWith('http://')) {
-      return bridgeUrl.replace('http://', 'ws://');
-    }
-    return bridgeUrl;
+    return import.meta.env.VITE_API_URL || 'http://localhost:3001';
   }
 
-  normalizeWsUrl(url) {
+  normalizeHttpUrl(url) {
     if (!url) return url;
 
     try {
       const parsed = new URL(url);
-      const isLocalAddress = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1';
+      const isLocalAddress = ['localhost', '127.0.0.1'].includes(parsed.hostname);
       const runningRemotely = typeof window !== 'undefined' && !['localhost', '127.0.0.1'].includes(window.location.hostname);
 
-      // If the app is opened remotely, localhost/127 points at the user's device.
       if (isLocalAddress && runningRemotely) {
         parsed.hostname = window.location.hostname;
       }
 
-      if (parsed.protocol === 'http:') parsed.protocol = 'ws:';
-      if (parsed.protocol === 'https:') parsed.protocol = 'wss:';
+      if (parsed.protocol === 'ws:') parsed.protocol = 'http:';
+      if (parsed.protocol === 'wss:') parsed.protocol = 'https:';
 
       return parsed.toString().replace(/\/$/, '');
     } catch {
@@ -82,7 +57,7 @@ export class GatewayClient {
 
   connect() {
     return new Promise((resolve, reject) => {
-      if (this.ws?.readyState === WS_STATES.OPEN) {
+      if (this.socket?.connected) {
         resolve();
         return;
       }
@@ -92,135 +67,71 @@ export class GatewayClient {
         return;
       }
 
-      const wsUrl = `${this.url}?session=${this.sessionId}&token=${this.token}`;
-      const safeWsUrl = wsUrl.replace(/token=[^&]+/, 'token=***');
-      
-      console.log(`[Gateway] Connecting to: ${safeWsUrl}`);
       this.connectionState = 'connecting';
+      this.socket = io(this.url, {
+        transports: ['websocket'],
+        reconnection: true,
+        reconnectionAttempts: this.maxReconnectAttempts,
+        reconnectionDelay: this.reconnectDelay,
+        auth: {
+          token: this.token,
+          sessionId: this.sessionId
+        }
+      });
 
-      try {
-        this.ws = new WebSocket(wsUrl);
+      this.socket.on('connect', () => {
+        this.isConnected = true;
+        this.connectionState = 'connected';
+        this.connectHandlers.forEach((h) => h());
+        this.flushMessageQueue();
+        resolve();
+      });
 
-        this.ws.onopen = () => {
-          console.log('[Gateway] ✅ Connected');
-          this.isConnected = true;
-          this.connectionState = 'connected';
-          this.reconnectAttempt = 0;
-          this.connectHandlers.forEach(h => h());
-          this.flushMessageQueue();
-          this.startPing();
-          resolve();
-        };
+      this.socket.on('disconnect', (reason) => {
+        this.isConnected = false;
+        this.connectionState = reason === 'io client disconnect' ? 'disconnected' : 'reconnecting';
+        this.disconnectHandlers.forEach((h) => h({ reason }));
+      });
 
-        this.ws.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            console.log('[Gateway] 📬 Message:', data);
-
-            // Handle ping/pong
-            if (data.type === 'pong') return;
-
-            // Forward to handlers
-            this.messageHandlers.forEach(h => h(data));
-          } catch (err) {
-            console.error('[Gateway] Parse error:', event.data);
-          }
-        };
-
-        this.ws.onerror = (error) => {
-          console.error('[Gateway] ❌ Error:', error);
-          this.errorHandlers.forEach(h => h(error));
-          if (this.connectionState === 'connecting') {
-            reject(error);
-          }
-        };
-
-        this.ws.onclose = (event) => {
-          console.log(`[Gateway] ❌ Disconnected (code: ${event.code})`);
-          this.isConnected = false;
-          this.connectionState = 'disconnected';
-          this.stopPing();
-          this.disconnectHandlers.forEach(h => h(event));
-          
-          // Auto-reconnect
-          if (event.code !== 1000) {
-            this.scheduleReconnect();
-          }
-        };
-      } catch (err) {
+      this.socket.on('connect_error', (error) => {
         this.connectionState = 'error';
-        reject(err);
-      }
+        this.errorHandlers.forEach((h) => h(error));
+        reject(error);
+      });
+
+      this.socket.on('chat:response', (data) => {
+        this.messageHandlers.forEach((h) => h(data));
+      });
+
+      this.socket.on('chat:error', (error) => {
+        this.errorHandlers.forEach((h) => h(error));
+      });
     });
   }
 
-  scheduleReconnect() {
-    if (this.reconnectAttempt >= this.maxReconnectAttempts) {
-      console.log('[Gateway] Max reconnect attempts reached');
-      this.connectionState = 'failed';
-      return;
-    }
-
-    this.reconnectAttempt++;
-    const delay = Math.min(
-      this.reconnectDelay * Math.pow(2, this.reconnectAttempt - 1),
-      30000
-    );
-
-    console.log(`[Gateway] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempt})`);
-    this.connectionState = 'reconnecting';
-
-    setTimeout(() => {
-      this.connect().catch(() => {});
-    }, delay);
-  }
-
-  startPing() {
-    this.pingInterval = setInterval(() => {
-      if (this.isConnected) {
-        this.sendRaw({ type: 'ping' });
-      }
-    }, 30000);
-  }
-
-  stopPing() {
-    if (this.pingInterval) {
-      clearInterval(this.pingInterval);
-      this.pingInterval = null;
-    }
-  }
-
   send(message) {
-    const payload = {
-      type: 'message',
-      message: message,
-      timestamp: new Date().toISOString()
-    };
+    const payload = { message, timestamp: new Date().toISOString() };
 
-    return this.sendRaw(payload);
-  }
-
-  sendRaw(data) {
-    const payload = JSON.stringify(data);
-
-    if (this.isConnected && this.ws.readyState === WS_STATES.OPEN) {
-      this.ws.send(payload);
-      return true;
-    } else {
+    if (!this.isConnected || !this.socket) {
       this.messageQueue.push(payload);
-      console.log('[Gateway] Message queued (offline)');
       return false;
     }
+
+    this.socket.emit('chat:message', payload, (ack) => {
+      if (ack && !ack.ok) {
+        this.errorHandlers.forEach((h) => h(ack));
+      }
+    });
+    return true;
   }
 
   flushMessageQueue() {
     while (this.messageQueue.length > 0 && this.isConnected) {
       const payload = this.messageQueue.shift();
-      this.ws.send(payload);
+      this.socket.emit('chat:message', payload);
     }
   }
 
-  // Event handlers
   onMessage(handler) {
     this.messageHandlers.push(handler);
   }
@@ -238,10 +149,11 @@ export class GatewayClient {
   }
 
   disconnect() {
-    this.stopPing();
-    if (this.ws) {
-      this.ws.close(1000, 'Client disconnect');
+    if (this.socket) {
+      this.socket.disconnect();
     }
+    this.isConnected = false;
+    this.connectionState = 'disconnected';
   }
 
   generateSessionId() {
@@ -252,7 +164,6 @@ export class GatewayClient {
     return {
       isConnected: this.isConnected,
       connectionState: this.connectionState,
-      reconnectAttempt: this.reconnectAttempt,
       queuedMessages: this.messageQueue.length
     };
   }
