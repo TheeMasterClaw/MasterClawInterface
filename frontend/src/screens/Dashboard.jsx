@@ -11,6 +11,7 @@ import ActivityLogPanel, { logActivity } from '../components/ActivityLogPanel';
 import CommandPalette from '../components/CommandPalette';
 import FocusTimer from '../components/FocusTimer';
 import WeatherPanel from '../components/WeatherPanel';
+import HabitTracker from '../components/HabitTracker';
 import './Dashboard.css';
 
 // Browser detection
@@ -32,6 +33,7 @@ export default function Dashboard({ mode, avatar }) {
   const [showActivityLogPanel, setShowActivityLogPanel] = useState(false);
   const [showFocusTimer, setShowFocusTimer] = useState(false);
   const [showWeatherPanel, setShowWeatherPanel] = useState(false);
+  const [showHabitTracker, setShowHabitTracker] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -230,6 +232,7 @@ export default function Dashboard({ mode, avatar }) {
         setShowQuickLinksPanel(false);
         setShowCommandPalette(false);
         setShowFocusTimer(false);
+        setShowHabitTracker(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -437,6 +440,9 @@ export default function Dashboard({ mode, avatar }) {
           case 'weather':
             setShowWeatherPanel(true);
             break;
+          case 'habits':
+            setShowHabitTracker(true);
+            break;
         }
         break;
       case 'settings':
@@ -532,6 +538,13 @@ export default function Dashboard({ mode, avatar }) {
         />
       )}
 
+      {showHabitTracker && (
+        <HabitTracker
+          isOpen={showHabitTracker}
+          onClose={() => setShowHabitTracker(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -569,6 +582,7 @@ export default function Dashboard({ mode, avatar }) {
                   <li><strong>/activity</strong> – Open Activity Log</li>
                   <li><strong>/focus</strong> – Open Focus Timer</li>
                   <li><strong>/weather</strong> – Open Weather</li>
+                  <li><strong>/habits</strong> – Open Habit Tracker</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -606,6 +620,7 @@ export default function Dashboard({ mode, avatar }) {
           <button className="icon-btn" onClick={() => setShowActivityLogPanel(true)} title="Activity Log">📊</button>
           <button className="icon-btn" onClick={() => setShowFocusTimer(true)} title="Focus Timer">🎯</button>
           <button className="icon-btn" onClick={() => setShowWeatherPanel(true)} title="Weather">🌤️</button>
+          <button className="icon-btn" onClick={() => setShowHabitTracker(true)} title="Habit Tracker">🎯</button>
         </div>
       </div>
 

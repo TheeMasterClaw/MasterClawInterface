@@ -9,6 +9,7 @@ import QuickLinksPanel from './components/QuickLinksPanel';
 import ActivityLogPanel from './components/ActivityLogPanel';
 import FocusTimer from './components/FocusTimer';
 import WeatherPanel from './components/WeatherPanel';
+import HabitTracker from './components/HabitTracker';
 import './App.css';
 
 // Browser detection
@@ -25,6 +26,7 @@ export default function App() {
   const [showActivityLogPanel, setShowActivityLogPanel] = useState(false);
   const [showFocusTimer, setShowFocusTimer] = useState(false);
   const [showWeatherPanel, setShowWeatherPanel] = useState(false);
+  const [showHabitTracker, setShowHabitTracker] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -166,6 +168,15 @@ export default function App() {
         🌤️
       </button>
 
+      {/* Habit Tracker button - always visible */}
+      <button
+        className="global-habit-btn"
+        onClick={() => setShowHabitTracker(true)}
+        title="Habit Tracker"
+      >
+        🎯
+      </button>
+
       {showSettings && (
         <Settings
           onClose={() => setShowSettings(false)}
@@ -206,6 +217,13 @@ export default function App() {
         <WeatherPanel
           isOpen={showWeatherPanel}
           onClose={() => setShowWeatherPanel(false)}
+        />
+      )}
+
+      {showHabitTracker && (
+        <HabitTracker
+          isOpen={showHabitTracker}
+          onClose={() => setShowHabitTracker(false)}
         />
       )}
 
