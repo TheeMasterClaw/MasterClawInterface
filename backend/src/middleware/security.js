@@ -266,6 +266,17 @@ export function asyncHandler(fn) {
 export function errorHandler(err, req, res, next) {
   console.error(`[Error] ${req.method} ${req.path}:`, err.message);
 
+  // Handle payload too large (body size exceeded)
+  if (err.type === 'entity.too.large' || err.status === 413 || err.message?.includes('payload too large')) {
+    const limit = err.limit ? ` (${err.limit} limit)` : '';
+    return res.status(413).json({
+      error: 'Request body too large',
+      code: 'PAYLOAD_TOO_LARGE',
+      message: `The request body exceeds the maximum allowed size${limit}. Please reduce payload size.`,
+      maxSize: err.limit || 'varies by endpoint'
+    });
+  }
+
   // Handle specific error types
   if (err.name === 'SyntaxError' && err.type === 'entity.parse.failed') {
     return res.status(400).json({

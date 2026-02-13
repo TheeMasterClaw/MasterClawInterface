@@ -60,7 +60,23 @@ app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
   credentials: true
 }));
-app.use(express.json());
+
+// Security: Body size limits to prevent DoS via large payloads
+// 100KB for general API requests, 1MB for TTS (text can be large)
+const GENERAL_BODY_LIMIT = process.env.BODY_LIMIT_GENERAL || '100kb';
+const TTS_BODY_LIMIT = process.env.BODY_LIMIT_TTS || '1mb';
+
+app.use(express.json({ 
+  limit: GENERAL_BODY_LIMIT,
+  verify: (req, res, buf) => {
+    // Store raw body for potential signature verification
+    req.rawBody = buf;
+  }
+}));
+
+// TTS endpoint needs larger body limit for long text
+app.use('/tts', express.json({ limit: TTS_BODY_LIMIT }));
+
 app.use(sanitizeBody); // Apply body sanitization globally
 
 // Apply API token authentication to all routes except health
@@ -101,7 +117,8 @@ app.get('/', (req, res) => {
     security: {
       rateLimiting: true,
       securityHeaders: true,
-      apiAuth: !!process.env.MASTERCLAW_API_TOKEN
+      apiAuth: !!process.env.MASTERCLAW_API_TOKEN,
+      bodySizeLimit: GENERAL_BODY_LIMIT
     }
   });
 });

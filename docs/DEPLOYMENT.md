@@ -167,6 +167,10 @@ MC Web App ← → OpenClaw Gateway ← → Storage
 ```env
 PORT=3001
 NODE_ENV=production
+
+# Body Size Limits (security - prevents DoS via large payloads)
+BODY_LIMIT_GENERAL=100kb      # General API endpoints
+BODY_LIMIT_TTS=1mb            # TTS endpoint (allows larger text)
 ```
 
 **Database**
@@ -298,6 +302,7 @@ For distributed setup:
 - [ ] API authentication added (if multi-user)
 - [ ] CORS restricted to trusted origins
 - [ ] Rate limiting enabled
+- [ ] Request body size limits configured (BODY_LIMIT_GENERAL, BODY_LIMIT_TTS)
 - [ ] SQL injection prevention (parameterized queries—already done)
 - [ ] XSS prevention (React does this)
 - [ ] CSRF tokens for state-changing requests
