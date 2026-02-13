@@ -9,6 +9,7 @@ import NotesPanel from '../components/NotesPanel';
 import QuickLinksPanel from '../components/QuickLinksPanel';
 import ActivityLogPanel, { logActivity } from '../components/ActivityLogPanel';
 import CommandPalette from '../components/CommandPalette';
+import FocusTimer from '../components/FocusTimer';
 import './Dashboard.css';
 
 // Browser detection
@@ -28,6 +29,7 @@ export default function Dashboard({ mode, avatar }) {
   const [showNotesPanel, setShowNotesPanel] = useState(false);
   const [showQuickLinksPanel, setShowQuickLinksPanel] = useState(false);
   const [showActivityLogPanel, setShowActivityLogPanel] = useState(false);
+  const [showFocusTimer, setShowFocusTimer] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -225,6 +227,7 @@ export default function Dashboard({ mode, avatar }) {
         setShowHealthMonitor(false);
         setShowQuickLinksPanel(false);
         setShowCommandPalette(false);
+        setShowFocusTimer(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -426,6 +429,9 @@ export default function Dashboard({ mode, avatar }) {
           case 'activity':
             setShowActivityLogPanel(true);
             break;
+          case 'focus':
+            setShowFocusTimer(true);
+            break;
         }
         break;
       case 'settings':
@@ -507,6 +513,13 @@ export default function Dashboard({ mode, avatar }) {
         />
       )}
 
+      {showFocusTimer && (
+        <FocusTimer
+          isOpen={showFocusTimer}
+          onClose={() => setShowFocusTimer(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -542,6 +555,7 @@ export default function Dashboard({ mode, avatar }) {
                   <li><strong>/events</strong> – Upcoming events</li>
                   <li><strong>/links</strong> – Open Quick Links</li>
                   <li><strong>/activity</strong> – Open Activity Log</li>
+                  <li><strong>/focus</strong> – Open Focus Timer</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -577,6 +591,7 @@ export default function Dashboard({ mode, avatar }) {
           <button className="icon-btn" onClick={() => setShowNotesPanel(true)} title="Notes">📝</button>
           <button className="icon-btn" onClick={() => setShowQuickLinksPanel(true)} title="Quick Links">🔗</button>
           <button className="icon-btn" onClick={() => setShowActivityLogPanel(true)} title="Activity Log">📊</button>
+          <button className="icon-btn" onClick={() => setShowFocusTimer(true)} title="Focus Timer">🎯</button>
         </div>
       </div>
 

@@ -7,6 +7,7 @@ import Settings from './components/Settings';
 import HealthMonitor from './components/HealthMonitor';
 import QuickLinksPanel from './components/QuickLinksPanel';
 import ActivityLogPanel from './components/ActivityLogPanel';
+import FocusTimer from './components/FocusTimer';
 import './App.css';
 
 // Browser detection
@@ -21,6 +22,7 @@ export default function App() {
   const [showHealthMonitor, setShowHealthMonitor] = useState(false);
   const [showQuickLinksPanel, setShowQuickLinksPanel] = useState(false);
   const [showActivityLogPanel, setShowActivityLogPanel] = useState(false);
+  const [showFocusTimer, setShowFocusTimer] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -144,6 +146,15 @@ export default function App() {
         📊
       </button>
 
+      {/* Focus Timer button - always visible */}
+      <button
+        className="global-focus-btn"
+        onClick={() => setShowFocusTimer(true)}
+        title="Focus Timer"
+      >
+        🎯
+      </button>
+
       {showSettings && (
         <Settings
           onClose={() => setShowSettings(false)}
@@ -170,6 +181,13 @@ export default function App() {
         <ActivityLogPanel
           isOpen={showActivityLogPanel}
           onClose={() => setShowActivityLogPanel(false)}
+        />
+      )}
+
+      {showFocusTimer && (
+        <FocusTimer
+          isOpen={showFocusTimer}
+          onClose={() => setShowFocusTimer(false)}
         />
       )}
 
