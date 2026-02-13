@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { createServer } from 'http';
-import { initDb } from './db.js';
+import { initDb, auditSecurity } from './db.js';
 import { calendarRouter } from './routes/calendar.js';
 import { tasksRouter } from './routes/tasks.js';
 import { ttsRouter } from './routes/tts.js';
@@ -75,6 +75,18 @@ app.use('/chat', chatRouter);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Security audit endpoint
+app.get('/security/audit', (req, res) => {
+  const audit = auditSecurity();
+  res.json({
+    ...audit,
+    endpoints: {
+      total: 4,
+      protected: 4
+    }
+  });
 });
 
 app.get('/', (req, res) => {

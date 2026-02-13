@@ -127,6 +127,128 @@ export function validateEventExists(req, res, next) {
 }
 
 /**
+ * Validates and sanitizes query parameters
+ * Prevents injection attacks via query strings
+ * 
+ * @param {Object} schema - Validation schema: { paramName: { type: 'string'|'number'|'date'|'enum', enum?: string[], maxLength?: number } }
+ * @returns {Function} Express middleware
+ */
+export function validateQueryParams(schema) {
+  return (req, res, next) => {
+    const errors = [];
+    const sanitized = {};
+    
+    for (const [key, rules] of Object.entries(schema)) {
+      let value = req.query[key];
+      
+      // Skip undefined values unless required
+      if (value === undefined) {
+        continue;
+      }
+      
+      // Convert arrays to single value (prevent array injection)
+      if (Array.isArray(value)) {
+        errors.push({ param: key, error: 'Array values not allowed for this parameter' });
+        continue;
+      }
+      
+      // Validate string type
+      if (rules.type === 'string') {
+        if (typeof value !== 'string') {
+          errors.push({ param: key, error: 'Must be a string' });
+          continue;
+        }
+        
+        // Check max length
+        if (rules.maxLength && value.length > rules.maxLength) {
+          errors.push({ param: key, error: `Must not exceed ${rules.maxLength} characters` });
+          continue;
+        }
+        
+        // Check pattern (alphanumeric with common safe chars only)
+        if (rules.pattern) {
+          if (!rules.pattern.test(value)) {
+            errors.push({ param: key, error: 'Contains invalid characters' });
+            continue;
+          }
+        }
+        
+        sanitized[key] = value.trim();
+      }
+      
+      // Validate enum type
+      if (rules.type === 'enum') {
+        if (typeof value !== 'string') {
+          errors.push({ param: key, error: 'Must be a string' });
+          continue;
+        }
+        
+        const normalizedValue = value.toLowerCase().trim();
+        if (!rules.enum.includes(normalizedValue)) {
+          errors.push({ 
+            param: key, 
+            error: `Must be one of: ${rules.enum.join(', ')}`,
+            received: value
+          });
+          continue;
+        }
+        
+        sanitized[key] = normalizedValue;
+      }
+      
+      // Validate number type
+      if (rules.type === 'number') {
+        const num = Number(value);
+        if (isNaN(num)) {
+          errors.push({ param: key, error: 'Must be a valid number' });
+          continue;
+        }
+        
+        // Check min/max bounds
+        if (rules.min !== undefined && num < rules.min) {
+          errors.push({ param: key, error: `Must be at least ${rules.min}` });
+          continue;
+        }
+        if (rules.max !== undefined && num > rules.max) {
+          errors.push({ param: key, error: `Must not exceed ${rules.max}` });
+          continue;
+        }
+        
+        sanitized[key] = num;
+      }
+      
+      // Validate date type (ISO 8601)
+      if (rules.type === 'date') {
+        if (typeof value !== 'string') {
+          errors.push({ param: key, error: 'Must be a string' });
+          continue;
+        }
+        
+        const date = new Date(value);
+        if (isNaN(date.getTime())) {
+          errors.push({ param: key, error: 'Must be a valid ISO 8601 date' });
+          continue;
+        }
+        
+        sanitized[key] = value;
+      }
+    }
+    
+    if (errors.length > 0) {
+      return res.status(400).json({
+        error: 'Invalid query parameters',
+        code: 'INVALID_QUERY_PARAMS',
+        errors
+      });
+    }
+    
+    // Attach sanitized values to request
+    req.sanitizedQuery = { ...req.query, ...sanitized };
+    next();
+  };
+}
+
+/**
  * Async error wrapper for route handlers
  * Eliminates need for try/catch in every route
  */

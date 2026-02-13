@@ -6,14 +6,26 @@ import {
 } from '../db.js';
 import { 
   validateEventExists,
+  validateQueryParams,
   asyncHandler 
 } from '../middleware/security.js';
 
 export const calendarRouter = express.Router();
 
-// Get all calendar events
-calendarRouter.get('/events', asyncHandler(async (req, res) => {
-  const { after, before } = req.query;
+// Query parameter validation schemas
+const eventsQuerySchema = {
+  after: { type: 'date' },
+  before: { type: 'date' },
+};
+
+const historyQuerySchema = {
+  limit: { type: 'number', min: 1, max: 500 },
+  before: { type: 'date' },
+};
+
+// Get all calendar events - with validated query params
+calendarRouter.get('/events', validateQueryParams(eventsQuerySchema), asyncHandler(async (req, res) => {
+  const { after, before } = req.sanitizedQuery;
   const filter = {};
   
   if (after) filter.after = after;

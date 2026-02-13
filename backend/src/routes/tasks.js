@@ -9,18 +9,25 @@ import {
 import { 
   validateIdParam, 
   validateTaskExists,
+  validateQueryParams,
   sanitizeBody,
   asyncHandler 
 } from '../middleware/security.js';
 
 export const tasksRouter = express.Router();
 
+// Query parameter validation schemas
+const tasksQuerySchema = {
+  status: { type: 'enum', enum: ['open', 'in_progress', 'done', 'archived'] },
+  priority: { type: 'enum', enum: ['low', 'normal', 'high'] },
+};
+
 // Apply body sanitization to all routes
 tasksRouter.use(sanitizeBody);
 
-// Get all tasks with optional filtering
-tasksRouter.get('/', asyncHandler(async (req, res) => {
-  const { status, priority } = req.query;
+// Get all tasks with optional filtering - with validated query params
+tasksRouter.get('/', validateQueryParams(tasksQuerySchema), asyncHandler(async (req, res) => {
+  const { status, priority } = req.sanitizedQuery;
   const filter = {};
   
   if (status) filter.status = status;
