@@ -16,6 +16,7 @@ const COMMANDS = [
   { id: 'health', label: 'Health Monitor', icon: '🏥', shortcut: 'health', action: 'panel', target: 'health' },
   { id: 'activity', label: 'Activity Log', icon: '📊', shortcut: '/activity', action: 'panel', target: 'activity' },
   { id: 'focus', label: 'Focus Timer', icon: '🎯', shortcut: '/focus', action: 'panel', target: 'focus' },
+  { id: 'weather', label: 'Weather', icon: '🌤️', shortcut: '/weather', action: 'panel', target: 'weather' },
   { id: 'theme-dark', label: 'Switch to Dark Theme', icon: '🌙', shortcut: 'theme dark', action: 'theme', value: 'dark' },
   { id: 'theme-light', label: 'Switch to Light Theme', icon: '☀️', shortcut: 'theme light', action: 'theme', value: 'light' },
   { id: 'voice', label: 'Voice Input', icon: '🎤', shortcut: 'voice', action: 'voice' },

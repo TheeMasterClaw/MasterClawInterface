@@ -8,6 +8,7 @@ import HealthMonitor from './components/HealthMonitor';
 import QuickLinksPanel from './components/QuickLinksPanel';
 import ActivityLogPanel from './components/ActivityLogPanel';
 import FocusTimer from './components/FocusTimer';
+import WeatherPanel from './components/WeatherPanel';
 import './App.css';
 
 // Browser detection
@@ -23,6 +24,7 @@ export default function App() {
   const [showQuickLinksPanel, setShowQuickLinksPanel] = useState(false);
   const [showActivityLogPanel, setShowActivityLogPanel] = useState(false);
   const [showFocusTimer, setShowFocusTimer] = useState(false);
+  const [showWeatherPanel, setShowWeatherPanel] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -155,6 +157,15 @@ export default function App() {
         🎯
       </button>
 
+      {/* Weather button - always visible */}
+      <button
+        className="global-weather-btn"
+        onClick={() => setShowWeatherPanel(true)}
+        title="Weather"
+      >
+        🌤️
+      </button>
+
       {showSettings && (
         <Settings
           onClose={() => setShowSettings(false)}
@@ -188,6 +199,13 @@ export default function App() {
         <FocusTimer
           isOpen={showFocusTimer}
           onClose={() => setShowFocusTimer(false)}
+        />
+      )}
+
+      {showWeatherPanel && (
+        <WeatherPanel
+          isOpen={showWeatherPanel}
+          onClose={() => setShowWeatherPanel(false)}
         />
       )}
 

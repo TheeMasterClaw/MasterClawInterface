@@ -10,6 +10,7 @@ import QuickLinksPanel from '../components/QuickLinksPanel';
 import ActivityLogPanel, { logActivity } from '../components/ActivityLogPanel';
 import CommandPalette from '../components/CommandPalette';
 import FocusTimer from '../components/FocusTimer';
+import WeatherPanel from '../components/WeatherPanel';
 import './Dashboard.css';
 
 // Browser detection
@@ -30,6 +31,7 @@ export default function Dashboard({ mode, avatar }) {
   const [showQuickLinksPanel, setShowQuickLinksPanel] = useState(false);
   const [showActivityLogPanel, setShowActivityLogPanel] = useState(false);
   const [showFocusTimer, setShowFocusTimer] = useState(false);
+  const [showWeatherPanel, setShowWeatherPanel] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -432,6 +434,9 @@ export default function Dashboard({ mode, avatar }) {
           case 'focus':
             setShowFocusTimer(true);
             break;
+          case 'weather':
+            setShowWeatherPanel(true);
+            break;
         }
         break;
       case 'settings':
@@ -520,6 +525,13 @@ export default function Dashboard({ mode, avatar }) {
         />
       )}
 
+      {showWeatherPanel && (
+        <WeatherPanel
+          isOpen={showWeatherPanel}
+          onClose={() => setShowWeatherPanel(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -556,6 +568,7 @@ export default function Dashboard({ mode, avatar }) {
                   <li><strong>/links</strong> – Open Quick Links</li>
                   <li><strong>/activity</strong> – Open Activity Log</li>
                   <li><strong>/focus</strong> – Open Focus Timer</li>
+                  <li><strong>/weather</strong> – Open Weather</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -592,6 +605,7 @@ export default function Dashboard({ mode, avatar }) {
           <button className="icon-btn" onClick={() => setShowQuickLinksPanel(true)} title="Quick Links">🔗</button>
           <button className="icon-btn" onClick={() => setShowActivityLogPanel(true)} title="Activity Log">📊</button>
           <button className="icon-btn" onClick={() => setShowFocusTimer(true)} title="Focus Timer">🎯</button>
+          <button className="icon-btn" onClick={() => setShowWeatherPanel(true)} title="Weather">🌤️</button>
         </div>
       </div>
 

@@ -197,6 +197,33 @@ input:focus {
   transform: scale(1.05);
 }
 
+/* Global weather button - always visible */
+.global-weather-btn {
+  position: fixed;
+  top: 20px;
+  right: 280px;
+  z-index: 100;
+  padding: 10px;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 10px;
+  color: #fcd34d;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.global-weather-btn:hover {
+  background: rgba(245, 158, 11, 0.3);
+  color: #e2e8f0;
+  transform: scale(1.05);
+}
+
 /* Light theme support */
 body.theme-light {
   background: #f8fafc;
