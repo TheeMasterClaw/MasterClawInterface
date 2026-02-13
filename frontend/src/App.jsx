@@ -12,6 +12,7 @@ import WeatherPanel from './components/WeatherPanel';
 import HabitTracker from './components/HabitTracker';
 import DailyQuote from './components/DailyQuote';
 import TimeTracker from './components/TimeTracker';
+import MoodTracker from './components/MoodTracker';
 import './App.css';
 
 // Browser detection
@@ -31,6 +32,7 @@ export default function App() {
   const [showHabitTracker, setShowHabitTracker] = useState(false);
   const [showDailyQuote, setShowDailyQuote] = useState(false);
   const [showTimeTracker, setShowTimeTracker] = useState(false);
+  const [showMoodTracker, setShowMoodTracker] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -199,6 +201,15 @@ export default function App() {
         ⏱️
       </button>
 
+      {/* Mood Tracker button - always visible */}
+      <button
+        className="global-mood-btn"
+        onClick={() => setShowMoodTracker(true)}
+        title="Mood Tracker"
+      >
+        🧠
+      </button>
+
       {showSettings && (
         <Settings
           onClose={() => setShowSettings(false)}
@@ -260,6 +271,13 @@ export default function App() {
         <TimeTracker
           isOpen={showTimeTracker}
           onClose={() => setShowTimeTracker(false)}
+        />
+      )}
+
+      {showMoodTracker && (
+        <MoodTracker
+          isOpen={showMoodTracker}
+          onClose={() => setShowMoodTracker(false)}
         />
       )}
 
