@@ -7,6 +7,7 @@ import TaskPanel from '../components/TaskPanel';
 import CalendarPanel from '../components/CalendarPanel';
 import NotesPanel from '../components/NotesPanel';
 import QuickLinksPanel from '../components/QuickLinksPanel';
+import ActivityLogPanel, { logActivity } from '../components/ActivityLogPanel';
 import CommandPalette from '../components/CommandPalette';
 import './Dashboard.css';
 
@@ -26,6 +27,7 @@ export default function Dashboard({ mode, avatar }) {
   const [showCalendarPanel, setShowCalendarPanel] = useState(false);
   const [showNotesPanel, setShowNotesPanel] = useState(false);
   const [showQuickLinksPanel, setShowQuickLinksPanel] = useState(false);
+  const [showActivityLogPanel, setShowActivityLogPanel] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -281,6 +283,13 @@ export default function Dashboard({ mode, avatar }) {
     setIsTyping(true);
     setAvatarState('thinking');
 
+    // Log activity
+    logActivity({
+      type: 'message',
+      title: 'Message sent',
+      description: userText.substring(0, 100) + (userText.length > 100 ? '...' : '')
+    });
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -291,6 +300,11 @@ export default function Dashboard({ mode, avatar }) {
         }]);
         setIsTyping(false);
         setAvatarState('idle');
+        logActivity({
+          type: 'command',
+          title: 'Command executed',
+          description: 'Cleared chat history'
+        });
         return;
       } catch (err) {
         console.error('Failed to clear history:', err);
@@ -409,6 +423,9 @@ export default function Dashboard({ mode, avatar }) {
           case 'health':
             setShowHealthMonitor(true);
             break;
+          case 'activity':
+            setShowActivityLogPanel(true);
+            break;
         }
         break;
       case 'settings':
@@ -483,6 +500,13 @@ export default function Dashboard({ mode, avatar }) {
         />
       )}
 
+      {showActivityLogPanel && (
+        <ActivityLogPanel
+          isOpen={showActivityLogPanel}
+          onClose={() => setShowActivityLogPanel(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -517,6 +541,7 @@ export default function Dashboard({ mode, avatar }) {
                   <li><strong>/event "[title]" [when]</strong> – Create event</li>
                   <li><strong>/events</strong> – Upcoming events</li>
                   <li><strong>/links</strong> – Open Quick Links</li>
+                  <li><strong>/activity</strong> – Open Activity Log</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -551,6 +576,7 @@ export default function Dashboard({ mode, avatar }) {
           <button className="icon-btn" onClick={() => setShowCalendarPanel(true)} title="Calendar">📅</button>
           <button className="icon-btn" onClick={() => setShowNotesPanel(true)} title="Notes">📝</button>
           <button className="icon-btn" onClick={() => setShowQuickLinksPanel(true)} title="Quick Links">🔗</button>
+          <button className="icon-btn" onClick={() => setShowActivityLogPanel(true)} title="Activity Log">📊</button>
         </div>
       </div>
 

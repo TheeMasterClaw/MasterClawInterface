@@ -6,6 +6,7 @@ import ModeSelector from './components/ModeSelector';
 import Settings from './components/Settings';
 import HealthMonitor from './components/HealthMonitor';
 import QuickLinksPanel from './components/QuickLinksPanel';
+import ActivityLogPanel from './components/ActivityLogPanel';
 import './App.css';
 
 // Browser detection
@@ -19,6 +20,7 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [showHealthMonitor, setShowHealthMonitor] = useState(false);
   const [showQuickLinksPanel, setShowQuickLinksPanel] = useState(false);
+  const [showActivityLogPanel, setShowActivityLogPanel] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -133,6 +135,15 @@ export default function App() {
         🔗
       </button>
 
+      {/* Activity Log button - always visible */}
+      <button
+        className="global-activity-btn"
+        onClick={() => setShowActivityLogPanel(true)}
+        title="Activity Log"
+      >
+        📊
+      </button>
+
       {showSettings && (
         <Settings
           onClose={() => setShowSettings(false)}
@@ -152,6 +163,13 @@ export default function App() {
         <QuickLinksPanel
           isOpen={showQuickLinksPanel}
           onClose={() => setShowQuickLinksPanel(false)}
+        />
+      )}
+
+      {showActivityLogPanel && (
+        <ActivityLogPanel
+          isOpen={showActivityLogPanel}
+          onClose={() => setShowActivityLogPanel(false)}
         />
       )}
 

@@ -14,6 +14,7 @@ const COMMANDS = [
   { id: 'help', label: 'Show Help', icon: '❓', shortcut: '/help', action: 'help' },
   { id: 'settings', label: 'Open Settings', icon: '⚙️', shortcut: 'Cmd+,', action: 'settings' },
   { id: 'health', label: 'Health Monitor', icon: '🏥', shortcut: 'health', action: 'panel', target: 'health' },
+  { id: 'activity', label: 'Activity Log', icon: '📊', shortcut: '/activity', action: 'panel', target: 'activity' },
   { id: 'theme-dark', label: 'Switch to Dark Theme', icon: '🌙', shortcut: 'theme dark', action: 'theme', value: 'dark' },
   { id: 'theme-light', label: 'Switch to Light Theme', icon: '☀️', shortcut: 'theme light', action: 'theme', value: 'light' },
   { id: 'voice', label: 'Voice Input', icon: '🎤', shortcut: 'voice', action: 'voice' },
