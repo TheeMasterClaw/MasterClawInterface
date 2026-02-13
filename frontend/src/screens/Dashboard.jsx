@@ -6,6 +6,7 @@ import HealthMonitor from '../components/HealthMonitor';
 import TaskPanel from '../components/TaskPanel';
 import CalendarPanel from '../components/CalendarPanel';
 import NotesPanel from '../components/NotesPanel';
+import CommandPalette from '../components/CommandPalette';
 import './Dashboard.css';
 
 // Browser detection
@@ -26,6 +27,7 @@ export default function Dashboard({ mode, avatar }) {
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
   const messagesEndRef = useRef(null);
   const gatewayRef = useRef(null);
   const messageCountRef = useRef(0);
@@ -208,10 +210,16 @@ export default function Dashboard({ mode, avatar }) {
         setShowHelp(prev => !prev);
       }
 
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowCommandPalette(prev => !prev);
+      }
+
       if (e.key === 'Escape') {
         setShowSettings(false);
         setShowHelp(false);
         setShowHealthMonitor(false);
+        setShowCommandPalette(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -375,6 +383,48 @@ export default function Dashboard({ mode, avatar }) {
     }
   };
 
+  const handleCommandPaletteAction = (command) => {
+    switch (command.type) {
+      case 'input':
+        setInput(command.value);
+        setTimeout(() => inputRef.current?.focus(), 100);
+        break;
+      case 'panel':
+        switch (command.target) {
+          case 'tasks':
+            setShowTaskPanel(true);
+            break;
+          case 'calendar':
+            setShowCalendarPanel(true);
+            break;
+          case 'notes':
+            setShowNotesPanel(true);
+            break;
+          case 'health':
+            setShowHealthMonitor(true);
+            break;
+        }
+        break;
+      case 'settings':
+        setShowSettings(true);
+        break;
+      case 'help':
+        setShowHelp(true);
+        break;
+      case 'voice':
+        handleVoiceInput();
+        break;
+      case 'theme':
+        if (isBrowser) {
+          const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
+          settings.theme = command.value;
+          localStorage.setItem('mc-settings', JSON.stringify(settings));
+          window.location.reload();
+        }
+        break;
+    }
+  };
+
   const AvatarWithState = avatar ? React.cloneElement(avatar, {
     state: avatarState,
     size: 'small'
@@ -420,6 +470,13 @@ export default function Dashboard({ mode, avatar }) {
         />
       )}
 
+      <CommandPalette
+        isOpen={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        onCommand={handleCommandPaletteAction}
+        inputRef={inputRef}
+      />
+
       {showHelp && (
         <div className="help-overlay" onClick={() => setShowHelp(false)}>
           <div className="help-panel" onClick={e => e.stopPropagation()}>
@@ -431,6 +488,7 @@ export default function Dashboard({ mode, avatar }) {
               <section>
                 <h4>Keyboard Shortcuts</h4>
                 <ul>
+                  <li><strong>⌘/Ctrl + K</strong> - Open Command Palette</li>
                   <li><strong>⌘/Ctrl + Enter</strong> - Send message</li>
                   <li><strong>⌘/Ctrl + .</strong> - Toggle settings</li>
                   <li><strong>⌘/Ctrl + /</strong> - Show help</li>
@@ -471,6 +529,7 @@ export default function Dashboard({ mode, avatar }) {
             {(connectionStatus === 'error' || connectionStatus === 'offline') && <span className="status-indicator">🔴 Offline</span>}
           </div>
 
+          <button className="icon-btn" onClick={() => setShowCommandPalette(true)} title="Command Palette (⌘K)">⌘</button>
           <button className="icon-btn" onClick={() => setShowHelp(true)} title="Help">❓</button>
           <button className="icon-btn" onClick={() => setShowSettings(true)} title="Settings">⚙️</button>
           <button className="icon-btn" onClick={() => setShowHealthMonitor(true)} title="Health Monitor">🏥</button>
@@ -550,7 +609,7 @@ export default function Dashboard({ mode, avatar }) {
           )}
 
           <div className="input-hints">
-            <span>Press <strong>⌘Enter</strong> to send · <strong>/</strong> for commands</span>
+            <span>Press <strong>⌘K</strong> for commands · <strong>⌘Enter</strong> to send</span>
           </div>
         </div>
       </div>
