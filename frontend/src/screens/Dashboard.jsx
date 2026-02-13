@@ -12,6 +12,7 @@ import CommandPalette from '../components/CommandPalette';
 import FocusTimer from '../components/FocusTimer';
 import WeatherPanel from '../components/WeatherPanel';
 import HabitTracker from '../components/HabitTracker';
+import DailyQuote from '../components/DailyQuote';
 import './Dashboard.css';
 
 // Browser detection
@@ -34,6 +35,7 @@ export default function Dashboard({ mode, avatar }) {
   const [showFocusTimer, setShowFocusTimer] = useState(false);
   const [showWeatherPanel, setShowWeatherPanel] = useState(false);
   const [showHabitTracker, setShowHabitTracker] = useState(false);
+  const [showDailyQuote, setShowDailyQuote] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -298,6 +300,19 @@ export default function Dashboard({ mode, avatar }) {
       description: userText.substring(0, 100) + (userText.length > 100 ? '...' : '')
     });
 
+    // Handle slash commands
+    if (userText === '/quotes') {
+      setShowDailyQuote(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Daily Quotes panel'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -443,6 +458,9 @@ export default function Dashboard({ mode, avatar }) {
           case 'habits':
             setShowHabitTracker(true);
             break;
+          case 'quotes':
+            setShowDailyQuote(true);
+            break;
         }
         break;
       case 'settings':
@@ -545,6 +563,13 @@ export default function Dashboard({ mode, avatar }) {
         />
       )}
 
+      {showDailyQuote && (
+        <DailyQuote
+          isOpen={showDailyQuote}
+          onClose={() => setShowDailyQuote(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -583,6 +608,7 @@ export default function Dashboard({ mode, avatar }) {
                   <li><strong>/focus</strong> – Open Focus Timer</li>
                   <li><strong>/weather</strong> – Open Weather</li>
                   <li><strong>/habits</strong> – Open Habit Tracker</li>
+                  <li><strong>/quotes</strong> – Open Daily Quotes</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -621,6 +647,7 @@ export default function Dashboard({ mode, avatar }) {
           <button className="icon-btn" onClick={() => setShowFocusTimer(true)} title="Focus Timer">🎯</button>
           <button className="icon-btn" onClick={() => setShowWeatherPanel(true)} title="Weather">🌤️</button>
           <button className="icon-btn" onClick={() => setShowHabitTracker(true)} title="Habit Tracker">🎯</button>
+          <button className="icon-btn" onClick={() => setShowDailyQuote(true)} title="Daily Quote">💬</button>
         </div>
       </div>
 

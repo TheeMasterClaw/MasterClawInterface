@@ -10,6 +10,7 @@ import ActivityLogPanel from './components/ActivityLogPanel';
 import FocusTimer from './components/FocusTimer';
 import WeatherPanel from './components/WeatherPanel';
 import HabitTracker from './components/HabitTracker';
+import DailyQuote from './components/DailyQuote';
 import './App.css';
 
 // Browser detection
@@ -27,6 +28,7 @@ export default function App() {
   const [showFocusTimer, setShowFocusTimer] = useState(false);
   const [showWeatherPanel, setShowWeatherPanel] = useState(false);
   const [showHabitTracker, setShowHabitTracker] = useState(false);
+  const [showDailyQuote, setShowDailyQuote] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -177,6 +179,15 @@ export default function App() {
         🎯
       </button>
 
+      {/* Daily Quote button - always visible */}
+      <button
+        className="global-quote-btn"
+        onClick={() => setShowDailyQuote(true)}
+        title="Daily Quote"
+      >
+        💬
+      </button>
+
       {showSettings && (
         <Settings
           onClose={() => setShowSettings(false)}
@@ -224,6 +235,13 @@ export default function App() {
         <HabitTracker
           isOpen={showHabitTracker}
           onClose={() => setShowHabitTracker(false)}
+        />
+      )}
+
+      {showDailyQuote && (
+        <DailyQuote
+          isOpen={showDailyQuote}
+          onClose={() => setShowDailyQuote(false)}
         />
       )}
 
