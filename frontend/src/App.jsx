@@ -13,6 +13,7 @@ import HabitTracker from './components/HabitTracker';
 import DailyQuote from './components/DailyQuote';
 import TimeTracker from './components/TimeTracker';
 import MoodTracker from './components/MoodTracker';
+import BreathingExercise from './components/BreathingExercise';
 import './App.css';
 
 // Browser detection
@@ -33,6 +34,7 @@ export default function App() {
   const [showDailyQuote, setShowDailyQuote] = useState(false);
   const [showTimeTracker, setShowTimeTracker] = useState(false);
   const [showMoodTracker, setShowMoodTracker] = useState(false);
+  const [showBreathingExercise, setShowBreathingExercise] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -210,6 +212,15 @@ export default function App() {
         🧠
       </button>
 
+      {/* Breathing Exercise button - always visible */}
+      <button
+        className="global-breathing-btn"
+        onClick={() => setShowBreathingExercise(true)}
+        title="Breathing Exercise"
+      >
+        🫁
+      </button>
+
       {showSettings && (
         <Settings
           onClose={() => setShowSettings(false)}
@@ -278,6 +289,13 @@ export default function App() {
         <MoodTracker
           isOpen={showMoodTracker}
           onClose={() => setShowMoodTracker(false)}
+        />
+      )}
+
+      {showBreathingExercise && (
+        <BreathingExercise
+          isOpen={showBreathingExercise}
+          onClose={() => setShowBreathingExercise(false)}
         />
       )}
 

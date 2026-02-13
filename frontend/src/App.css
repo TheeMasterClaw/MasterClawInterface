@@ -332,6 +332,33 @@ input:focus {
   transform: scale(1.05);
 }
 
+/* Global breathing exercise button - always visible */
+.global-breathing-btn {
+  position: fixed;
+  top: 20px;
+  right: 540px;
+  z-index: 100;
+  padding: 10px;
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 10px;
+  color: #6ee7b7;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.global-breathing-btn:hover {
+  background: rgba(16, 185, 129, 0.3);
+  color: #e2e8f0;
+  transform: scale(1.05);
+}
+
 /* Light theme support */
 body.theme-light {
   background: #f8fafc;
