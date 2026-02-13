@@ -1,6 +1,6 @@
 /**
  * OpenClaw Gateway WebSocket Client
- * Connects directly to the OpenClaw gateway with auto-reconnect
+ * Connects via Claw Bot Bridge (handles auth/CORS)
  */
 
 const WS_STATES = {
@@ -11,9 +11,12 @@ const WS_STATES = {
 };
 
 export class GatewayClient {
-  constructor(url, token, options = {}) {
-    this.url = url;
-    this.token = token;
+  constructor(options = {}) {
+    // Use Claw Bot bridge URL from env
+    this.url = options.url || this.getBridgeUrl();
+    this.sessionId = options.sessionId || this.generateSessionId();
+    this.token = options.token || this.getToken();
+    
     this.ws = null;
     this.isConnected = false;
     this.connectionState = 'disconnected';
@@ -22,13 +25,28 @@ export class GatewayClient {
     this.connectHandlers = [];
     this.disconnectHandlers = [];
     this.reconnectAttempt = 0;
-    this.maxReconnectAttempts = options.maxReconnectAttempts || 5;
-    this.reconnectDelay = options.reconnectDelay || 3000;
-    this.reconnectDelayMax = options.reconnectDelayMax || 30000;
-    this.reconnectTimer = null;
+    this.maxReconnectAttempts = 10;
+    this.reconnectDelay = 2000;
     this.pingInterval = null;
-    this.lastPing = null;
     this.messageQueue = [];
+  }
+
+  getBridgeUrl() {
+    // Get from environment or fallback
+    const bridgeUrl = import.meta.env.VITE_GATEWAY_URL || '';
+    
+    // Convert http/https to ws/wss
+    if (bridgeUrl.startsWith('https://')) {
+      return bridgeUrl.replace('https://', 'wss://');
+    }
+    if (bridgeUrl.startsWith('http://')) {
+      return bridgeUrl.replace('http://', 'ws://');
+    }
+    return bridgeUrl;
+  }
+
+  getToken() {
+    return import.meta.env.VITE_GATEWAY_TOKEN || '';
   }
 
   connect() {
@@ -38,20 +56,17 @@ export class GatewayClient {
         return;
       }
 
+      if (!this.url) {
+        reject(new Error('Gateway URL not configured'));
+        return;
+      }
+
+      const wsUrl = `${this.url}?session=${this.sessionId}&token=${this.token}`;
+      
+      console.log('[Gateway] Connecting to bridge...');
+      this.connectionState = 'connecting';
+
       try {
-        // WebSocket URL - convert http/https to ws/wss
-        let wsUrl = this.url
-          .replace(/^https/, 'wss')
-          .replace(/^http/, 'ws')
-          .replace(/\/$/, '');
-        
-        // Add token to URL for auth
-        const separator = wsUrl.includes('?') ? '&' : '?';
-        wsUrl += `${separator}token=${this.token}`;
-
-        console.log('[Gateway] Connecting to:', wsUrl.replace(/token=[^\u0026]+/, 'token=***'));
-        this.connectionState = 'connecting';
-
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
@@ -60,13 +75,8 @@ export class GatewayClient {
           this.connectionState = 'connected';
           this.reconnectAttempt = 0;
           this.connectHandlers.forEach(h => h());
-          
-          // Start ping interval
-          this.startPing();
-          
-          // Flush queued messages
           this.flushMessageQueue();
-          
+          this.startPing();
           resolve();
         };
 
@@ -76,21 +86,12 @@ export class GatewayClient {
             console.log('[Gateway] 📬 Message:', data);
 
             // Handle ping/pong
-            if (data.type === 'pong') {
-              this.lastPing = Date.now();
-              return;
-            }
+            if (data.type === 'pong') return;
 
-            // Handle authentication challenge
-            if (data.event === 'connect.challenge') {
-              console.log('[Gateway] 🔐 Auth challenge received');
-              return;
-            }
-
-            // Handle regular messages
+            // Forward to handlers
             this.messageHandlers.forEach(h => h(data));
           } catch (err) {
-            console.error('[Gateway] Failed to parse message:', event.data);
+            console.error('[Gateway] Parse error:', event.data);
           }
         };
 
@@ -109,8 +110,8 @@ export class GatewayClient {
           this.stopPing();
           this.disconnectHandlers.forEach(h => h(event));
           
-          // Auto-reconnect unless intentionally closed
-          if (event.code !== 1000 && event.code !== 1001) {
+          // Auto-reconnect
+          if (event.code !== 1000) {
             this.scheduleReconnect();
           }
         };
@@ -131,26 +132,23 @@ export class GatewayClient {
     this.reconnectAttempt++;
     const delay = Math.min(
       this.reconnectDelay * Math.pow(2, this.reconnectAttempt - 1),
-      this.reconnectDelayMax
+      30000
     );
 
     console.log(`[Gateway] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempt})`);
     this.connectionState = 'reconnecting';
 
-    this.reconnectTimer = setTimeout(() => {
-      this.connect().catch(() => {
-        // Reconnect failed, will try again if attempts remain
-      });
+    setTimeout(() => {
+      this.connect().catch(() => {});
     }, delay);
   }
 
   startPing() {
     this.pingInterval = setInterval(() => {
       if (this.isConnected) {
-        this.ws.send(JSON.stringify({ type: 'ping' }));
-        this.lastPing = Date.now();
+        this.sendRaw({ type: 'ping' });
       }
-    }, 30000); // Ping every 30 seconds
+    }, 30000);
   }
 
   stopPing() {
@@ -161,17 +159,22 @@ export class GatewayClient {
   }
 
   send(message) {
-    const payload = JSON.stringify({
+    const payload = {
       type: 'message',
       message: message,
       timestamp: new Date().toISOString()
-    });
+    };
+
+    return this.sendRaw(payload);
+  }
+
+  sendRaw(data) {
+    const payload = JSON.stringify(data);
 
     if (this.isConnected && this.ws.readyState === WS_STATES.OPEN) {
       this.ws.send(payload);
       return true;
     } else {
-      // Queue message for when connection returns
       this.messageQueue.push(payload);
       console.log('[Gateway] Message queued (offline)');
       return false;
@@ -185,6 +188,7 @@ export class GatewayClient {
     }
   }
 
+  // Event handlers
   onMessage(handler) {
     this.messageHandlers.push(handler);
   }
@@ -202,17 +206,14 @@ export class GatewayClient {
   }
 
   disconnect() {
-    // Clear reconnect timer to prevent auto-reconnect
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
-    }
-    
     this.stopPing();
-    
     if (this.ws) {
       this.ws.close(1000, 'Client disconnect');
     }
+  }
+
+  generateSessionId() {
+    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
   getState() {
@@ -220,7 +221,6 @@ export class GatewayClient {
       isConnected: this.isConnected,
       connectionState: this.connectionState,
       reconnectAttempt: this.reconnectAttempt,
-      lastPing: this.lastPing,
       queuedMessages: this.messageQueue.length
     };
   }
