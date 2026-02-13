@@ -7,10 +7,42 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.join(__dirname, '../data');
 const dbPath = path.join(dataDir, 'mc.json');
 
-// Ensure data directory exists
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+/**
+ * Set secure file permissions (owner read/write only)
+ * Prevents other users from accessing sensitive MasterClaw data
+ */
+function setSecurePermissions(filePath) {
+  try {
+    fs.chmodSync(filePath, 0o600);
+  } catch (err) {
+    console.warn(`[Security] Could not set secure permissions on ${filePath}:`, err.message);
+  }
 }
+
+/**
+ * Set secure directory permissions (owner read/write/execute only)
+ */
+function setSecureDirPermissions(dirPath) {
+  try {
+    fs.chmodSync(dirPath, 0o700);
+  } catch (err) {
+    console.warn(`[Security] Could not set secure permissions on ${dirPath}:`, err.message);
+  }
+}
+
+/**
+ * Ensure data directory exists with secure permissions
+ */
+function ensureSecureDataDir() {
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+  // Always ensure secure permissions on data directory
+  setSecureDirPermissions(dataDir);
+}
+
+// Initialize secure data directory
+ensureSecureDataDir();
 
 // In-memory JSON-based database for Railway compatibility
 let db = {
@@ -32,10 +64,12 @@ function loadDb() {
   }
 }
 
-// Save to disk
+// Save to disk with secure permissions
 function saveDb() {
   try {
     fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
+    // Ensure database file has secure permissions (owner read/write only)
+    setSecurePermissions(dbPath);
   } catch (err) {
     console.error('Error saving database:', err.message);
   }
@@ -169,4 +203,54 @@ export function queryChatHistory(limit = 100, before = null) {
 export function clearChatHistory() {
   db.chat_history = [];
   saveDb();
+}
+
+/**
+ * Run a security audit on the database file and directory permissions
+ * Returns a report of security status and any issues found
+ */
+export function auditSecurity() {
+  const audit = {
+    secure: true,
+    timestamp: new Date().toISOString(),
+    checks: [],
+    warnings: [],
+    recommendations: []
+  };
+
+  // Check data directory permissions
+  try {
+    const dirStats = fs.statSync(dataDir);
+    const dirMode = dirStats.mode & 0o777;
+    if (dirMode !== 0o700) {
+      audit.secure = false;
+      audit.warnings.push(`Data directory has permissive permissions: ${dirMode.toString(8)} (expected 700)`);
+      audit.recommendations.push(`Run: chmod 700 ${dataDir}`);
+    } else {
+      audit.checks.push({ name: 'data_directory_permissions', status: 'pass', mode: '700' });
+    }
+  } catch (err) {
+    audit.secure = false;
+    audit.warnings.push(`Could not check data directory permissions: ${err.message}`);
+  }
+
+  // Check database file permissions
+  try {
+    if (fs.existsSync(dbPath)) {
+      const fileStats = fs.statSync(dbPath);
+      const fileMode = fileStats.mode & 0o777;
+      if (fileMode !== 0o600) {
+        audit.secure = false;
+        audit.warnings.push(`Database file has permissive permissions: ${fileMode.toString(8)} (expected 600)`);
+        audit.recommendations.push(`Run: chmod 600 ${dbPath}`);
+      } else {
+        audit.checks.push({ name: 'database_file_permissions', status: 'pass', mode: '600' });
+      }
+    }
+  } catch (err) {
+    audit.secure = false;
+    audit.warnings.push(`Could not check database file permissions: ${err.message}`);
+  }
+
+  return audit;
 }
