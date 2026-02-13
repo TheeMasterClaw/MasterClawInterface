@@ -11,9 +11,18 @@ const WS_STATES = {
 };
 
 export class GatewayClient {
-  constructor(options = {}) {
+  constructor(options = {}, tokenOverride = '', connectionOptions = {}) {
+    // Backward compatibility: allow (url, token, options) signature.
+    if (typeof options === 'string') {
+      options = {
+        url: options,
+        token: tokenOverride,
+        ...connectionOptions
+      };
+    }
+
     // Use Claw Bot bridge URL from env
-    this.url = options.url || this.getBridgeUrl();
+    this.url = this.normalizeWsUrl(options.url || this.getBridgeUrl());
     this.sessionId = options.sessionId || this.generateSessionId();
     this.token = options.token || this.getToken();
     
@@ -25,8 +34,8 @@ export class GatewayClient {
     this.connectHandlers = [];
     this.disconnectHandlers = [];
     this.reconnectAttempt = 0;
-    this.maxReconnectAttempts = 10;
-    this.reconnectDelay = 2000;
+    this.maxReconnectAttempts = options.maxReconnectAttempts || 10;
+    this.reconnectDelay = options.reconnectDelay || 2000;
     this.pingInterval = null;
     this.messageQueue = [];
   }
@@ -43,6 +52,39 @@ export class GatewayClient {
       return bridgeUrl.replace('http://', 'ws://');
     }
     return bridgeUrl;
+  }
+
+  normalizeWsUrl(url) {
+    if (!url) return url;
+
+    try {
+      const parsed = new URL(url);
+      const hasWindow = typeof window !== 'undefined';
+      const pageHostname = hasWindow ? window.location.hostname : '';
+      const pageProtocol = hasWindow ? window.location.protocol : '';
+      const isLocalAddress = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1';
+      const runningRemotely = hasWindow && !['localhost', '127.0.0.1'].includes(pageHostname);
+
+      // If the app is opened remotely, localhost/127 points at the user's device.
+      if (isLocalAddress && runningRemotely) {
+        parsed.hostname = pageHostname;
+      }
+
+      const isLocalTarget = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1';
+
+      if (parsed.protocol === 'http:') parsed.protocol = 'ws:';
+      if (parsed.protocol === 'https:') parsed.protocol = 'wss:';
+
+      // Browsers block insecure ws:// from HTTPS pages except localhost.
+      const shouldForceSecureWs = pageProtocol === 'https:' && parsed.protocol === 'ws:' && !isLocalTarget;
+      if (shouldForceSecureWs) {
+        parsed.protocol = 'wss:';
+      }
+
+      return parsed.toString().replace(/\/$/, '');
+    } catch {
+      return url;
+    }
   }
 
   getToken() {
@@ -62,8 +104,9 @@ export class GatewayClient {
       }
 
       const wsUrl = `${this.url}?session=${this.sessionId}&token=${this.token}`;
+      const safeWsUrl = wsUrl.replace(/token=[^&]+/, 'token=***');
       
-      console.log('[Gateway] Connecting to bridge...');
+      console.log(`[Gateway] Connecting to: ${safeWsUrl}`);
       this.connectionState = 'connecting';
 
       try {
