@@ -10,6 +10,7 @@ import { tasksRouter } from './routes/tasks.js';
 import { ttsRouter } from './routes/tts.js';
 import { chatRouter } from './routes/chat.js';
 import { errorHandler, sanitizeBody, authenticateApiToken } from './middleware/security.js';
+import { requestTimeout, timeoutFor } from './middleware/timeout.js';
 import { createSocketServer } from './socket.js';
 
 dotenv.config();
@@ -79,6 +80,11 @@ app.use('/tts', express.json({ limit: TTS_BODY_LIMIT }));
 
 app.use(sanitizeBody); // Apply body sanitization globally
 
+// Security: Request timeout to prevent slowloris attacks and resource exhaustion
+// 30s default, skipped for health checks to allow monitoring
+const REQUEST_TIMEOUT_MS = parseInt(process.env.REQUEST_TIMEOUT_MS || '30000', 10);
+app.use(requestTimeout(REQUEST_TIMEOUT_MS, { skipPaths: ['/health'] }));
+
 // Apply API token authentication to all routes except health
 app.use(authenticateApiToken);
 
@@ -118,7 +124,8 @@ app.get('/', (req, res) => {
       rateLimiting: true,
       securityHeaders: true,
       apiAuth: !!process.env.MASTERCLAW_API_TOKEN,
-      bodySizeLimit: GENERAL_BODY_LIMIT
+      bodySizeLimit: GENERAL_BODY_LIMIT,
+      requestTimeout: REQUEST_TIMEOUT_MS
     }
   });
 });

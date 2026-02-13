@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import { authenticateApiToken, asyncHandler } from '../middleware/security.js';
+import { timeoutFor } from '../middleware/timeout.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const audioDir = path.join(__dirname, '../../data/audio');
@@ -54,9 +55,9 @@ function resolveAudioPath(filename) {
   return resolvedPath;
 }
 
-// Text-to-Speech endpoint (protected by API token)
+// Text-to-Speech endpoint (protected by API token + extended timeout)
 // Supports multiple providers: OpenAI, ElevenLabs, local
-ttsRouter.post('/', authenticateApiToken, asyncHandler(async (req, res) => {
+ttsRouter.post('/', timeoutFor('tts'), authenticateApiToken, asyncHandler(async (req, res) => {
   const { text, voice = 'alloy', provider = 'openai' } = req.body;
 
   // Validate required fields
