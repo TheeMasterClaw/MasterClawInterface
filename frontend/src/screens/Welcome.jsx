@@ -8,20 +8,20 @@ export default function Welcome({ onContinue, avatar }) {
   return (
     <div className="welcome-screen">
       <div className="welcome-container">
-        <div className="avatar-wrapper">
+        <div className="avatar-wrapper-large">
           {AvatarLarge}
         </div>
 
-        <h1 className="welcome-title">MC</h1>
-        <p className="welcome-subtitle">MasterClaw</p>
+        <h1 className="welcome-title">MasterClaw</h1>
+        <p className="welcome-subtitle">YOUR AI COMMAND CENTER</p>
 
         <div className="welcome-message">
-          <p>Welcome, Rex.</p>
-          <p>Let's take over the world together.</p>
+          <p className="welcome-greeting">Welcome, Rex.</p>
+          <p className="welcome-tagline">Let's take over the world together.</p>
         </div>
 
         <button className="welcome-button" onClick={onContinue}>
-          Begin
+          Enter Chat →
         </button>
 
         <p className="welcome-privacy">

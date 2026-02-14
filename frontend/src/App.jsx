@@ -24,7 +24,6 @@ const isBrowser = typeof window !== 'undefined';
 
 export default function App() {
   const [phase, setPhase] = useState('welcome');
-  const [mode, setMode] = useState(null);
   const [hasGreeted, setHasGreeted] = useState(false);
   const [theme, setTheme] = useState('dark');
   const [showSettings, setShowSettings] = useState(false);
@@ -106,15 +105,8 @@ export default function App() {
     }
   };
 
-  const handleModeSelected = (selectedMode) => {
-    setMode(selectedMode);
-    setPhase('dashboard');
-  };
-
   const handleBack = () => {
     if (phase === 'dashboard') {
-      setPhase('mode-select');
-    } else if (phase === 'mode-select') {
       setPhase('welcome');
     }
   };
@@ -240,17 +232,13 @@ export default function App() {
 
       {phase === 'welcome' && (
         <Welcome
-          onContinue={() => setPhase('mode-select')}
+          onContinue={() => setPhase('dashboard')}
           avatar={<Avatar />}
         />
       )}
 
-      {phase === 'mode-select' && (
-        <ModeSelector onSelect={handleModeSelected} avatar={<Avatar />} />
-      )}
-
-      {phase === 'dashboard' && mode && (
-        <Dashboard mode={mode} avatar={<Avatar />} />
+      {phase === 'dashboard' && (
+        <Dashboard mode="hybrid" avatar={<Avatar />} />
       )}
     </div>
   );

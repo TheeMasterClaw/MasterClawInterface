@@ -804,6 +804,99 @@
   color: #94a3b8;
 }
 
+/* Mode Switcher Styles */
+.mode-switcher {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 12px;
+  justify-content: center;
+  margin-bottom: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.mode-switch-btn {
+  padding: 10px 18px;
+  background: rgba(51, 65, 85, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  color: #cbd5e1;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 50px;
+}
+
+.mode-switch-btn:hover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.mode-switch-btn.active {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  border-color: #6366f1;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* Media Controls */
+.media-controls {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.camera-button {
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  background: rgba(51, 65, 85, 0.6);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.camera-button:hover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+}
+
+.camera-button.active {
+  background: linear-gradient(135deg, #ec4899 0%, #f97316 100%);
+  border-color: #ec4899;
+  color: white;
+  box-shadow: 0 6px 24px rgba(236, 72, 153, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Video Preview */
+.video-preview {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.8);
+  border: 2px solid rgba(99, 102, 241, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.camera-feed {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
 @media (max-width: 600px) {
   .dashboard {
     flex-direction: column;
