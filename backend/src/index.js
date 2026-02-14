@@ -73,16 +73,28 @@ app.use(cors({
 const GENERAL_BODY_LIMIT = process.env.BODY_LIMIT_GENERAL || '100kb';
 const TTS_BODY_LIMIT = process.env.BODY_LIMIT_TTS || '1mb';
 
-app.use(express.json({ 
+const parseGeneralJson = express.json({
   limit: GENERAL_BODY_LIMIT,
   verify: (req, res, buf) => {
     // Store raw body for potential signature verification
     req.rawBody = buf;
   }
-}));
+});
 
-// TTS endpoint needs larger body limit for long text
-app.use('/tts', express.json({ limit: TTS_BODY_LIMIT }));
+const parseTtsJson = express.json({
+  limit: TTS_BODY_LIMIT,
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+});
+
+// Choose parser by route so /tts is not constrained by the general body limit
+app.use((req, res, next) => {
+  if (req.path.startsWith('/tts')) {
+    return parseTtsJson(req, res, next);
+  }
+  return parseGeneralJson(req, res, next);
+});
 
 app.use(sanitizeBody); // Apply body sanitization globally
 

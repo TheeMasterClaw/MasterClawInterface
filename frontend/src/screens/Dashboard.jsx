@@ -437,7 +437,7 @@ export default function Dashboard({ mode, avatar }) {
   }, [input, isConnected]);
 
   const handleVoiceInput = () => {
-    if (!isBrowser || !isListening) return;
+    if (!isBrowser || isListening) return;
 
     setIsListening(true);
     setAvatarState('listening');

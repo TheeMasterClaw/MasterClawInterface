@@ -22,6 +22,7 @@ export class GatewayClient {
     this.connectHandlers = [];
     this.disconnectHandlers = [];
     this.messageQueue = [];
+    this.maxQueueSize = options.maxQueueSize || 100;
     this.maxReconnectAttempts = options.maxReconnectAttempts || 10;
     this.reconnectDelay = options.reconnectDelay || 2000;
   }
@@ -113,6 +114,9 @@ export class GatewayClient {
     const payload = { message, timestamp: new Date().toISOString() };
 
     if (!this.isConnected || !this.socket) {
+      if (this.messageQueue.length >= this.maxQueueSize) {
+        this.messageQueue.shift();
+      }
       this.messageQueue.push(payload);
       return false;
     }
@@ -133,19 +137,31 @@ export class GatewayClient {
   }
 
   onMessage(handler) {
-    this.messageHandlers.push(handler);
+    if (typeof handler === 'function') this.messageHandlers.push(handler);
+    return () => {
+      this.messageHandlers = this.messageHandlers.filter((h) => h !== handler);
+    };
   }
 
   onError(handler) {
-    this.errorHandlers.push(handler);
+    if (typeof handler === 'function') this.errorHandlers.push(handler);
+    return () => {
+      this.errorHandlers = this.errorHandlers.filter((h) => h !== handler);
+    };
   }
 
   onConnect(handler) {
-    this.connectHandlers.push(handler);
+    if (typeof handler === 'function') this.connectHandlers.push(handler);
+    return () => {
+      this.connectHandlers = this.connectHandlers.filter((h) => h !== handler);
+    };
   }
 
   onDisconnect(handler) {
-    this.disconnectHandlers.push(handler);
+    if (typeof handler === 'function') this.disconnectHandlers.push(handler);
+    return () => {
+      this.disconnectHandlers = this.disconnectHandlers.filter((h) => h !== handler);
+    };
   }
 
   disconnect() {

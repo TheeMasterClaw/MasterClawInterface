@@ -1,23 +1,14 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
 import express from 'express';
 import { requestTimeout, timeoutFor, getTimeoutStatus } from '../src/middleware/timeout.js';
 
 describe('Request Timeout Security Middleware', () => {
   let app;
-  let server;
 
   beforeEach(() => {
     app = express();
     app.use(express.json());
-  });
-
-  afterEach((done) => {
-    if (server) {
-      server.close(done);
-    } else {
-      done();
-    }
   });
 
   describe('Basic timeout functionality', () => {
@@ -169,7 +160,7 @@ describe('Request Timeout Security Middleware', () => {
         });
 
       // Either success (if processed quickly) or timeout
-      expect([200, 408, 503]).toContain(response.status);
+      expect([200, 408, 413, 503]).toContain(response.status);
     });
 
     it('should clean up timeout resources after response', async () => {

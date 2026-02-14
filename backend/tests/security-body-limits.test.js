@@ -10,7 +10,14 @@ describe('Body Size Limit Security', () => {
     app = express();
     
     // Apply same body limits as production
-    app.use(express.json({ limit: '100kb' }));
+    const parseGeneralJson = express.json({ limit: '100kb' });
+    const parseTtsJson = express.json({ limit: '1mb' });
+
+    app.use((req, res, next) => {
+      if (req.path.startsWith('/tts')) return parseTtsJson(req, res, next);
+      return parseGeneralJson(req, res, next);
+    });
+
     app.use(express.urlencoded({ limit: '100kb', extended: true }));
     app.use(sanitizeBody);
 
@@ -20,7 +27,6 @@ describe('Body Size Limit Security', () => {
     });
 
     // TTS endpoint with larger limit
-    app.use('/tts', express.json({ limit: '1mb' }));
     app.post('/tts', (req, res) => {
       res.json({ received: req.body });
     });
