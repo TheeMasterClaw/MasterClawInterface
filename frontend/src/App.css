@@ -15,6 +15,24 @@ body {
   background: linear-gradient(135deg, #0a0e1a 0%, #0f172a 50%, #1e1b4b 100%);
   color: #e2e8f0;
   overflow: hidden;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+  animation: ambientGlow 15s ease-in-out infinite;
+}
+
+@keyframes ambientGlow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
 #root {
@@ -61,7 +79,9 @@ input:focus {
   font-size: 16px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.05),
+              0 0 0 rgba(103, 232, 249, 0);
 }
 
 .back-button:hover {
@@ -69,7 +89,9 @@ input:focus {
   border-color: rgba(103, 232, 249, 0.5);
   color: #22d3ee;
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(34, 211, 238, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 32px rgba(34, 211, 238, 0.2), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.08),
+              0 0 30px rgba(103, 232, 249, 0.3);
 }
 
 /* Global settings button - always visible */
@@ -92,7 +114,9 @@ input:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.05),
+              0 0 0 rgba(99, 102, 241, 0);
 }
 
 .global-settings-btn:hover {
@@ -100,7 +124,9 @@ input:focus {
   border-color: rgba(99, 102, 241, 0.6);
   color: #e2e8f0;
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.08),
+              0 0 40px rgba(99, 102, 241, 0.4);
 }
 
 /* Global health button - always visible */
@@ -128,6 +154,7 @@ input:focus {
   background: rgba(34, 197, 94, 0.3);
   color: #e2e8f0;
   transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
 }
 
 /* Global quick links button - always visible */
@@ -461,14 +488,17 @@ body.theme-light .text-input::placeholder {
 /* Futuristic control rail refinements */
 [class^='global-'][class$='-btn'] {
   backdrop-filter: blur(16px);
-  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.4), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.05),
+              0 0 0 rgba(99, 102, 241, 0);
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [class^='global-'][class$='-btn']:hover {
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.5), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 [class^='global-'][class$='-btn']:active {
