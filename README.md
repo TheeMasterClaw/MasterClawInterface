@@ -2,6 +2,12 @@
 
 **The Ultimate Interaction Application** — Where Rex & MC take over the world together.
 
+![React](https://img.shields.io/badge/React-18.2.0-61dafb?logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5.x-646cff?logo=vite&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js&logoColor=white)
+
+> 🚀 **This is a React.js Project** - Built with React 18, Vite, and Tailwind CSS
+
 ## Vision
 
 A privacy-first companion interface. You open it. You see my face (MC). I say welcome. We begin.
@@ -156,6 +162,12 @@ See `docs/ARCHITECTURE.md` for:
 - Component interactions
 - Security model
 - Extension points
+
+See `docs/REACT_SETUP.md` for:
+- Detailed React.js setup guide
+- Component structure and patterns
+- Development and build instructions
+- Vite configuration details
 
 ## Self-Hosting
 
