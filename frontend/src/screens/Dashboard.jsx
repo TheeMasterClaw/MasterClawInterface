@@ -22,7 +22,7 @@ import './Dashboard.css';
 // Browser detection
 const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
 
-export default function Dashboard({ mode: initialMode, avatar }) {
+export default function Dashboard({ mode, avatar }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isListening, setIsListening] = useState(false);
@@ -48,7 +48,7 @@ export default function Dashboard({ mode: initialMode, avatar }) {
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
-  const [currentMode, setCurrentMode] = useState(initialMode || 'hybrid');
+  const [currentMode, setCurrentMode] = useState(mode || 'hybrid');
   const messagesEndRef = useRef(null);
   const gatewayRef = useRef(null);
   const messageCountRef = useRef(0);
