@@ -818,36 +818,38 @@ export default function Dashboard({ mode, avatar }) {
         </div>
 
         <div className="input-area">
-          {(mode === 'text' || mode === 'hybrid') && (
-            <div className="text-input-group">
-              <input
-                ref={inputRef}
-                type="text"
-                className="text-input"
-                placeholder="Transmit command… (/help for shortcuts)"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendText()}
-              />
-              <button className="send-button" onClick={handleSendText} title="Send">→</button>
-            </div>
-          )}
+          <div className="input-controls">
+            {(mode === 'text' || mode === 'hybrid') && (
+              <div className="text-input-group">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  className="text-input"
+                  placeholder="Transmit command… (/help for shortcuts)"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendText()}
+                />
+                <button className="send-button" onClick={handleSendText} title="Send">→</button>
+              </div>
+            )}
 
-          {(mode === 'voice' || mode === 'hybrid') && (
-            <button
-              className={`voice-button ${isListening ? 'listening' : ''}`}
-              onClick={handleVoiceInput}
-            >
-              {isListening ? '🎤 Listening...' : '🎤 Speak'}
-            </button>
-          )}
+            {(mode === 'voice' || mode === 'hybrid') && (
+              <button
+                className={`voice-button ${isListening ? 'listening' : ''}`}
+                onClick={handleVoiceInput}
+              >
+                {isListening ? '🎤 Listening...' : '🎤 Speak'}
+              </button>
+            )}
 
-          {mode === 'context' && (
-            <div className="context-info">
-              <p>👁️ MC is watching your calendar and tasks.</p>
-              <p>I'll alert you to what matters.</p>
-            </div>
-          )}
+            {mode === 'context' && (
+              <div className="context-info">
+                <p>👁️ MC is watching your calendar and tasks.</p>
+                <p>I'll alert you to what matters.</p>
+              </div>
+            )}
+          </div>
 
           <div className="input-hints">
             <span>Press <strong>⌘K</strong> for commands · <strong>⌘Enter</strong> to send</span>
