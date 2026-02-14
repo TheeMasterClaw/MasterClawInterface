@@ -48,11 +48,24 @@ export default function Dashboard({ mode, avatar }) {
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [currentMode, setCurrentMode] = useState(mode || 'hybrid');
   const messagesEndRef = useRef(null);
   const gatewayRef = useRef(null);
   const messageCountRef = useRef(0);
   const audioRef = useRef(null);
   const inputRef = useRef(null);
+  const videoRef = useRef(null);
+  const [isVideoActive, setIsVideoActive] = useState(false);
+
+  // Cleanup video stream on unmount
+  useEffect(() => {
+    return () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+        const tracks = videoRef.current.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+      }
+    };
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -179,7 +192,7 @@ export default function Dashboard({ mode, avatar }) {
 
   // Proactive alerts for Context mode
   useEffect(() => {
-    if (!isBrowser || mode !== 'context') return;
+    if (!isBrowser || currentMode !== 'context') return;
 
     const checkAlerts = async () => {
       try {
@@ -208,7 +221,7 @@ export default function Dashboard({ mode, avatar }) {
     checkAlerts();
     const interval = setInterval(checkAlerts, 60000);
     return () => clearInterval(interval);
-  }, [mode]);
+  }, [currentMode]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -474,6 +487,46 @@ export default function Dashboard({ mode, avatar }) {
       };
 
       recognition.start();
+    }
+  };
+
+  const handleVideoToggle = async () => {
+    if (!isBrowser) return;
+
+    if (isVideoActive) {
+      // Stop video
+      if (videoRef.current && videoRef.current.srcObject) {
+        const tracks = videoRef.current.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+      }
+      setIsVideoActive(false);
+    } else {
+      // Start video
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play();
+        }
+        setIsVideoActive(true);
+      } catch (err) {
+        console.error('Failed to access camera:', err);
+        const errorMessage = err.name === 'NotAllowedError' 
+          ? 'Camera access denied. Please grant camera permissions in your browser settings.'
+          : 'Camera not available or already in use.';
+        
+        // Show error in chat instead of alert
+        messageCountRef.current++;
+        const errorMsg = {
+          id: messageCountRef.current,
+          type: 'mc',
+          text: `📷 ${errorMessage}`,
+          timestamp: new Date().toISOString(),
+          error: true
+        };
+        setMessages(prev => [...prev, errorMsg]);
+      }
     }
   };
 
@@ -749,7 +802,7 @@ export default function Dashboard({ mode, avatar }) {
           </div>
 
           <div className="mode-indicator">
-            <span className="mode-badge">{mode}</span>
+            <span className="mode-badge">{currentMode}</span>
 
             <div className={`connection-status ${connectionStatus}`}>
               {connectionStatus === 'connected' && <span className="status-indicator">🟢 Live</span>}
@@ -783,12 +836,12 @@ export default function Dashboard({ mode, avatar }) {
         <div className="dashboard-main">
           <div className="chat-shell">
             <div className="dashboard-hud">
-              <div className="hud-chip">Mode: <strong>{mode}</strong></div>
+              <div className="hud-chip">Mode: <strong>{currentMode}</strong></div>
               <div className={`hud-chip hud-chip--${connectionStatus}`}>{statusLabelMap[connectionStatus] || 'Status unknown'}</div>
               <div className="hud-chip">Messages: <strong>{messages.length}</strong></div>
             </div>
 
-            {mode === 'context' && alerts.length > 0 && (
+            {currentMode === 'context' && alerts.length > 0 && (
               <div className="alerts-container">
                 {alerts.map(alert => (
                   <div key={alert.id} className="alert-item">{alert.message}</div>
@@ -825,8 +878,45 @@ export default function Dashboard({ mode, avatar }) {
             </div>
 
             <div className="input-area">
+              {isVideoActive && (
+                <div className="video-preview">
+                  <video ref={videoRef} autoPlay muted className="camera-feed" />
+                </div>
+              )}
+
+              <div className="mode-switcher">
+                <button 
+                  className={`mode-switch-btn ${currentMode === 'text' ? 'active' : ''}`}
+                  onClick={() => setCurrentMode('text')}
+                  title="Text Mode"
+                >
+                  💬
+                </button>
+                <button 
+                  className={`mode-switch-btn ${currentMode === 'voice' ? 'active' : ''}`}
+                  onClick={() => setCurrentMode('voice')}
+                  title="Voice Mode"
+                >
+                  🎤
+                </button>
+                <button 
+                  className={`mode-switch-btn ${currentMode === 'hybrid' ? 'active' : ''}`}
+                  onClick={() => setCurrentMode('hybrid')}
+                  title="Hybrid Mode"
+                >
+                  🔀
+                </button>
+                <button 
+                  className={`mode-switch-btn ${currentMode === 'context' ? 'active' : ''}`}
+                  onClick={() => setCurrentMode('context')}
+                  title="Context Mode"
+                >
+                  👁️
+                </button>
+              </div>
+
               <div className="input-controls">
-                {(mode === 'text' || mode === 'hybrid') && (
+                {(currentMode === 'text' || currentMode === 'hybrid') && (
                   <div className="text-input-group">
                     <input
                       ref={inputRef}
@@ -841,16 +931,27 @@ export default function Dashboard({ mode, avatar }) {
                   </div>
                 )}
 
-                {(mode === 'voice' || mode === 'hybrid') && (
-                  <button
-                    className={`voice-button ${isListening ? 'listening' : ''}`}
-                    onClick={handleVoiceInput}
-                  >
-                    {isListening ? '🎤 Listening...' : '🎤 Speak'}
-                  </button>
-                )}
+                <div className="media-controls">
+                  {(currentMode === 'voice' || currentMode === 'hybrid') && (
+                    <button
+                      className={`voice-button ${isListening ? 'listening' : ''}`}
+                      onClick={handleVoiceInput}
+                      title="Voice Input"
+                    >
+                      {isListening ? '🎤 Listening...' : '🎤 Speak'}
+                    </button>
+                  )}
 
-                {mode === 'context' && (
+                  <button
+                    className={`camera-button ${isVideoActive ? 'active' : ''}`}
+                    onClick={handleVideoToggle}
+                    title={isVideoActive ? 'Stop Camera' : 'Start Camera'}
+                  >
+                    {isVideoActive ? '📹 Stop' : '📷 Camera'}
+                  </button>
+                </div>
+
+                {currentMode === 'context' && (
                   <div className="context-info">
                     <p>👁️ MC is watching your calendar and tasks.</p>
                     <p>I'll alert you to what matters.</p>
