@@ -16,6 +16,7 @@ import MoodTracker from './components/MoodTracker';
 import BreathingExercise from './components/BreathingExercise';
 import ProductivityAnalytics from './components/ProductivityAnalytics';
 import NotesPanel from './components/NotesPanel';
+import Navbar from './components/Navbar';
 import './App.css';
 
 // Browser detection
@@ -126,126 +127,24 @@ export default function App() {
 
   return (
     <div className={`app app--${theme}`}>
-      {phase !== 'dashboard' && (
-        <>
-          {/* Settings button - visible before entering dashboard */}
-          <button
-            className="global-settings-btn"
-            onClick={() => setShowSettings(true)}
-            title="Settings"
-          >
-            ⚙️
-          </button>
-
-          {/* Health Monitor button - visible before entering dashboard */}
-          <button
-            className="global-health-btn"
-            onClick={() => setShowHealthMonitor(true)}
-            title="Health Monitor"
-          >
-            🏥
-          </button>
-
-          {/* Quick Links button - visible before entering dashboard */}
-          <button
-            className="global-links-btn"
-            onClick={() => setShowQuickLinksPanel(true)}
-            title="Quick Links"
-          >
-            🔗
-          </button>
-
-          {/* Activity Log button - visible before entering dashboard */}
-          <button
-            className="global-activity-btn"
-            onClick={() => setShowActivityLogPanel(true)}
-            title="Activity Log"
-          >
-            📊
-          </button>
-
-          {/* Focus Timer button - visible before entering dashboard */}
-          <button
-            className="global-focus-btn"
-            onClick={() => setShowFocusTimer(true)}
-            title="Focus Timer"
-          >
-            🎯
-          </button>
-
-          {/* Weather button - visible before entering dashboard */}
-          <button
-            className="global-weather-btn"
-            onClick={() => setShowWeatherPanel(true)}
-            title="Weather"
-          >
-            🌤️
-          </button>
-
-          {/* Habit Tracker button - visible before entering dashboard */}
-          <button
-            className="global-habit-btn"
-            onClick={() => setShowHabitTracker(true)}
-            title="Habit Tracker"
-          >
-            🎯
-          </button>
-
-          {/* Daily Quote button - visible before entering dashboard */}
-          <button
-            className="global-quote-btn"
-            onClick={() => setShowDailyQuote(true)}
-            title="Daily Quote"
-          >
-            💬
-          </button>
-
-          {/* Time Tracker button - visible before entering dashboard */}
-          <button
-            className="global-time-btn"
-            onClick={() => setShowTimeTracker(true)}
-            title="Time Tracker"
-          >
-            ⏱️
-          </button>
-
-          {/* Mood Tracker button - visible before entering dashboard */}
-          <button
-            className="global-mood-btn"
-            onClick={() => setShowMoodTracker(true)}
-            title="Mood Tracker"
-          >
-            🧠
-          </button>
-
-          {/* Breathing Exercise button - visible before entering dashboard */}
-          <button
-            className="global-breathing-btn"
-            onClick={() => setShowBreathingExercise(true)}
-            title="Breathing Exercise"
-          >
-            🫁
-          </button>
-
-          {/* Productivity Analytics button - visible before entering dashboard */}
-          <button
-            className="global-productivity-btn"
-            onClick={() => setShowProductivityAnalytics(true)}
-            title="Productivity Analytics"
-          >
-            📈
-          </button>
-
-          {/* Notes button - visible before entering dashboard */}
-          <button
-            className="global-notes-btn"
-            onClick={() => setShowNotesPanel(true)}
-            title="Notes"
-          >
-            📝
-          </button>
-        </>
-      )}
+      {/* Navbar - always visible across all phases */}
+      <Navbar 
+        phase={phase}
+        onBack={handleBack}
+        onSettingsClick={() => setShowSettings(true)}
+        onHealthClick={() => setShowHealthMonitor(true)}
+        onLinksClick={() => setShowQuickLinksPanel(true)}
+        onActivityClick={() => setShowActivityLogPanel(true)}
+        onFocusClick={() => setShowFocusTimer(true)}
+        onWeatherClick={() => setShowWeatherPanel(true)}
+        onHabitClick={() => setShowHabitTracker(true)}
+        onQuoteClick={() => setShowDailyQuote(true)}
+        onTimeClick={() => setShowTimeTracker(true)}
+        onMoodClick={() => setShowMoodTracker(true)}
+        onBreathingClick={() => setShowBreathingExercise(true)}
+        onProductivityClick={() => setShowProductivityAnalytics(true)}
+        onNotesClick={() => setShowNotesPanel(true)}
+      />
 
       {showSettings && (
         <Settings
@@ -337,17 +236,6 @@ export default function App() {
           isOpen={showNotesPanel}
           onClose={() => setShowNotesPanel(false)}
         />
-      )}
-
-      {/* Back button for non-welcome screens */}
-      {phase !== 'welcome' && (
-        <button
-          className="back-button"
-          onClick={handleBack}
-          title="Go back"
-        >
-          ←
-        </button>
       )}
 
       {phase === 'welcome' && (

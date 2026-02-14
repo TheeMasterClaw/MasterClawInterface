@@ -42,6 +42,7 @@ body::before {
 .app {
   width: 100%;
   height: 100%;
+  padding-top: 68px; /* Space for fixed navbar */
 }
 
 /* Smooth scrolling */
@@ -64,7 +65,28 @@ input:focus {
   outline: none;
 }
 
-/* Back button */
+/* Old global button styles - now replaced by Navbar component */
+/* These styles are kept for reference but no longer actively used */
+/*
+.back-button,
+.global-settings-btn,
+.global-health-btn,
+.global-links-btn,
+.global-activity-btn,
+.global-focus-btn,
+.global-weather-btn,
+.global-habit-btn,
+.global-quote-btn,
+.global-time-btn,
+.global-mood-btn,
+.global-breathing-btn,
+.global-productivity-btn,
+.global-notes-btn {
+  display: none;
+}
+*/
+
+/* Back button - no longer used, moved to Navbar */
 .back-button {
   position: fixed;
   top: 20px;
@@ -507,4 +529,22 @@ body.theme-light .text-input::placeholder {
 
 body.theme-light [class^='global-'][class$='-btn'] {
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Hide old button styles - replaced by Navbar component */
+.back-button,
+.global-settings-btn,
+.global-health-btn,
+.global-links-btn,
+.global-activity-btn,
+.global-focus-btn,
+.global-weather-btn,
+.global-habit-btn,
+.global-quote-btn,
+.global-time-btn,
+.global-mood-btn,
+.global-breathing-btn,
+.global-productivity-btn,
+.global-notes-btn {
+  display: none !important;
 }
