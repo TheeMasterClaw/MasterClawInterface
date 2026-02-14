@@ -84,7 +84,7 @@ export default function App() {
       const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
       const provider = settings.ttsProvider || 'openai';
       const voice = settings.ttsVoice || 'alloy';
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const API_URL = import.meta.env.VITE_GATEWAY_URL || import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
       const response = await fetch(`${API_URL}/tts`, {
         method: 'POST',

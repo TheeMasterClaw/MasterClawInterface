@@ -1,7 +1,7 @@
 // API Configuration - lazy evaluation to avoid SSR issues
 const getApiBase = () => {
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GATEWAY_URL) {
+    return import.meta.env.VITE_GATEWAY_URL;
   }
   return 'http://localhost:3001';
 };

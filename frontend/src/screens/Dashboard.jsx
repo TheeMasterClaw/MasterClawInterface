@@ -123,7 +123,7 @@ export default function Dashboard({ mode, avatar }) {
     const initGateway = async () => {
       try {
         const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
-        const gatewayUrl = settings.gatewayUrl || import.meta.env.VITE_API_URL || 'http://localhost:3001';
+        const gatewayUrl = settings.gatewayUrl || import.meta.env.VITE_GATEWAY_URL || import.meta.env.VITE_API_URL || 'http://localhost:3001';
         const gatewayToken = settings.gatewayToken || import.meta.env.VITE_GATEWAY_TOKEN || '';
 
         const client = new GatewayClient(gatewayUrl, gatewayToken, {

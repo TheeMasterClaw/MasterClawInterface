@@ -159,6 +159,30 @@ MC Web App ← → OpenClaw Gateway ← → Storage
 
 ---
 
+
+### Option 4: Vercel (Frontend) + Railway (Gateway/API)
+
+This is the most stable cloud setup for Socket.IO:
+
+- Deploy `frontend/` to Vercel (HTTPS)
+- Deploy `backend/` to Railway (HTTPS/WSS)
+- Frontend connects to Railway using `https://...` (Socket.IO upgrades to `wss://` automatically)
+
+#### Required environment variables
+
+**Vercel (frontend build env):**
+```env
+VITE_GATEWAY_URL=https://your-railway-app.up.railway.app
+```
+
+**Railway (backend runtime env):**
+```env
+PORT=3001
+FRONTEND_URL=https://master-claw-interface.vercel.app,http://localhost:5173,http://localhost:3000
+```
+
+> Do not use `ws://` URLs in production frontend code. Always use the Railway `https://` origin.
+
 ## Configuration
 
 ### Environment Variables
@@ -171,6 +195,7 @@ NODE_ENV=production
 # Body Size Limits (security - prevents DoS via large payloads)
 BODY_LIMIT_GENERAL=100kb      # General API endpoints
 BODY_LIMIT_TTS=1mb            # TTS endpoint (allows larger text)
+FRONTEND_URL=https://master-claw-interface.vercel.app,http://localhost:5173,http://localhost:3000
 ```
 
 **Database**
@@ -195,6 +220,11 @@ OPENAI_API_KEY=sk-...
 TTS_PROVIDER=elevenlabs
 ELEVENLABS_API_KEY=...
 ELEVENLABS_VOICE_ID=...
+```
+
+**Frontend (Vercel)**
+```env
+VITE_GATEWAY_URL=https://your-railway-app.up.railway.app
 ```
 
 **OpenClaw Integration** (optional)
