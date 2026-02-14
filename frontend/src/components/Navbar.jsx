@@ -88,7 +88,7 @@ export default function Navbar({
               onClick={onHabitClick}
               title="Habit Tracker"
             >
-              🎯
+              ✅
             </button>
             <button
               className="navbar-btn navbar-btn-weather"

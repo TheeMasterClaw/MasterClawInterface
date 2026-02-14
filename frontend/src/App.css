@@ -65,27 +65,6 @@ input:focus {
   outline: none;
 }
 
-/* Old global button styles - now replaced by Navbar component */
-/* These styles are kept for reference but no longer actively used */
-/*
-.back-button,
-.global-settings-btn,
-.global-health-btn,
-.global-links-btn,
-.global-activity-btn,
-.global-focus-btn,
-.global-weather-btn,
-.global-habit-btn,
-.global-quote-btn,
-.global-time-btn,
-.global-mood-btn,
-.global-breathing-btn,
-.global-productivity-btn,
-.global-notes-btn {
-  display: none;
-}
-*/
-
 /* Back button - no longer used, moved to Navbar */
 .back-button {
   position: fixed;
