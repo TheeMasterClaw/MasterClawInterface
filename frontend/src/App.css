@@ -461,14 +461,18 @@ body.theme-light .text-input::placeholder {
 /* Futuristic control rail refinements */
 [class^='global-'][class$='-btn'] {
   backdrop-filter: blur(16px);
-  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.4), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.05),
+              0 0 0 rgba(99, 102, 241, 0);
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [class^='global-'][class$='-btn']:hover {
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.5), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.08),
+              0 0 30px currentColor;
 }
 
 [class^='global-'][class$='-btn']:active {
