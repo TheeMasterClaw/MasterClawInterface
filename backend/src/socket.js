@@ -3,9 +3,11 @@ import { processChatMessage } from './services/chatGateway.js';
 
 export function createSocketServer(httpServer) {
   const io = new Server(httpServer, {
+    path: '/socket.io',
     cors: {
-      origin: process.env.FRONTEND_URL || '*',
-      credentials: true
+      origin: process.env.FRONTEND_URL?.split(',').map((origin) => origin.trim()) || '*',
+      credentials: true,
+      methods: ['GET', 'POST']
     }
   });
 
@@ -28,6 +30,11 @@ export function createSocketServer(httpServer) {
         socket.emit('chat:error', payloadError);
         if (typeof ack === 'function') ack({ ok: false, statusCode, ...payloadError });
       }
+    });
+
+
+    socket.on('ping', () => {
+      socket.emit('pong', { ts: Date.now() });
     });
 
     socket.on('disconnect', (reason) => {

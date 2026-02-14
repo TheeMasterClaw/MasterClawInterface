@@ -63,8 +63,12 @@ const chatLimiter = rateLimit({
 
 app.use(limiter);
 
+const allowedOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map((origin) => origin.trim())
+  : '*';
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
+  origin: allowedOrigins,
   credentials: true
 }));
 

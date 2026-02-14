@@ -28,7 +28,7 @@ export class GatewayClient {
   }
 
   getBridgeUrl() {
-    return import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    return import.meta.env.VITE_GATEWAY_URL || import.meta.env.VITE_API_URL || 'http://localhost:3001';
   }
 
   normalizeHttpUrl(url) {
@@ -71,6 +71,7 @@ export class GatewayClient {
       this.connectionState = 'connecting';
       this.socket = io(this.url, {
         transports: ['websocket'],
+        path: '/socket.io',
         reconnection: true,
         reconnectionAttempts: this.maxReconnectAttempts,
         reconnectionDelay: this.reconnectDelay,
