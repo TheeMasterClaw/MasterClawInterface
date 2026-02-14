@@ -260,8 +260,15 @@
 
 .input-area {
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 8px;
   margin-top: auto;
+}
+
+.input-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .text-input-group {
@@ -352,6 +359,7 @@
 }
 
 .context-info {
+  flex: 1;
   padding: 16px;
   background: rgba(99, 102, 241, 0.1);
   border: 1px solid rgba(99, 102, 241, 0.3);
@@ -744,5 +752,10 @@
 
   .input-hints {
     display: none;
+  }
+
+  .input-controls {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
