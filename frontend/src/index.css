@@ -60,6 +60,12 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+/* Shared animations */
+@keyframes bgPulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.05); }
+}
+
 @media (prefers-color-scheme: light) {
   a:hover {
     color: #747bff;

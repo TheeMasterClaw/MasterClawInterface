@@ -15,11 +15,6 @@
   animation: bgPulse 10s ease-in-out infinite;
 }
 
-@keyframes bgPulse {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.05); }
-}
-
 .welcome-screen::before {
   content: '';
   position: absolute;
@@ -124,8 +119,6 @@
               0 0 40px rgba(99, 102, 241, 0.2);
   position: relative;
   overflow: hidden;
-  background-size: 200% 100%;
-  animation: gradientShift 3s ease infinite;
 }
 
 .welcome-button::before {
@@ -177,10 +170,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
