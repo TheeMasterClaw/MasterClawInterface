@@ -57,6 +57,16 @@ export default function Dashboard({ mode: initialMode, avatar }) {
   const videoRef = useRef(null);
   const [isVideoActive, setIsVideoActive] = useState(false);
 
+  // Cleanup video stream on unmount
+  useEffect(() => {
+    return () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+        const tracks = videoRef.current.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+      }
+    };
+  }, []);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -502,7 +512,20 @@ export default function Dashboard({ mode: initialMode, avatar }) {
         setIsVideoActive(true);
       } catch (err) {
         console.error('Failed to access camera:', err);
-        alert('Camera access denied or not available');
+        const errorMessage = err.name === 'NotAllowedError' 
+          ? 'Camera access denied. Please grant camera permissions in your browser settings.'
+          : 'Camera not available or already in use.';
+        
+        // Show error in chat instead of alert
+        messageCountRef.current++;
+        const errorMsg = {
+          id: messageCountRef.current,
+          type: 'mc',
+          text: `📷 ${errorMessage}`,
+          timestamp: new Date().toISOString(),
+          error: true
+        };
+        setMessages(prev => [...prev, errorMsg]);
       }
     }
   };
