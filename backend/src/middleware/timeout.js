@@ -28,26 +28,52 @@ export function requestTimeout(timeoutMs = DEFAULT_TIMEOUT_MS, options = {}) {
     // Track if response has been sent
     let responded = false;
 
+    // Guard double-writes after timeout by patching response methods.
+    // This prevents "Cannot set headers after they are sent" in async handlers
+    // that resolve after we already sent a timeout response.
+    let isTimingOut = false;
+    const originalJson = res.json.bind(res);
+    const originalSend = res.send.bind(res);
+    const originalEnd = res.end.bind(res);
+
+    res.json = (...args) => {
+      if ((responded || req.timedout) && !isTimingOut) return res;
+      if (res.headersSent) return res;
+      return originalJson(...args);
+    };
+
+    res.send = (...args) => {
+      if ((responded || req.timedout) && !isTimingOut) return res;
+      if (res.headersSent) return res;
+      return originalSend(...args);
+    };
+
+    res.end = (...args) => {
+      if ((responded || req.timedout) && !isTimingOut) return res;
+      return originalEnd(...args);
+    };
+
     // Set timeout
     const timeoutId = setTimeout(() => {
       if (!responded) {
         responded = true;
+        req.timedout = true;
         
         // Log timeout for monitoring
         console.warn(`[Timeout] Request timeout: ${req.method} ${req.path} from ${req.ip}`);
         
         // Send timeout response
         if (!res.headersSent) {
+          isTimingOut = true;
           res.status(408).json({
             error: 'Request timeout',
             code: 'REQUEST_TIMEOUT',
             message: `Request exceeded ${timeoutMs}ms timeout limit`,
             suggestion: 'Try again with a smaller payload or contact support if the issue persists'
           });
+          isTimingOut = false;
         }
         
-        // Destroy socket to free resources
-        req.socket?.destroy();
       }
     }, timeoutMs);
 
