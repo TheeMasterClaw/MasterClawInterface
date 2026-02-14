@@ -126,122 +126,126 @@ export default function App() {
 
   return (
     <div className={`app app--${theme}`}>
-      {/* Settings button - always visible */}
-      <button
-        className="global-settings-btn"
-        onClick={() => setShowSettings(true)}
-        title="Settings"
-      >
-        ⚙️
-      </button>
+      {phase !== 'dashboard' && (
+        <>
+          {/* Settings button - visible before entering dashboard */}
+          <button
+            className="global-settings-btn"
+            onClick={() => setShowSettings(true)}
+            title="Settings"
+          >
+            ⚙️
+          </button>
 
-      {/* Health Monitor button - always visible */}
-      <button
-        className="global-health-btn"
-        onClick={() => setShowHealthMonitor(true)}
-        title="Health Monitor"
-      >
-        🏥
-      </button>
+          {/* Health Monitor button - visible before entering dashboard */}
+          <button
+            className="global-health-btn"
+            onClick={() => setShowHealthMonitor(true)}
+            title="Health Monitor"
+          >
+            🏥
+          </button>
 
-      {/* Quick Links button - always visible */}
-      <button
-        className="global-links-btn"
-        onClick={() => setShowQuickLinksPanel(true)}
-        title="Quick Links"
-      >
-        🔗
-      </button>
+          {/* Quick Links button - visible before entering dashboard */}
+          <button
+            className="global-links-btn"
+            onClick={() => setShowQuickLinksPanel(true)}
+            title="Quick Links"
+          >
+            🔗
+          </button>
 
-      {/* Activity Log button - always visible */}
-      <button
-        className="global-activity-btn"
-        onClick={() => setShowActivityLogPanel(true)}
-        title="Activity Log"
-      >
-        📊
-      </button>
+          {/* Activity Log button - visible before entering dashboard */}
+          <button
+            className="global-activity-btn"
+            onClick={() => setShowActivityLogPanel(true)}
+            title="Activity Log"
+          >
+            📊
+          </button>
 
-      {/* Focus Timer button - always visible */}
-      <button
-        className="global-focus-btn"
-        onClick={() => setShowFocusTimer(true)}
-        title="Focus Timer"
-      >
-        🎯
-      </button>
+          {/* Focus Timer button - visible before entering dashboard */}
+          <button
+            className="global-focus-btn"
+            onClick={() => setShowFocusTimer(true)}
+            title="Focus Timer"
+          >
+            🎯
+          </button>
 
-      {/* Weather button - always visible */}
-      <button
-        className="global-weather-btn"
-        onClick={() => setShowWeatherPanel(true)}
-        title="Weather"
-      >
-        🌤️
-      </button>
+          {/* Weather button - visible before entering dashboard */}
+          <button
+            className="global-weather-btn"
+            onClick={() => setShowWeatherPanel(true)}
+            title="Weather"
+          >
+            🌤️
+          </button>
 
-      {/* Habit Tracker button - always visible */}
-      <button
-        className="global-habit-btn"
-        onClick={() => setShowHabitTracker(true)}
-        title="Habit Tracker"
-      >
-        🎯
-      </button>
+          {/* Habit Tracker button - visible before entering dashboard */}
+          <button
+            className="global-habit-btn"
+            onClick={() => setShowHabitTracker(true)}
+            title="Habit Tracker"
+          >
+            🎯
+          </button>
 
-      {/* Daily Quote button - always visible */}
-      <button
-        className="global-quote-btn"
-        onClick={() => setShowDailyQuote(true)}
-        title="Daily Quote"
-      >
-        💬
-      </button>
+          {/* Daily Quote button - visible before entering dashboard */}
+          <button
+            className="global-quote-btn"
+            onClick={() => setShowDailyQuote(true)}
+            title="Daily Quote"
+          >
+            💬
+          </button>
 
-      {/* Time Tracker button - always visible */}
-      <button
-        className="global-time-btn"
-        onClick={() => setShowTimeTracker(true)}
-        title="Time Tracker"
-      >
-        ⏱️
-      </button>
+          {/* Time Tracker button - visible before entering dashboard */}
+          <button
+            className="global-time-btn"
+            onClick={() => setShowTimeTracker(true)}
+            title="Time Tracker"
+          >
+            ⏱️
+          </button>
 
-      {/* Mood Tracker button - always visible */}
-      <button
-        className="global-mood-btn"
-        onClick={() => setShowMoodTracker(true)}
-        title="Mood Tracker"
-      >
-        🧠
-      </button>
+          {/* Mood Tracker button - visible before entering dashboard */}
+          <button
+            className="global-mood-btn"
+            onClick={() => setShowMoodTracker(true)}
+            title="Mood Tracker"
+          >
+            🧠
+          </button>
 
-      {/* Breathing Exercise button - always visible */}
-      <button
-        className="global-breathing-btn"
-        onClick={() => setShowBreathingExercise(true)}
-        title="Breathing Exercise"
-      >
-        🫁
-      </button>
+          {/* Breathing Exercise button - visible before entering dashboard */}
+          <button
+            className="global-breathing-btn"
+            onClick={() => setShowBreathingExercise(true)}
+            title="Breathing Exercise"
+          >
+            🫁
+          </button>
 
-      {/* Productivity Analytics button - always visible */}
-      <button
-        className="global-productivity-btn"
-        onClick={() => setShowProductivityAnalytics(true)}
-        title="Productivity Analytics"
-      >
-        📈
-      </button>
+          {/* Productivity Analytics button - visible before entering dashboard */}
+          <button
+            className="global-productivity-btn"
+            onClick={() => setShowProductivityAnalytics(true)}
+            title="Productivity Analytics"
+          >
+            📈
+          </button>
 
-      {/* Notes button - always visible */}
-      <button
-        className="global-notes-btn"
-        onClick={() => setShowNotesPanel(true)}
-        title="Notes"
-      >
-        📝
-      </button>
+          {/* Notes button - visible before entering dashboard */}
+          <button
+            className="global-notes-btn"
+            onClick={() => setShowNotesPanel(true)}
+            title="Notes"
+          >
+            📝
+          </button>
+        </>
+      )}
 
       {showSettings && (
         <Settings
