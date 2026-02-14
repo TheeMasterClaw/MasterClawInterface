@@ -555,6 +555,16 @@ export default function Dashboard({ mode, avatar }) {
     }
   };
 
+  const statusLabelMap = {
+    connected: 'Neural link synchronized',
+    reconnecting: 'Recovering uplink',
+    'backend-only': 'API fallback active',
+    connecting: 'Establishing uplink',
+    unconfigured: 'Gateway setup required',
+    error: 'Network fault detected',
+    offline: 'System offline'
+  };
+
   const AvatarWithState = avatar ? React.cloneElement(avatar, {
     state: avatarState,
     size: 'small'
@@ -723,6 +733,11 @@ export default function Dashboard({ mode, avatar }) {
       )}
 
       <div className="dashboard-sidebar">
+        <div className="sidebar-brand">
+          <span className="sidebar-brand__label">MASTERCLAW</span>
+          <span className="sidebar-brand__sub">Neural Console</span>
+        </div>
+
         <div className="mc-avatar-sidebar">
           {AvatarWithState}
         </div>
@@ -739,7 +754,7 @@ export default function Dashboard({ mode, avatar }) {
             {(connectionStatus === 'error' || connectionStatus === 'offline') && <span className="status-indicator">🔴 Offline</span>}
           </div>
 
-          <button className="icon-btn" onClick={() => setShowCommandPalette(true)} title="Command Palette (⌘K)">⌘</button>
+          <button className="icon-btn" onClick={() => setShowCommandPalette(true)} title="Command Palette (⌘K)" aria-label="Open command palette">⌘</button>
           <button className="icon-btn" onClick={() => setShowHelp(true)} title="Help">❓</button>
           <button className="icon-btn" onClick={() => setShowSettings(true)} title="Settings">⚙️</button>
           <button className="icon-btn" onClick={() => setShowHealthMonitor(true)} title="Health Monitor">🏥</button>
@@ -760,6 +775,12 @@ export default function Dashboard({ mode, avatar }) {
       </div>
 
       <div className="dashboard-main">
+        <div className="dashboard-hud">
+          <div className="hud-chip">Mode: <strong>{mode}</strong></div>
+          <div className={`hud-chip hud-chip--${connectionStatus}`}>{statusLabelMap[connectionStatus] || 'Status unknown'}</div>
+          <div className="hud-chip">Messages: <strong>{messages.length}</strong></div>
+        </div>
+
         {mode === 'context' && alerts.length > 0 && (
           <div className="alerts-container">
             {alerts.map(alert => (
@@ -803,7 +824,7 @@ export default function Dashboard({ mode, avatar }) {
                 ref={inputRef}
                 type="text"
                 className="text-input"
-                placeholder="Type /help for commands or just ask..."
+                placeholder="Transmit command… (/help for shortcuts)"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendText()}

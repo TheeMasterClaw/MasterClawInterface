@@ -443,3 +443,17 @@ body.theme-light .text-input {
 body.theme-light .text-input::placeholder {
   color: #94a3b8;
 }
+
+/* Futuristic control rail refinements */
+[class^='global-'][class$='-btn'] {
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.35), inset 0 0 14px rgba(255, 255, 255, 0.02);
+}
+
+[class^='global-'][class$='-btn']:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+
+body.theme-light [class^='global-'][class$='-btn'] {
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+}

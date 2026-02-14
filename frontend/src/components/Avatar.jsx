@@ -30,6 +30,15 @@ export default function Avatar({ state = 'idle', size = 'medium' }) {
       >
         {/* Definitions for gradients and filters */}
         <defs>
+          <linearGradient id="avatarShell" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#67e8f9" />
+            <stop offset="45%" stopColor="#818cf8" />
+            <stop offset="100%" stopColor="#c084fc" />
+          </linearGradient>
+          <radialGradient id="avatarCoreBloom" cx="50%" cy="50%" r="65%">
+            <stop offset="0%" stopColor="#ecfeff" stopOpacity="0.95" />
+            <stop offset="100%" stopColor="#67e8f9" stopOpacity="0" />
+          </radialGradient>
           <radialGradient id="coreGradient" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#818cf8" />
             <stop offset="100%" stopColor="#6366f1" />
@@ -46,6 +55,17 @@ export default function Avatar({ state = 'idle', size = 'medium' }) {
             </feMerge>
           </filter>
         </defs>
+
+        <circle cx="100" cy="100" r="92" className="avatar-shell" fill="none" />
+        <circle cx="100" cy="100" r="64" className="avatar-shell avatar-shell--inner" fill="none" />
+
+        <g className={`avatar-scanlines avatar-scanlines--${state}`}>
+          <line x1="32" y1="85" x2="168" y2="85" className="avatar-scanline" />
+          <line x1="24" y1="100" x2="176" y2="100" className="avatar-scanline" />
+          <line x1="32" y1="115" x2="168" y2="115" className="avatar-scanline" />
+        </g>
+
+        <circle cx="100" cy="100" r="36" className="avatar-bloom" fill="url(#avatarCoreBloom)" />
 
         {/* Central circle - core intelligence */}
         <circle 
@@ -100,6 +120,13 @@ export default function Avatar({ state = 'idle', size = 'medium' }) {
           className={`avatar-boundary avatar-boundary--${state}`}
           fill="none"
         />
+
+        <g className={`avatar-data-ring avatar-data-ring--${state}`}>
+          <path d="M100 20 A80 80 0 0 1 170 70" className="avatar-data-arc" />
+          <path d="M180 100 A80 80 0 0 1 130 170" className="avatar-data-arc avatar-data-arc--delayed" />
+          <path d="M100 180 A80 80 0 0 1 30 130" className="avatar-data-arc" />
+          <path d="M20 100 A80 80 0 0 1 70 30" className="avatar-data-arc avatar-data-arc--delayed" />
+        </g>
 
         {/* Ripple effect for listening state */}
         {state === 'listening' && (
