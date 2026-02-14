@@ -1,8 +1,8 @@
 .dashboard {
   display: flex;
-  height: 100%;
-  min-height: 100vh;
-  min-height: 100svh;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 100dvh;
   position: relative;
   overflow: hidden;
   background:
@@ -11,6 +11,34 @@
     linear-gradient(135deg, #0a0e1a 0%, #0b1222 45%, #111827 100%);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
   color: #e2e8f0;
+}
+
+.dashboard-layout {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-header {
+  position: relative;
+  z-index: 1;
+  padding: 16px 24px 0;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 20px;
+  color: #e2e8f0;
+  letter-spacing: 0.3px;
+}
+
+.dashboard-header p {
+  margin: 4px 0 0;
+  color: #94a3b8;
+  font-size: 12px;
 }
 
 .dashboard::before {
@@ -183,13 +211,28 @@
   flex: 1;
   min-height: 0;
   display: flex;
-  flex-direction: column;
-  padding: 24px;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 20px 20px 0;
   background: linear-gradient(160deg, rgba(15, 23, 42, 0.42), rgba(15, 23, 42, 0.12));
   backdrop-filter: blur(10px);
   position: relative;
   z-index: 1;
   overflow: hidden;
+}
+
+.chat-shell {
+  width: min(980px, 100%);
+  height: 100%;
+  margin: 0 auto;
+  min-height: 0;
+  border-radius: 20px;
+  border: 1px solid rgba(103, 232, 249, 0.24);
+  background: linear-gradient(160deg, rgba(15, 23, 42, 0.82), rgba(2, 6, 23, 0.75));
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
 }
 
 .messages-container {
@@ -199,7 +242,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
   padding: 18px 12px 12px;
   border-radius: 16px;
   border: 1px solid rgba(56, 189, 248, 0.16);
@@ -261,7 +304,7 @@
 .input-area {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   margin-top: auto;
 }
 
@@ -561,9 +604,31 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 8px;
+  padding-top: 0;
   font-size: 11px;
   color: #64748b;
+}
+
+@media (max-width: 900px) {
+  .dashboard-sidebar {
+    width: 88px;
+    padding: 14px 6px;
+    gap: 14px;
+  }
+
+  .chat-shell {
+    height: 100%;
+    border-radius: 14px;
+    padding: 12px;
+  }
+
+  .dashboard-main {
+    padding: 10px 10px 0;
+  }
+
+  .dashboard-header {
+    padding: 12px 12px 0;
+  }
 }
 
 .input-hints strong {

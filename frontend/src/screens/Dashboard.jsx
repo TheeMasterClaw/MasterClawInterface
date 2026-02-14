@@ -732,127 +732,136 @@ export default function Dashboard({ mode, avatar }) {
         </div>
       )}
 
-      <div className="dashboard-sidebar">
-        <div className="sidebar-brand">
-          <span className="sidebar-brand__label">MASTERCLAW</span>
-          <span className="sidebar-brand__sub">Neural Console</span>
-        </div>
+      <header className="dashboard-header">
+        <h1>Mission Control</h1>
+        <p>Command center and ability tabs</p>
+      </header>
 
-        <div className="mc-avatar-sidebar">
-          {AvatarWithState}
-        </div>
-
-        <div className="mode-indicator">
-          <span className="mode-badge">{mode}</span>
-
-          <div className={`connection-status ${connectionStatus}`}>
-            {connectionStatus === 'connected' && <span className="status-indicator">🟢 Live</span>}
-            {connectionStatus === 'reconnecting' && <span className="status-indicator">🔄 Reconnecting...</span>}
-            {connectionStatus === 'backend-only' && <span className="status-indicator">🟡 API</span>}
-            {connectionStatus === 'connecting' && <span className="status-indicator">⏳ Connecting...</span>}
-            {connectionStatus === 'unconfigured' && <span className="status-indicator">⚙️ Setup</span>}
-            {(connectionStatus === 'error' || connectionStatus === 'offline') && <span className="status-indicator">🔴 Offline</span>}
+      <div className="dashboard-layout">
+        <div className="dashboard-sidebar">
+          <div className="sidebar-brand">
+            <span className="sidebar-brand__label">MASTERCLAW</span>
+            <span className="sidebar-brand__sub">Neural Console</span>
           </div>
 
-          <button className="icon-btn" onClick={() => setShowCommandPalette(true)} title="Command Palette (⌘K)" aria-label="Open command palette">⌘</button>
-          <button className="icon-btn" onClick={() => setShowHelp(true)} title="Help">❓</button>
-          <button className="icon-btn" onClick={() => setShowSettings(true)} title="Settings">⚙️</button>
-          <button className="icon-btn" onClick={() => setShowHealthMonitor(true)} title="Health Monitor">🏥</button>
-          <button className="icon-btn" onClick={() => setShowTaskPanel(true)} title="Tasks">📋</button>
-          <button className="icon-btn" onClick={() => setShowCalendarPanel(true)} title="Calendar">📅</button>
-          <button className="icon-btn" onClick={() => setShowNotesPanel(true)} title="Notes">📝</button>
-          <button className="icon-btn" onClick={() => setShowQuickLinksPanel(true)} title="Quick Links">🔗</button>
-          <button className="icon-btn" onClick={() => setShowActivityLogPanel(true)} title="Activity Log">📊</button>
-          <button className="icon-btn" onClick={() => setShowFocusTimer(true)} title="Focus Timer">🎯</button>
-          <button className="icon-btn" onClick={() => setShowWeatherPanel(true)} title="Weather">🌤️</button>
-          <button className="icon-btn" onClick={() => setShowHabitTracker(true)} title="Habit Tracker">🎯</button>
-          <button className="icon-btn" onClick={() => setShowDailyQuote(true)} title="Daily Quote">💬</button>
-          <button className="icon-btn" onClick={() => setShowTimeTracker(true)} title="Time Tracker">⏱️</button>
-          <button className="icon-btn" onClick={() => setShowMoodTracker(true)} title="Mood Tracker">🧠</button>
-          <button className="icon-btn" onClick={() => setShowBreathingExercise(true)} title="Breathing Exercise">🫁</button>
-          <button className="icon-btn" onClick={() => setShowProductivityAnalytics(true)} title="Productivity Analytics">📈</button>
-        </div>
-      </div>
-
-      <div className="dashboard-main">
-        <div className="dashboard-hud">
-          <div className="hud-chip">Mode: <strong>{mode}</strong></div>
-          <div className={`hud-chip hud-chip--${connectionStatus}`}>{statusLabelMap[connectionStatus] || 'Status unknown'}</div>
-          <div className="hud-chip">Messages: <strong>{messages.length}</strong></div>
-        </div>
-
-        {mode === 'context' && alerts.length > 0 && (
-          <div className="alerts-container">
-            {alerts.map(alert => (
-              <div key={alert.id} className="alert-item">{alert.message}</div>
-            ))}
+          <div className="mc-avatar-sidebar">
+            {AvatarWithState}
           </div>
-        )}
 
-        <div className="messages-container">
-          {messages.map((msg) => (
-            <div key={msg.id} className={`message message-${msg.type}`}>
-              <div className="message-content">
-                {msg.command && <span className="command-badge">/{msg.command}</span>}
-                {msg.text}
+          <div className="mode-indicator">
+            <span className="mode-badge">{mode}</span>
+
+            <div className={`connection-status ${connectionStatus}`}>
+              {connectionStatus === 'connected' && <span className="status-indicator">🟢 Live</span>}
+              {connectionStatus === 'reconnecting' && <span className="status-indicator">🔄 Reconnecting...</span>}
+              {connectionStatus === 'backend-only' && <span className="status-indicator">🟡 API</span>}
+              {connectionStatus === 'connecting' && <span className="status-indicator">⏳ Connecting...</span>}
+              {connectionStatus === 'unconfigured' && <span className="status-indicator">⚙️ Setup</span>}
+              {(connectionStatus === 'error' || connectionStatus === 'offline') && <span className="status-indicator">🔴 Offline</span>}
+            </div>
+
+            <button className="icon-btn" onClick={() => setShowCommandPalette(true)} title="Command Palette (⌘K)" aria-label="Open command palette">⌘</button>
+            <button className="icon-btn" onClick={() => setShowHelp(true)} title="Help">❓</button>
+            <button className="icon-btn" onClick={() => setShowSettings(true)} title="Settings">⚙️</button>
+            <button className="icon-btn" onClick={() => setShowHealthMonitor(true)} title="Health Monitor">🏥</button>
+            <button className="icon-btn" onClick={() => setShowTaskPanel(true)} title="Tasks">📋</button>
+            <button className="icon-btn" onClick={() => setShowCalendarPanel(true)} title="Calendar">📅</button>
+            <button className="icon-btn" onClick={() => setShowNotesPanel(true)} title="Notes">📝</button>
+            <button className="icon-btn" onClick={() => setShowQuickLinksPanel(true)} title="Quick Links">🔗</button>
+            <button className="icon-btn" onClick={() => setShowActivityLogPanel(true)} title="Activity Log">📊</button>
+            <button className="icon-btn" onClick={() => setShowFocusTimer(true)} title="Focus Timer">🎯</button>
+            <button className="icon-btn" onClick={() => setShowWeatherPanel(true)} title="Weather">🌤️</button>
+            <button className="icon-btn" onClick={() => setShowHabitTracker(true)} title="Habit Tracker">🎯</button>
+            <button className="icon-btn" onClick={() => setShowDailyQuote(true)} title="Daily Quote">💬</button>
+            <button className="icon-btn" onClick={() => setShowTimeTracker(true)} title="Time Tracker">⏱️</button>
+            <button className="icon-btn" onClick={() => setShowMoodTracker(true)} title="Mood Tracker">🧠</button>
+            <button className="icon-btn" onClick={() => setShowBreathingExercise(true)} title="Breathing Exercise">🫁</button>
+            <button className="icon-btn" onClick={() => setShowProductivityAnalytics(true)} title="Productivity Analytics">📈</button>
+          </div>
+        </div>
+
+        <div className="dashboard-main">
+          <div className="chat-shell">
+            <div className="dashboard-hud">
+              <div className="hud-chip">Mode: <strong>{mode}</strong></div>
+              <div className={`hud-chip hud-chip--${connectionStatus}`}>{statusLabelMap[connectionStatus] || 'Status unknown'}</div>
+              <div className="hud-chip">Messages: <strong>{messages.length}</strong></div>
+            </div>
+
+            {mode === 'context' && alerts.length > 0 && (
+              <div className="alerts-container">
+                {alerts.map(alert => (
+                  <div key={alert.id} className="alert-item">{alert.message}</div>
+                ))}
               </div>
-              {msg.timestamp && (
-                <div className="message-time">
-                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            )}
+
+            <div className="messages-container">
+              {messages.map((msg) => (
+                <div key={msg.id} className={`message message-${msg.type}`}>
+                  <div className="message-content">
+                    {msg.command && <span className="command-badge">/{msg.command}</span>}
+                    {msg.text}
+                  </div>
+                  {msg.timestamp && (
+                    <div className="message-time">
+                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {isTyping && (
+                <div className="message message-mc typing">
+                  <div className="message-content">
+                    <span className="typing-indicator">
+                      <span></span><span></span><span></span>
+                    </span>
+                  </div>
                 </div>
               )}
+
+              <div ref={messagesEndRef} />
             </div>
-          ))}
 
-          {isTyping && (
-            <div className="message message-mc typing">
-              <div className="message-content">
-                <span className="typing-indicator">
-                  <span></span><span></span><span></span>
-                </span>
+            <div className="input-area">
+              <div className="input-controls">
+                {(mode === 'text' || mode === 'hybrid') && (
+                  <div className="text-input-group">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      className="text-input"
+                      placeholder="Transmit command… (/help for shortcuts)"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendText()}
+                    />
+                    <button className="send-button" onClick={handleSendText} title="Send">→</button>
+                  </div>
+                )}
+
+                {(mode === 'voice' || mode === 'hybrid') && (
+                  <button
+                    className={`voice-button ${isListening ? 'listening' : ''}`}
+                    onClick={handleVoiceInput}
+                  >
+                    {isListening ? '🎤 Listening...' : '🎤 Speak'}
+                  </button>
+                )}
+
+                {mode === 'context' && (
+                  <div className="context-info">
+                    <p>👁️ MC is watching your calendar and tasks.</p>
+                    <p>I'll alert you to what matters.</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="input-hints">
+                <span>Press <strong>⌘K</strong> for commands · <strong>⌘Enter</strong> to send</span>
               </div>
             </div>
-          )}
-
-          <div ref={messagesEndRef} />
-        </div>
-
-        <div className="input-area">
-          <div className="input-controls">
-            {(mode === 'text' || mode === 'hybrid') && (
-              <div className="text-input-group">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  className="text-input"
-                  placeholder="Transmit command… (/help for shortcuts)"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendText()}
-                />
-                <button className="send-button" onClick={handleSendText} title="Send">→</button>
-              </div>
-            )}
-
-            {(mode === 'voice' || mode === 'hybrid') && (
-              <button
-                className={`voice-button ${isListening ? 'listening' : ''}`}
-                onClick={handleVoiceInput}
-              >
-                {isListening ? '🎤 Listening...' : '🎤 Speak'}
-              </button>
-            )}
-
-            {mode === 'context' && (
-              <div className="context-info">
-                <p>👁️ MC is watching your calendar and tasks.</p>
-                <p>I'll alert you to what matters.</p>
-              </div>
-            )}
-          </div>
-
-          <div className="input-hints">
-            <span>Press <strong>⌘K</strong> for commands · <strong>⌘Enter</strong> to send</span>
           </div>
         </div>
       </div>
