@@ -11,8 +11,8 @@ body,
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto Mono', sans-serif;
-  background: #0f172a;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+  background: linear-gradient(135deg, #0a0e1a 0%, #0f172a 50%, #1e1b4b 100%);
   color: #e2e8f0;
   overflow: hidden;
 }
@@ -52,19 +52,24 @@ input:focus {
   top: 20px;
   left: 20px;
   z-index: 100;
-  padding: 8px 12px;
-  background: rgba(148, 163, 184, 0.1);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  color: #94a3b8;
+  padding: 10px 14px;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(103, 232, 249, 0.25);
+  border-radius: 12px;
+  color: #67e8f9;
   font-size: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .back-button:hover {
-  background: rgba(148, 163, 184, 0.2);
-  color: #e2e8f0;
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(103, 232, 249, 0.5);
+  color: #22d3ee;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(34, 211, 238, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* Global settings button - always visible */
@@ -74,24 +79,28 @@ input:focus {
   right: 20px;
   z-index: 100;
   padding: 10px;
-  background: rgba(99, 102, 241, 0.2);
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: 12px;
   color: #a78bfa;
   font-size: 18px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 44px;
   height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .global-settings-btn:hover {
-  background: rgba(99, 102, 241, 0.3);
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.6);
   color: #e2e8f0;
-  transform: scale(1.05);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* Global health button - always visible */
@@ -451,14 +460,21 @@ body.theme-light .text-input::placeholder {
 
 /* Futuristic control rail refinements */
 [class^='global-'][class$='-btn'] {
-  backdrop-filter: blur(8px);
-  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.35), inset 0 0 14px rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [class^='global-'][class$='-btn']:hover {
   transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+[class^='global-'][class$='-btn']:active {
+  transform: translateY(-1px) scale(1.02);
 }
 
 body.theme-light [class^='global-'][class$='-btn'] {
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
