@@ -26,6 +26,7 @@ export default function App() {
   const [phase, setPhase] = useState('welcome');
   const [hasGreeted, setHasGreeted] = useState(false);
   const [theme, setTheme] = useState('dark');
+  const [connectionStatus, setConnectionStatus] = useState('connecting');
   const [showSettings, setShowSettings] = useState(false);
   const [showHealthMonitor, setShowHealthMonitor] = useState(false);
   const [showQuickLinksPanel, setShowQuickLinksPanel] = useState(false);
@@ -122,6 +123,7 @@ export default function App() {
       {/* Navbar - always visible across all phases */}
       <Navbar 
         phase={phase}
+        connectionStatus={connectionStatus}
         onBack={handleBack}
         onSettingsClick={() => setShowSettings(true)}
         onHealthClick={() => setShowHealthMonitor(true)}
@@ -238,7 +240,11 @@ export default function App() {
       )}
 
       {phase === 'dashboard' && (
-        <Dashboard mode="hybrid" avatar={<Avatar />} />
+        <Dashboard 
+          mode="hybrid" 
+          avatar={<Avatar />} 
+          onConnectionStatusChange={setConnectionStatus}
+        />
       )}
     </div>
   );

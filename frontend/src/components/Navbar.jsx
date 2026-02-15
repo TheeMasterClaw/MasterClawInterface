@@ -3,6 +3,7 @@ import './Navbar.css';
 
 export default function Navbar({ 
   phase,
+  connectionStatus,
   onBack,
   onSettingsClick,
   onHealthClick,
@@ -136,6 +137,20 @@ export default function Navbar({
             >
               ⚙️
             </button>
+          </div>
+        )}
+
+        {/* Right section - Connection Status (only on dashboard) */}
+        {phase === 'dashboard' && (
+          <div className="navbar-right">
+            <div className={`navbar-connection-status ${connectionStatus || 'connecting'}`}>
+              {(connectionStatus === 'connected') && <span>🟢 Live</span>}
+              {connectionStatus === 'reconnecting' && <span>🔄 Reconnecting...</span>}
+              {connectionStatus === 'backend-only' && <span>🟡 API</span>}
+              {connectionStatus === 'connecting' && <span>⏳ Connecting...</span>}
+              {connectionStatus === 'unconfigured' && <span>⚙️ Setup</span>}
+              {(connectionStatus === 'error' || connectionStatus === 'offline') && <span>🔴 Offline</span>}
+            </div>
           </div>
         )}
       </div>
