@@ -52,6 +52,7 @@
 }
 
 .avatar-wrapper-large {
+  margin-top: 20px;
   margin-bottom: 24px;
   animation: slideDown 0.8s ease-out;
   transform: scale(1.1);
