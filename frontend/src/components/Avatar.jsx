@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './Avatar.css';
 
 /**
@@ -11,6 +12,7 @@ import './Avatar.css';
  * - listening: Active listening, pulsing core
  * - thinking: Processing, orbiting nodes speed up
  * - speaking: Active response, flowing connections
+ * - error: Error or offline state
  */
 export default function Avatar({ state = 'idle', size = 'medium' }) {
   const sizeClasses = {
@@ -21,12 +23,23 @@ export default function Avatar({ state = 'idle', size = 'medium' }) {
 
   const { width, height } = sizeClasses[size] || sizeClasses.medium;
 
+  // Accessibility: Provide meaningful label for current state
+  const stateLabels = {
+    idle: 'MasterClaw AI Avatar - Ready',
+    listening: 'MasterClaw AI Avatar - Listening',
+    thinking: 'MasterClaw AI Avatar - Processing',
+    speaking: 'MasterClaw AI Avatar - Speaking',
+    error: 'MasterClaw AI Avatar - Error'
+  };
+
   return (
     <div className={`avatar avatar--${state} avatar--${size}`}>
       <svg 
         viewBox="0 0 200 200" 
         className="avatar-svg"
         style={{ width, height }}
+        role="img"
+        aria-label={stateLabels[state] || stateLabels.idle}
       >
         {/* Definitions for gradients and filters */}
         <defs>
@@ -135,7 +148,20 @@ export default function Avatar({ state = 'idle', size = 'medium' }) {
             <circle cx="100" cy="100" r="50" className="avatar-ripple avatar-ripple--delayed" fill="none" />
           </>
         )}
+
+        {/* Error state indicator */}
+        {state === 'error' && (
+          <>
+            <circle cx="100" cy="100" r="60" className="avatar-error-ring" fill="none" />
+            <path d="M100 70 L100 110 M100 120 L100 130" className="avatar-error-icon" />
+          </>
+        )}
       </svg>
     </div>
   );
 }
+
+Avatar.propTypes = {
+  state: PropTypes.oneOf(['idle', 'listening', 'thinking', 'speaking', 'error']),
+  size: PropTypes.oneOf(['small', 'medium', 'large'])
+};

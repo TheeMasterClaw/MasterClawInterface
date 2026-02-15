@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avatar Demo - All States</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 40px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #22d3ee;
+            margin-bottom: 40px;
+        }
+        .states {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        .state-demo {
+            background: rgba(34, 211, 238, 0.05);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+        }
+        .state-demo h2 {
+            color: #67e8f9;
+            margin: 0 0 20px 0;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .features {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+        }
+        .features h2 {
+            color: #818cf8;
+            margin-top: 0;
+        }
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        .features li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+        .features li:last-child {
+            border-bottom: none;
+        }
+        .badge {
+            display: inline-block;
+            background: #22d3ee;
+            color: #0a0a0a;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .badge.new {
+            background: #10b981;
+        }
+        .badge.improved {
+            background: #818cf8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 MasterClaw Avatar - Upgraded</h1>
+        
+        <div class="states">
+            <div class="state-demo">
+                <h2>Idle State</h2>
+                <p>Default state with gentle breathing animations</p>
+            </div>
+            
+            <div class="state-demo">
+                <h2>Listening State</h2>
+                <p>Pulsing core with ripple effects</p>
+            </div>
+            
+            <div class="state-demo">
+                <h2>Thinking State</h2>
+                <p>Faster animations with additional nodes</p>
+            </div>
+            
+            <div class="state-demo">
+                <h2>Speaking State</h2>
+                <p>Flowing connections and active response</p>
+            </div>
+            
+            <div class="state-demo">
+                <h2>Error State <span class="badge new">NEW</span></h2>
+                <p>Red pulsing ring with error indicator</p>
+            </div>
+        </div>
+        
+        <div class="features">
+            <h2>✨ Upgrade Highlights</h2>
+            <ul>
+                <li>
+                    <strong>Accessibility Improvements</strong>
+                    <span class="badge improved">IMPROVED</span>
+                    <br>
+                    Added ARIA labels, role attributes, and prefers-reduced-motion support for users sensitive to animations
+                </li>
+                <li>
+                    <strong>Performance Optimizations</strong>
+                    <span class="badge improved">IMPROVED</span>
+                    <br>
+                    Added will-change hints for better GPU acceleration and smoother animations
+                </li>
+                <li>
+                    <strong>Error State</strong>
+                    <span class="badge new">NEW</span>
+                    <br>
+                    New error/offline state with distinctive red styling and pulsing animations
+                </li>
+                <li>
+                    <strong>PropTypes Validation</strong>
+                    <span class="badge new">NEW</span>
+                    <br>
+                    Added runtime prop validation for better developer experience and debugging
+                </li>
+                <li>
+                    <strong>Code Quality</strong>
+                    <span class="badge improved">IMPROVED</span>
+                    <br>
+                    Fixed transform-origin syntax and improved animation consistency
+                </li>
+                <li>
+                    <strong>Browser Compatibility</strong>
+                    <span class="badge improved">IMPROVED</span>
+                    <br>
+                    Better cross-browser support with standardized CSS properties
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
