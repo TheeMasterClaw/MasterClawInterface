@@ -1,4 +1,5 @@
 import { createChatMessage, createTask, createEvent } from '../db.js';
+import { listSkills, findSkillByTrigger, invokeSkill } from './skillRegistry.js';
 
 export async function processChatMessage({ message, saveHistory = true }) {
   if (!message || !message.trim()) {
@@ -270,9 +271,85 @@ async function handleSlashCommand(message) {
     case 'help': {
       return {
         command,
-        text: `🤖 Available commands:\n\n/task [title] [priority] - Create task\n/tasks - List tasks\n/done [id] - Complete task\n/event [title] [when] - Create event\n/events - List upcoming events\n/clear - Clear chat history\n/help - Show this help`,
+        text: `🤖 Available commands:\n\n/task [title] [priority] - Create task\n/tasks - List tasks\n/done [id] - Complete task\n/event [title] [when] - Create event\n/events - List upcoming events\n/skills - List registered skills\n/skill [trigger] [args] - Invoke a skill\n/clear - Clear chat history\n/help - Show this help`,
         type: 'info'
       };
+    }
+
+    case 'skills': {
+      const registeredSkills = listSkills({ status: 'active' });
+      if (registeredSkills.length === 0) {
+        return { command, text: '🧩 No skills registered. Connect a bot to add skills.', type: 'info' };
+      }
+      const skillList = registeredSkills.map((s) =>
+        `🧩 /${s.trigger} — ${s.name}: ${s.description}`
+      ).join('\n');
+      return {
+        command,
+        text: `🧩 Registered skills (${registeredSkills.length}):\n${skillList}`,
+        type: 'info',
+        data: registeredSkills
+      };
+    }
+
+    case 'skill': {
+      if (!args.trim()) {
+        return {
+          command,
+          text: '❌ Usage: /skill <trigger> [arguments]\nExample: /skill weather city=London',
+          type: 'error'
+        };
+      }
+
+      const skillParts = args.split(' ');
+      const skillTrigger = skillParts[0];
+      const skillArgs = skillParts.slice(1).join(' ');
+
+      const skill = findSkillByTrigger(skillTrigger);
+      if (!skill) {
+        return {
+          command,
+          text: `❌ Skill not found: "${skillTrigger}". Use /skills to see available skills.`,
+          type: 'error'
+        };
+      }
+
+      // Parse simple key=value params from args
+      const params = {};
+      if (skillArgs) {
+        const kvPairs = skillArgs.match(/(\w+)=("[^"]*"|\S+)/g);
+        if (kvPairs) {
+          for (const pair of kvPairs) {
+            const eqIdx = pair.indexOf('=');
+            const key = pair.slice(0, eqIdx);
+            let value = pair.slice(eqIdx + 1);
+            if (value.startsWith('"') && value.endsWith('"')) {
+              value = value.slice(1, -1);
+            }
+            params[key] = value;
+          }
+        } else {
+          // If no key=value pairs, pass raw input
+          params.input = skillArgs;
+        }
+      }
+
+      try {
+        const result = await invokeSkill(skillTrigger, params);
+        const resultText = result.result?.text || result.result?.message || JSON.stringify(result.result || {});
+        return {
+          command,
+          text: `🧩 ${skill.name}: ${resultText}`,
+          type: 'success',
+          data: result
+        };
+      } catch (err) {
+        return {
+          command,
+          text: `❌ Skill error: ${err.message}`,
+          type: 'error'
+        };
+      }
     }
 
     default:
