@@ -50,6 +50,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [currentMode, setCurrentMode] = useState(mode || 'hybrid');
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const gatewayRef = useRef(null);
   const messageCountRef = useRef(0);
   const audioRef = useRef(null);
@@ -76,7 +77,9 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   }, [onConnectionStatusChange]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   };
 
   // Load chat history on mount
@@ -843,7 +846,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
               </div>
             )}
 
-            <div className="messages-container">
+            <div className="messages-container" ref={messagesContainerRef}>
               {messages.map((msg) => (
                 <div key={msg.id} className={`message message-${msg.type}`}>
                   <div className="message-content">
