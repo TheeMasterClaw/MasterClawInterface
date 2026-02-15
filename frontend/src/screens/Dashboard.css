@@ -23,27 +23,6 @@
   z-index: 1;
 }
 
-.dashboard-header {
-  position: relative;
-  z-index: 1;
-  padding: 8px 24px 0;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.dashboard-header h1 {
-  margin: 0;
-  font-size: 20px;
-  color: #e2e8f0;
-  letter-spacing: 0.3px;
-}
-
-.dashboard-header p {
-  margin: 4px 0 0;
-  color: #94a3b8;
-  font-size: 12px;
-}
-
 .dashboard::before {
   content: '';
   position: absolute;
@@ -665,10 +644,6 @@
 
   .dashboard-main {
     padding: 10px 10px 0;
-  }
-
-  .dashboard-header {
-    padding: 12px 12px 0;
   }
 }
 

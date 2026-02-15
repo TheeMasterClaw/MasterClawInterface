@@ -785,11 +785,6 @@ export default function Dashboard({ mode, avatar }) {
         </div>
       )}
 
-      <header className="dashboard-header">
-        <h1>Mission Control</h1>
-        <p>Command center and ability tabs</p>
-      </header>
-
       <div className="dashboard-layout">
         <div className="dashboard-sidebar">
           <div className="sidebar-brand">
