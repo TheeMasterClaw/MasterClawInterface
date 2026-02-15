@@ -60,6 +60,7 @@
   animation: shell-rotate 16s linear infinite;
   filter: drop-shadow(0 0 4px rgba(103, 232, 249, 0.4));
   will-change: transform;
+  transform-origin: 100px 100px;
 }
 
 .avatar-shell--inner {
@@ -70,6 +71,7 @@
   animation-duration: 10s;
   filter: drop-shadow(0 0 3px rgba(103, 232, 249, 0.3));
   will-change: transform;
+  transform-origin: 100px 100px;
 }
 
 .avatar-bloom {
