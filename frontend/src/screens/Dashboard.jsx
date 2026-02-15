@@ -22,7 +22,7 @@ import './Dashboard.css';
 // Browser detection
 const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
 
-export default function Dashboard({ mode, avatar }) {
+export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isListening, setIsListening] = useState(false);
@@ -66,6 +66,14 @@ export default function Dashboard({ mode, avatar }) {
       }
     };
   }, []);
+
+  // Helper function to update connection status
+  const updateConnectionStatus = useCallback((status) => {
+    setConnectionStatus(status);
+    if (onConnectionStatusChange) {
+      onConnectionStatusChange(status);
+    }
+  }, [onConnectionStatusChange]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -146,12 +154,12 @@ export default function Dashboard({ mode, avatar }) {
 
         client.onConnect(() => {
           setIsConnected(true);
-          setConnectionStatus('connected');
+          updateConnectionStatus('connected');
         });
 
         client.onDisconnect(() => {
           setIsConnected(false);
-          setConnectionStatus('reconnecting');
+          updateConnectionStatus('reconnecting');
         });
 
         client.onMessage((data) => {
@@ -170,14 +178,14 @@ export default function Dashboard({ mode, avatar }) {
         });
 
         client.onError(() => {
-          setConnectionStatus('error');
+          updateConnectionStatus('error');
         });
 
         await client.connect();
         gatewayRef.current = client;
       } catch (err) {
         console.error('Gateway connection failed:', err);
-        setConnectionStatus('offline');
+        updateConnectionStatus('offline');
       }
     };
 
@@ -798,15 +806,6 @@ export default function Dashboard({ mode, avatar }) {
 
           <div className="mode-indicator">
             <span className="mode-badge">{currentMode}</span>
-
-            <div className={`connection-status ${connectionStatus}`}>
-              {connectionStatus === 'connected' && <span className="status-indicator">🟢 Live</span>}
-              {connectionStatus === 'reconnecting' && <span className="status-indicator">🔄 Reconnecting...</span>}
-              {connectionStatus === 'backend-only' && <span className="status-indicator">🟡 API</span>}
-              {connectionStatus === 'connecting' && <span className="status-indicator">⏳ Connecting...</span>}
-              {connectionStatus === 'unconfigured' && <span className="status-indicator">⚙️ Setup</span>}
-              {(connectionStatus === 'error' || connectionStatus === 'offline') && <span className="status-indicator">🔴 Offline</span>}
-            </div>
 
             <button className="icon-btn" onClick={() => setShowCommandPalette(true)} title="Command Palette (⌘K)" aria-label="Open command palette">⌘</button>
             <button className="icon-btn" onClick={() => setShowHelp(true)} title="Help">❓</button>
