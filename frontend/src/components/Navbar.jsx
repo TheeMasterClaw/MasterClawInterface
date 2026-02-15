@@ -38,6 +38,14 @@ export default function Navbar({
           </div>
         </div>
 
+        {/* Center section - Mission Control Header */}
+        <div className="navbar-center">
+          <div className="navbar-mission-control">
+            <span className="mission-control-title">Mission Control</span>
+            <span className="mission-control-subtitle">Command center and ability tabs</span>
+          </div>
+        </div>
+
         {/* Right section - Tool buttons */}
         {phase !== 'dashboard' && (
           <div className="navbar-right">
