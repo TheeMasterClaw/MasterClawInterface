@@ -49,7 +49,6 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showHelp, setShowHelp] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [currentMode, setCurrentMode] = useState(mode || 'hybrid');
-  const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const gatewayRef = useRef(null);
   const messageCountRef = useRef(0);
@@ -870,8 +869,6 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   </div>
                 </div>
               )}
-
-              <div ref={messagesEndRef} />
             </div>
 
             <div className="input-area">
