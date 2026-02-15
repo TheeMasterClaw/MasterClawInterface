@@ -1,5 +1,11 @@
 import { Server } from 'socket.io';
 import { processChatMessage } from './services/chatGateway.js';
+import {
+  registerSkill,
+  listSkills,
+  removeSkillsBySocket,
+  invokeSkill,
+} from './services/skillRegistry.js';
 
 export function createSocketServer(httpServer) {
   const io = new Server(httpServer, {
@@ -32,12 +38,79 @@ export function createSocketServer(httpServer) {
       }
     });
 
+    // Skill registration via WebSocket
+    socket.on('skill:register', (payload = {}, ack) => {
+      try {
+        const skill = registerSkill({ ...payload, socketId: socket.id });
+        console.log(`🧩 Skill registered: ${skill.name} (/${skill.trigger}) by ${socket.id}`);
+        io.emit('skill:registered', skill);
+        if (typeof ack === 'function') ack({ ok: true, skill });
+      } catch (error) {
+        if (typeof ack === 'function') {
+          ack({ ok: false, error: error.message });
+        }
+      }
+    });
+
+    // List skills via WebSocket
+    socket.on('skill:list', (payload = {}, ack) => {
+      const skills = listSkills(payload);
+      if (typeof ack === 'function') ack({ ok: true, skills });
+    });
+
+    // Invoke a skill via WebSocket
+    socket.on('skill:invoke', async (payload = {}, ack) => {
+      try {
+        const { trigger, params = {} } = payload;
+        const result = await invokeSkill(trigger, params);
+
+        // If the skill is socket-based, forward the invocation to the bot
+        if (result.type === 'socket' && result.socketId) {
+          const targetSocket = io.sockets.sockets.get(result.socketId);
+          if (targetSocket) {
+            targetSocket.emit('skill:execute', {
+              trigger: result.skill,
+              params: result.params,
+              requesterId: socket.id,
+            });
+          } else {
+            if (typeof ack === 'function') {
+              ack({ ok: false, error: 'Skill provider is disconnected' });
+            }
+            return;
+          }
+        }
+
+        if (typeof ack === 'function') ack({ ok: true, ...result });
+      } catch (error) {
+        if (typeof ack === 'function') {
+          ack({ ok: false, error: error.message });
+        }
+      }
+    });
+
+    // Skill execution result (sent by the bot after processing)
+    socket.on('skill:result', (payload = {}) => {
+      const { requesterId, trigger, result } = payload;
+      if (requesterId) {
+        const requester = io.sockets.sockets.get(requesterId);
+        if (requester) {
+          requester.emit('skill:response', { trigger, result });
+        }
+      }
+    });
 
     socket.on('ping', () => {
       socket.emit('pong', { ts: Date.now() });
     });
 
     socket.on('disconnect', (reason) => {
+      // Clean up skills registered by this socket
+      const removed = removeSkillsBySocket(socket.id);
+      if (removed > 0) {
+        console.log(`🧩 Removed ${removed} skill(s) from disconnected socket ${socket.id}`);
+        io.emit('skill:unregistered', { socketId: socket.id, count: removed });
+      }
       console.log(`🔌 Socket disconnected (${socket.id}): ${reason}`);
     });
   });

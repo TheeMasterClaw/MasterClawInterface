@@ -364,4 +364,80 @@ app.use(cors({
 
 ---
 
+## Skills API
+
+See `docs/SKILL_DEVELOPMENT.md` for the full skill development guide.
+
+### `GET /skills`
+List all registered skills.
+
+```bash
+curl -H "X-API-Token: your-token" http://localhost:3001/skills
+```
+
+Query Parameters:
+- `status` — Filter by status (`active` or `inactive`)
+
+Response:
+```json
+{
+  "skills": [
+    {
+      "id": "a1b2c3d4e5f6",
+      "name": "Weather Lookup",
+      "description": "Get current weather for a city",
+      "trigger": "weather",
+      "parameters": [{ "name": "city", "type": "string", "required": true }],
+      "status": "active",
+      "registeredAt": "2026-02-15T10:00:00.000Z"
+    }
+  ],
+  "count": 1
+}
+```
+
+### `GET /skills/:id`
+Get a specific skill by ID.
+
+### `POST /skills`
+Register a new skill.
+
+```bash
+curl -X POST http://localhost:3001/skills \
+  -H "X-API-Token: your-token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Weather Lookup",
+    "description": "Get current weather for a city",
+    "trigger": "weather",
+    "parameters": [{ "name": "city", "type": "string", "required": true }],
+    "endpoint": "https://your-bot.example.com/skills/weather"
+  }'
+```
+
+### `PATCH /skills/:id`
+Update a skill.
+
+### `DELETE /skills/:id`
+Remove a skill.
+
+### `POST /skills/invoke/:trigger`
+Invoke a skill by trigger.
+
+```bash
+curl -X POST http://localhost:3001/skills/invoke/weather \
+  -H "X-API-Token: your-token" \
+  -H "Content-Type: application/json" \
+  -d '{ "city": "London" }'
+```
+
+### Chat Commands
+
+Skills are also accessible via chat slash commands:
+
+- `/skills` — List all registered skills
+- `/skill <trigger> [key=value ...]` — Invoke a skill
+
+---
+
 Built with intention. Privacy by default. Power when needed.
