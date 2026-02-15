@@ -21,6 +21,15 @@ import { genId } from '../db.js';
 const skills = new Map();
 
 /**
+ * Normalize a trigger string: strip leading slash, lowercase, trim.
+ * @param {string} trigger
+ * @returns {string}
+ */
+function normalizeTrigger(trigger) {
+  return trigger.replace(/^\//, '').toLowerCase().trim();
+}
+
+/**
  * Register a new skill.
  * @param {Object} opts
  * @param {string} opts.name - Unique skill name
@@ -43,7 +52,7 @@ export function registerSkill({ name, description, trigger, parameters = [], end
   }
 
   // Normalize trigger — strip leading slash if provided
-  const normalizedTrigger = trigger.replace(/^\//, '').toLowerCase().trim();
+  const normalizedTrigger = normalizeTrigger(trigger);
 
   if (!/^[a-z0-9_-]+$/.test(normalizedTrigger)) {
     throw Object.assign(
@@ -107,7 +116,7 @@ export function getSkill(id) {
  * @returns {Object|null}
  */
 export function findSkillByTrigger(trigger) {
-  const normalized = trigger.replace(/^\//, '').toLowerCase().trim();
+  const normalized = normalizeTrigger(trigger);
   for (const skill of skills.values()) {
     if (skill.trigger === normalized) {
       return skill;
