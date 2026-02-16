@@ -18,6 +18,7 @@ import MoodTracker from '../components/MoodTracker';
 import BreathingExercise from '../components/BreathingExercise';
 import ProductivityAnalytics from '../components/ProductivityAnalytics';
 import JournalPanel from '../components/JournalPanel';
+import SnippetsPanel from '../components/SnippetsPanel';
 import './Dashboard.css';
 
 // Browser detection
@@ -46,6 +47,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showProductivityAnalytics, setShowProductivityAnalytics] = useState(false);
   const [showJournalPanel, setShowJournalPanel] = useState(false);
+  const [showSnippetsPanel, setShowSnippetsPanel] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -273,6 +275,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowBreathingExercise(false);
         setShowProductivityAnalytics(false);
         setShowJournalPanel(false);
+        setShowSnippetsPanel(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -407,6 +410,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         type: 'command',
         title: 'Command executed',
         description: 'Opened Journal panel'
+      });
+      return;
+    }
+
+    if (userText === '/snippets') {
+      setShowSnippetsPanel(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Snippets Vault'
       });
       return;
     }
@@ -614,6 +629,9 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'journal':
             setShowJournalPanel(true);
             break;
+          case 'snippets':
+            setShowSnippetsPanel(true);
+            break;
         }
         break;
       case 'settings':
@@ -768,6 +786,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showSnippetsPanel && (
+        <SnippetsPanel
+          isOpen={showSnippetsPanel}
+          onClose={() => setShowSnippetsPanel(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -812,6 +837,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/breathe</strong> – Open Breathing Exercise</li>
                   <li><strong>/productivity</strong> – Open Productivity Analytics</li>
                   <li><strong>/journal</strong> – Open Journal</li>
+                  <li><strong>/snippets</strong> – Open Snippets Vault</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -853,6 +879,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowBreathingExercise(true)} title="Breathing Exercise">🫁</button>
             <button className="icon-btn" onClick={() => setShowProductivityAnalytics(true)} title="Productivity Analytics">📈</button>
             <button className="icon-btn" onClick={() => setShowJournalPanel(true)} title="Journal">📔</button>
+            <button className="icon-btn" onClick={() => setShowSnippetsPanel(true)} title="Snippets Vault">📦</button>
           </div>
         </div>
 

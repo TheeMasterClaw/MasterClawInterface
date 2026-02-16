@@ -11,6 +11,7 @@ import { ttsRouter } from './routes/tts.js';
 import { chatRouter } from './routes/chat.js';
 import { timeRouter } from './routes/time.js';
 import { skillsRouter } from './routes/skills.js';
+import { snippetsRouter } from './routes/snippets.js';
 import { errorHandler, sanitizeBody, authenticateApiToken } from './middleware/security.js';
 import { requestTimeout, timeoutFor } from './middleware/timeout.js';
 import { auditLogMiddleware, getRecentAuditLogs, getAuditStats, logSecurityEvent, SecurityEventType, Severity } from './middleware/auditLog.js';
@@ -122,6 +123,7 @@ app.use('/time', timeRouter);
 app.use('/tts', ttsRouter);
 app.use('/chat', chatRouter);
 app.use('/skills', skillsRouter);
+app.use('/snippets', snippetsRouter);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -175,7 +177,7 @@ app.get('/', (req, res) => {
   res.json({
     message: 'MC Backend API',
     status: 'running',
-    endpoints: ['/tasks', '/calendar', '/time', '/tts', '/health', '/chat', '/skills'],
+    endpoints: ['/tasks', '/calendar', '/time', '/tts', '/health', '/chat', '/skills', '/snippets'],
     realtime: 'socket.io enabled',
     security: {
       rateLimiting: true,

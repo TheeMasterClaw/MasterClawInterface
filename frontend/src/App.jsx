@@ -19,6 +19,7 @@ import NotesPanel from './components/NotesPanel';
 import JournalPanel from './components/JournalPanel';
 import WaterTracker from './components/WaterTracker';
 import QuestLog from './components/QuestLog';
+import SnippetsPanel from './components/SnippetsPanel';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -46,6 +47,7 @@ export default function App() {
   const [showJournalPanel, setShowJournalPanel] = useState(false);
   const [showWaterTracker, setShowWaterTracker] = useState(false);
   const [showQuestLog, setShowQuestLog] = useState(false);
+  const [showSnippetsPanel, setShowSnippetsPanel] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -147,6 +149,7 @@ export default function App() {
         onJournalClick={() => setShowJournalPanel(true)}
         onWaterClick={() => setShowWaterTracker(true)}
         onQuestLogClick={() => setShowQuestLog(true)}
+        onSnippetsClick={() => setShowSnippetsPanel(true)}
       />
 
       {showSettings && (
@@ -259,6 +262,13 @@ export default function App() {
         <QuestLog
           isOpen={showQuestLog}
           onClose={() => setShowQuestLog(false)}
+        />
+      )}
+
+      {showSnippetsPanel && (
+        <SnippetsPanel
+          isOpen={showSnippetsPanel}
+          onClose={() => setShowSnippetsPanel(false)}
         />
       )}
 

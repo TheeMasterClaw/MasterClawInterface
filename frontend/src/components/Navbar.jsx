@@ -19,7 +19,8 @@ export default function Navbar({
   onProductivityClick,
   onNotesClick,
   onJournalClick,
-  onQuestLogClick
+  onQuestLogClick,
+  onSnippetsClick
 }) {
   return (
     <nav className="navbar">
@@ -48,6 +49,13 @@ export default function Navbar({
         {/* Right section - Tool buttons */}
         {phase !== 'dashboard' && (
           <div className="navbar-right">
+            <button
+              className="navbar-btn navbar-btn-snippets"
+              onClick={onSnippetsClick}
+              title="Snippets Vault"
+            >
+              📦
+            </button>
             <button
               className="navbar-btn navbar-btn-quest"
               onClick={onQuestLogClick}
