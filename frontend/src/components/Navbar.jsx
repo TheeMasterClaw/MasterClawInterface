@@ -20,7 +20,8 @@ export default function Navbar({
   onNotesClick,
   onJournalClick,
   onQuestLogClick,
-  onSnippetsClick
+  onSnippetsClick,
+  onKnowledgeGardenClick
 }) {
   return (
     <nav className="navbar">
@@ -55,6 +56,13 @@ export default function Navbar({
               title="Snippets Vault"
             >
               📦
+            </button>
+            <button
+              className="navbar-btn navbar-btn-garden"
+              onClick={onKnowledgeGardenClick}
+              title="Knowledge Garden"
+            >
+              🌱
             </button>
             <button
               className="navbar-btn navbar-btn-quest"

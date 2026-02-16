@@ -19,6 +19,7 @@ import BreathingExercise from '../components/BreathingExercise';
 import ProductivityAnalytics from '../components/ProductivityAnalytics';
 import JournalPanel from '../components/JournalPanel';
 import SnippetsPanel from '../components/SnippetsPanel';
+import KnowledgeGarden from '../components/KnowledgeGarden';
 import './Dashboard.css';
 
 // Browser detection
@@ -48,6 +49,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showProductivityAnalytics, setShowProductivityAnalytics] = useState(false);
   const [showJournalPanel, setShowJournalPanel] = useState(false);
   const [showSnippetsPanel, setShowSnippetsPanel] = useState(false);
+  const [showKnowledgeGarden, setShowKnowledgeGarden] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -276,6 +278,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowProductivityAnalytics(false);
         setShowJournalPanel(false);
         setShowSnippetsPanel(false);
+        setShowKnowledgeGarden(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -422,6 +425,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         type: 'command',
         title: 'Command executed',
         description: 'Opened Snippets Vault'
+      });
+      return;
+    }
+
+    if (userText === '/garden' || userText === '/knowledge') {
+      setShowKnowledgeGarden(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Knowledge Garden'
       });
       return;
     }
@@ -632,6 +647,9 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'snippets':
             setShowSnippetsPanel(true);
             break;
+          case 'knowledge':
+            setShowKnowledgeGarden(true);
+            break;
         }
         break;
       case 'settings':
@@ -793,6 +811,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showKnowledgeGarden && (
+        <KnowledgeGarden
+          isOpen={showKnowledgeGarden}
+          onClose={() => setShowKnowledgeGarden(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -838,6 +863,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/productivity</strong> – Open Productivity Analytics</li>
                   <li><strong>/journal</strong> – Open Journal</li>
                   <li><strong>/snippets</strong> – Open Snippets Vault</li>
+                  <li><strong>/garden</strong> – Open Knowledge Garden</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -880,6 +906,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowProductivityAnalytics(true)} title="Productivity Analytics">📈</button>
             <button className="icon-btn" onClick={() => setShowJournalPanel(true)} title="Journal">📔</button>
             <button className="icon-btn" onClick={() => setShowSnippetsPanel(true)} title="Snippets Vault">📦</button>
+            <button className="icon-btn" onClick={() => setShowKnowledgeGarden(true)} title="Knowledge Garden">🌱</button>
           </div>
         </div>
 

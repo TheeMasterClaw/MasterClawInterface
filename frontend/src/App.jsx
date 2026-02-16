@@ -20,6 +20,7 @@ import JournalPanel from './components/JournalPanel';
 import WaterTracker from './components/WaterTracker';
 import QuestLog from './components/QuestLog';
 import SnippetsPanel from './components/SnippetsPanel';
+import KnowledgeGarden from './components/KnowledgeGarden';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -48,6 +49,7 @@ export default function App() {
   const [showWaterTracker, setShowWaterTracker] = useState(false);
   const [showQuestLog, setShowQuestLog] = useState(false);
   const [showSnippetsPanel, setShowSnippetsPanel] = useState(false);
+  const [showKnowledgeGarden, setShowKnowledgeGarden] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -150,6 +152,7 @@ export default function App() {
         onWaterClick={() => setShowWaterTracker(true)}
         onQuestLogClick={() => setShowQuestLog(true)}
         onSnippetsClick={() => setShowSnippetsPanel(true)}
+        onKnowledgeGardenClick={() => setShowKnowledgeGarden(true)}
       />
 
       {showSettings && (
@@ -269,6 +272,13 @@ export default function App() {
         <SnippetsPanel
           isOpen={showSnippetsPanel}
           onClose={() => setShowSnippetsPanel(false)}
+        />
+      )}
+
+      {showKnowledgeGarden && (
+        <KnowledgeGarden
+          isOpen={showKnowledgeGarden}
+          onClose={() => setShowKnowledgeGarden(false)}
         />
       )}
 
