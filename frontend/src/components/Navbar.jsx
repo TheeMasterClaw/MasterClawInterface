@@ -17,7 +17,9 @@ export default function Navbar({
   onMoodClick,
   onBreathingClick,
   onProductivityClick,
-  onNotesClick
+  onNotesClick,
+  onJournalClick,
+  onQuestLogClick
 }) {
   return (
     <nav className="navbar">
@@ -46,6 +48,20 @@ export default function Navbar({
         {/* Right section - Tool buttons */}
         {phase !== 'dashboard' && (
           <div className="navbar-right">
+            <button
+              className="navbar-btn navbar-btn-quest"
+              onClick={onQuestLogClick}
+              title="Quest Log"
+            >
+              🗡️
+            </button>
+            <button
+              className="navbar-btn navbar-btn-journal"
+              onClick={onJournalClick}
+              title="Journal"
+            >
+              📔
+            </button>
             <button
               className="navbar-btn navbar-btn-notes"
               onClick={onNotesClick}

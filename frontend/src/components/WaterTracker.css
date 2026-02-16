@@ -1,0 +1,657 @@
+.water-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.water-panel {
+  background: #1e293b;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 450px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+.water-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.water-panel-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.settings-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.settings-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.close-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Progress Section */
+.water-progress-section {
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.08) 0%, transparent 100%);
+}
+
+.water-visual {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.water-bottle {
+  position: relative;
+  width: 80px;
+  height: 160px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.water-level {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transition: height 0.5s ease, background 0.3s ease;
+  border-radius: 0 0 8px 8px;
+}
+
+.water-level::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 100%);
+}
+
+.bottle-markings {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px 4px;
+  pointer-events: none;
+}
+
+.bottle-markings .mark {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.3);
+  text-align: right;
+}
+
+.water-stats {
+  flex: 1;
+}
+
+.main-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.intake-amount {
+  font-size: 48px;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.intake-unit {
+  font-size: 18px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.goal-stat {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.hydration-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.status-icon {
+  font-size: 20px;
+}
+
+.goal-celebration {
+  margin-top: 12px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #22c55e20, #22c55e10);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 10px;
+  color: #22c55e;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+  animation: celebration-pulse 2s ease-in-out infinite;
+}
+
+@keyframes celebration-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px 4px rgba(34, 197, 94, 0.2);
+  }
+}
+
+/* Progress Bar */
+.progress-bar-container {
+  margin-top: 16px;
+}
+
+.progress-bar-bg {
+  height: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.5s ease, background 0.3s ease;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Quick Add Section */
+.quick-add-section {
+  padding: 20px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.quick-add-section h4 {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.quick-add-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.add-water-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 10px;
+  color: #3b82f6;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.add-water-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.add-water-btn.custom {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+.add-water-btn.custom:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.add-water-btn .btn-icon {
+  font-size: 20px;
+}
+
+.add-water-btn .btn-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Custom Input */
+.custom-input-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  animation: slide-down 0.2s ease;
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.custom-input-group input {
+  flex: 1;
+  padding: 12px 16px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+}
+
+.custom-input-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.custom-input-group button {
+  padding: 12px 20px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.custom-input-group button:hover {
+  background: #2563eb;
+}
+
+/* Water History */
+.water-history {
+  padding: 0 24px 20px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.water-history h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.history-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.history-amount {
+  font-weight: 600;
+  color: #3b82f6;
+  font-size: 14px;
+}
+
+.history-time {
+  font-size: 12px;
+  color: #64748b;
+  flex: 1;
+  text-align: center;
+}
+
+.remove-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.remove-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+/* Hydration Tips */
+.hydration-tips {
+  padding: 16px 24px 20px;
+  background: rgba(59, 130, 246, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hydration-tips p {
+  margin: 0;
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.hydration-tips strong {
+  color: #3b82f6;
+}
+
+/* Settings Panel */
+.water-settings {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.water-settings h4 {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.setting-group {
+  margin-bottom: 24px;
+}
+
+.setting-group label {
+  display: block;
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.goal-input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.goal-input-group input {
+  flex: 1;
+  padding: 12px 16px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.goal-input-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.goal-input-group .unit {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.preset-goals {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.preset-goals button {
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.preset-goals button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.preset-goals button.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.reminder-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.reminder-options button {
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.reminder-options button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.reminder-options button.active {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  color: white;
+}
+
+.enable-notifications {
+  margin-top: 12px;
+  width: 100%;
+  padding: 12px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  color: #8b5cf6;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.enable-notifications:hover {
+  background: rgba(139, 92, 246, 0.2);
+}
+
+/* Streak Display */
+.streak-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.streak-icon {
+  font-size: 24px;
+}
+
+.streak-count {
+  font-size: 28px;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.streak-label {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.back-btn {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Scrollbar Styling */
+.water-history::-webkit-scrollbar,
+.water-settings::-webkit-scrollbar {
+  width: 6px;
+}
+
+.water-history::-webkit-scrollbar-track,
+.water-settings::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.water-history::-webkit-scrollbar-thumb,
+.water-settings::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.water-history::-webkit-scrollbar-thumb:hover,
+.water-settings::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .water-panel {
+    width: 95%;
+    max-height: 95vh;
+  }
+
+  .quick-add-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .water-visual {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .water-bottle {
+    margin: 0 auto;
+  }
+}

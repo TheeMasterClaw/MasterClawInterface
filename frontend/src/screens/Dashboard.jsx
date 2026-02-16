@@ -17,6 +17,7 @@ import TimeTracker from '../components/TimeTracker';
 import MoodTracker from '../components/MoodTracker';
 import BreathingExercise from '../components/BreathingExercise';
 import ProductivityAnalytics from '../components/ProductivityAnalytics';
+import JournalPanel from '../components/JournalPanel';
 import './Dashboard.css';
 
 // Browser detection
@@ -44,6 +45,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showMoodTracker, setShowMoodTracker] = useState(false);
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showProductivityAnalytics, setShowProductivityAnalytics] = useState(false);
+  const [showJournalPanel, setShowJournalPanel] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -268,6 +270,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowMoodTracker(false);
         setShowBreathingExercise(false);
         setShowProductivityAnalytics(false);
+        setShowJournalPanel(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -390,6 +393,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         type: 'command',
         title: 'Command executed',
         description: 'Opened Productivity Analytics panel'
+      });
+      return;
+    }
+
+    if (userText === '/journal') {
+      setShowJournalPanel(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Journal panel'
       });
       return;
     }
@@ -594,6 +609,9 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'productivity':
             setShowProductivityAnalytics(true);
             break;
+          case 'journal':
+            setShowJournalPanel(true);
+            break;
         }
         break;
       case 'settings':
@@ -741,6 +759,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showJournalPanel && (
+        <JournalPanel
+          isOpen={showJournalPanel}
+          onClose={() => setShowJournalPanel(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -784,6 +809,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/mood</strong> – Open Mood Tracker</li>
                   <li><strong>/breathe</strong> – Open Breathing Exercise</li>
                   <li><strong>/productivity</strong> – Open Productivity Analytics</li>
+                  <li><strong>/journal</strong> – Open Journal</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -824,6 +850,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowMoodTracker(true)} title="Mood Tracker">🧠</button>
             <button className="icon-btn" onClick={() => setShowBreathingExercise(true)} title="Breathing Exercise">🫁</button>
             <button className="icon-btn" onClick={() => setShowProductivityAnalytics(true)} title="Productivity Analytics">📈</button>
+            <button className="icon-btn" onClick={() => setShowJournalPanel(true)} title="Journal">📔</button>
           </div>
         </div>
 

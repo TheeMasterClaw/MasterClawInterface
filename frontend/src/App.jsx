@@ -16,6 +16,9 @@ import MoodTracker from './components/MoodTracker';
 import BreathingExercise from './components/BreathingExercise';
 import ProductivityAnalytics from './components/ProductivityAnalytics';
 import NotesPanel from './components/NotesPanel';
+import JournalPanel from './components/JournalPanel';
+import WaterTracker from './components/WaterTracker';
+import QuestLog from './components/QuestLog';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -40,6 +43,9 @@ export default function App() {
   const [showBreathingExercise, setShowBreathingExercise] = useState(false);
   const [showProductivityAnalytics, setShowProductivityAnalytics] = useState(false);
   const [showNotesPanel, setShowNotesPanel] = useState(false);
+  const [showJournalPanel, setShowJournalPanel] = useState(false);
+  const [showWaterTracker, setShowWaterTracker] = useState(false);
+  const [showQuestLog, setShowQuestLog] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -138,6 +144,9 @@ export default function App() {
         onBreathingClick={() => setShowBreathingExercise(true)}
         onProductivityClick={() => setShowProductivityAnalytics(true)}
         onNotesClick={() => setShowNotesPanel(true)}
+        onJournalClick={() => setShowJournalPanel(true)}
+        onWaterClick={() => setShowWaterTracker(true)}
+        onQuestLogClick={() => setShowQuestLog(true)}
       />
 
       {showSettings && (
@@ -230,6 +239,38 @@ export default function App() {
           isOpen={showNotesPanel}
           onClose={() => setShowNotesPanel(false)}
         />
+      )}
+
+      {showJournalPanel && (
+        <JournalPanel
+          isOpen={showJournalPanel}
+          onClose={() => setShowJournalPanel(false)}
+        />
+      )}
+
+      {showWaterTracker && (
+        <WaterTracker
+          isOpen={showWaterTracker}
+          onClose={() => setShowWaterTracker(false)}
+        />
+      )}
+
+      {showQuestLog && (
+        <QuestLog
+          isOpen={showQuestLog}
+          onClose={() => setShowQuestLog(false)}
+        />
+      )}
+
+      {/* Back button for non-welcome screens */}
+      {phase !== 'welcome' && (
+        <button
+          className="back-button"
+          onClick={handleBack}
+          title="Go back"
+        >
+          ←
+        </button>
       )}
 
       {phase === 'welcome' && (
