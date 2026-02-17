@@ -30,6 +30,7 @@ import WeeklyReview from '../components/WeeklyReview';
 import DecisionJournal from '../components/DecisionJournal';
 import IdeaIncubator from '../components/IdeaIncubator';
 import WorkoutTracker from '../components/WorkoutTracker';
+import ChallengeTracker from '../components/ChallengeTracker';
 import './Dashboard.css';
 
 // Browser detection
@@ -70,6 +71,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showDecisionJournal, setShowDecisionJournal] = useState(false);
   const [showIdeaIncubator, setShowIdeaIncubator] = useState(false);
   const [showWorkoutTracker, setShowWorkoutTracker] = useState(false);
+  const [showChallengeTracker, setShowChallengeTracker] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -308,6 +310,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowWeeklyReview(false);
         setShowDecisionJournal(false);
         setShowIdeaIncubator(false);
+        setShowChallengeTracker(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -565,6 +568,17 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       });
       return;
     }
+
+    if (userText === '/challenge' || userText === '/challenges') {
+      setShowChallengeTracker(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Challenge Tracker'
+      });
+      return;
     }
 
     if (userText === '/clear' || userText === '/cls') {
@@ -805,6 +819,10 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'ideas':
             setShowIdeaIncubator(true);
             break;
+          case 'challenge':
+          case 'challenges':
+            setShowChallengeTracker(true);
+            break;
         }
         break;
       case 'settings':
@@ -1029,6 +1047,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showChallengeTracker && (
+        <ChallengeTracker
+          isOpen={showChallengeTracker}
+          onClose={() => setShowChallengeTracker(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1083,6 +1108,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/skills</strong> – Open Skill Tracker</li>
                   <li><strong>/review</strong> – Open Weekly Review</li>
                   <li><strong>/idea</strong> – Open Idea Incubator</li>
+                  <li><strong>/challenge</strong> – Open Challenge Tracker</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1134,6 +1160,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowSkillTracker(true)} title="Skill Tracker">🎯</button>
             <button className="icon-btn" onClick={() => setShowWeeklyReview(true)} title="Weekly Review">🗓️</button>
             <button className="icon-btn" onClick={() => setShowIdeaIncubator(true)} title="Idea Incubator">💡</button>
+            <button className="icon-btn" onClick={() => setShowChallengeTracker(true)} title="Challenge Tracker">🎯</button>
           </div>
         </div>
 
