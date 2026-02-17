@@ -26,6 +26,7 @@ import GratitudeLog from '../components/GratitudeLog';
 import ReadingList from '../components/ReadingList';
 import AmbientMixer from '../components/AmbientMixer';
 import SkillTracker from '../components/SkillTracker';
+import WeeklyReview from '../components/WeeklyReview';
 import './Dashboard.css';
 
 // Browser detection
@@ -62,6 +63,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showReadingList, setShowReadingList] = useState(false);
   const [showAmbientMixer, setShowAmbientMixer] = useState(false);
   const [showSkillTracker, setShowSkillTracker] = useState(false);
+  const [showWeeklyReview, setShowWeeklyReview] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -297,6 +299,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowReadingList(false);
         setShowAmbientMixer(false);
         setShowSkillTracker(false);
+        setShowWeeklyReview(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -531,6 +534,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/review' || userText === '/weekly') {
+      setShowWeeklyReview(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Weekly Review'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -761,6 +776,10 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'learning':
             setShowSkillTracker(true);
             break;
+          case 'weekly-review':
+          case 'review':
+            setShowWeeklyReview(true);
+            break;
         }
         break;
       case 'settings':
@@ -971,6 +990,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showWeeklyReview && (
+        <WeeklyReview
+          isOpen={showWeeklyReview}
+          onClose={() => setShowWeeklyReview(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1023,6 +1049,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/reading</strong> – Open Reading List</li>
                   <li><strong>/ambient</strong> – Open Ambient Sound Mixer</li>
                   <li><strong>/skills</strong> – Open Skill Tracker</li>
+                  <li><strong>/review</strong> – Open Weekly Review</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1072,6 +1099,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowReadingList(true)} title="Reading List">📚</button>
             <button className="icon-btn" onClick={() => setShowAmbientMixer(true)} title="Ambient Sound Mixer">🎧</button>
             <button className="icon-btn" onClick={() => setShowSkillTracker(true)} title="Skill Tracker">🎯</button>
+            <button className="icon-btn" onClick={() => setShowWeeklyReview(true)} title="Weekly Review">🗓️</button>
           </div>
         </div>
 

@@ -28,6 +28,7 @@ import GratitudeLog from './components/GratitudeLog';
 import ReadingList from './components/ReadingList';
 import AmbientMixer from './components/AmbientMixer';
 import SkillTracker from './components/SkillTracker';
+import WeeklyReview from './components/WeeklyReview';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -64,6 +65,7 @@ export default function App() {
   const [showReadingList, setShowReadingList] = useState(false);
   const [showAmbientMixer, setShowAmbientMixer] = useState(false);
   const [showSkillTracker, setShowSkillTracker] = useState(false);
+  const [showWeeklyReview, setShowWeeklyReview] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -174,6 +176,7 @@ export default function App() {
         onReadingListClick={() => setShowReadingList(true)}
         onAmbientMixerClick={() => setShowAmbientMixer(true)}
         onSkillTrackerClick={() => setShowSkillTracker(true)}
+        onWeeklyReviewClick={() => setShowWeeklyReview(true)}
       />
 
       {showSettings && (
@@ -349,6 +352,13 @@ export default function App() {
         <SkillTracker
           isOpen={showSkillTracker}
           onClose={() => setShowSkillTracker(false)}
+        />
+      )}
+
+      {showWeeklyReview && (
+        <WeeklyReview
+          isOpen={showWeeklyReview}
+          onClose={() => setShowWeeklyReview(false)}
         />
       )}
 

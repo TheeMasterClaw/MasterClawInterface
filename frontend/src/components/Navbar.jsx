@@ -28,7 +28,8 @@ export default function Navbar({
   onGratitudeLogClick,
   onReadingListClick,
   onAmbientMixerClick,
-  onSkillTrackerClick
+  onSkillTrackerClick,
+  onWeeklyReviewClick
 }) {
   return (
     <nav className="navbar">
@@ -217,6 +218,13 @@ export default function Navbar({
               title="Skill Tracker"
             >
               🎯
+            </button>
+            <button
+              className="navbar-btn navbar-btn-weekly-review"
+              onClick={onWeeklyReviewClick}
+              title="Weekly Review"
+            >
+              🗓️
             </button>
             <button
               className="navbar-btn navbar-btn-settings"
