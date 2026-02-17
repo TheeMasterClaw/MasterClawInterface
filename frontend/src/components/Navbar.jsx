@@ -21,7 +21,8 @@ export default function Navbar({
   onJournalClick,
   onQuestLogClick,
   onSnippetsClick,
-  onKnowledgeGardenClick
+  onKnowledgeGardenClick,
+  onGoalPlannerClick
 }) {
   return (
     <nav className="navbar">
@@ -50,6 +51,13 @@ export default function Navbar({
         {/* Right section - Tool buttons */}
         {phase !== 'dashboard' && (
           <div className="navbar-right">
+            <button
+              className="navbar-btn navbar-btn-goals"
+              onClick={onGoalPlannerClick}
+              title="Goal Planner"
+            >
+              🏆
+            </button>
             <button
               className="navbar-btn navbar-btn-snippets"
               onClick={onSnippetsClick}

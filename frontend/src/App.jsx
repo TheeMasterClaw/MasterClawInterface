@@ -21,6 +21,7 @@ import WaterTracker from './components/WaterTracker';
 import QuestLog from './components/QuestLog';
 import SnippetsPanel from './components/SnippetsPanel';
 import KnowledgeGarden from './components/KnowledgeGarden';
+import GoalPlanner from './components/GoalPlanner';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -50,6 +51,7 @@ export default function App() {
   const [showQuestLog, setShowQuestLog] = useState(false);
   const [showSnippetsPanel, setShowSnippetsPanel] = useState(false);
   const [showKnowledgeGarden, setShowKnowledgeGarden] = useState(false);
+  const [showGoalPlanner, setShowGoalPlanner] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -153,6 +155,7 @@ export default function App() {
         onQuestLogClick={() => setShowQuestLog(true)}
         onSnippetsClick={() => setShowSnippetsPanel(true)}
         onKnowledgeGardenClick={() => setShowKnowledgeGarden(true)}
+        onGoalPlannerClick={() => setShowGoalPlanner(true)}
       />
 
       {showSettings && (
@@ -279,6 +282,13 @@ export default function App() {
         <KnowledgeGarden
           isOpen={showKnowledgeGarden}
           onClose={() => setShowKnowledgeGarden(false)}
+        />
+      )}
+
+      {showGoalPlanner && (
+        <GoalPlanner
+          isOpen={showGoalPlanner}
+          onClose={() => setShowGoalPlanner(false)}
         />
       )}
 

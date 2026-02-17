@@ -362,6 +362,20 @@
               0 0 30px rgba(139, 92, 246, 0.3);
 }
 
+.navbar-btn-goals {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+}
+
+.navbar-btn-goals:hover {
+  background: rgba(245, 158, 11, 0.3);
+  border-color: rgba(245, 158, 11, 0.5);
+  color: #e2e8f0;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4),
+              0 0 30px rgba(245, 158, 11, 0.3);
+}
+
 /* Responsive adjustments */
 @media (max-width: 1200px) {
   .navbar-right {
