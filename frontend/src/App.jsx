@@ -25,6 +25,7 @@ import GoalPlanner from './components/GoalPlanner';
 import SystemMonitor from './components/SystemMonitor';
 import Whiteboard from './components/Whiteboard';
 import GratitudeLog from './components/GratitudeLog';
+import ReadingList from './components/ReadingList';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -58,6 +59,7 @@ export default function App() {
   const [showSystemMonitor, setShowSystemMonitor] = useState(false);
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const [showGratitudeLog, setShowGratitudeLog] = useState(false);
+  const [showReadingList, setShowReadingList] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -165,6 +167,7 @@ export default function App() {
         onSystemMonitorClick={() => setShowSystemMonitor(true)}
         onWhiteboardClick={() => setShowWhiteboard(true)}
         onGratitudeLogClick={() => setShowGratitudeLog(true)}
+        onReadingListClick={() => setShowReadingList(true)}
       />
 
       {showSettings && (
@@ -319,6 +322,13 @@ export default function App() {
         <GratitudeLog
           isOpen={showGratitudeLog}
           onClose={() => setShowGratitudeLog(false)}
+        />
+      )}
+
+      {showReadingList && (
+        <ReadingList
+          isOpen={showReadingList}
+          onClose={() => setShowReadingList(false)}
         />
       )}
 

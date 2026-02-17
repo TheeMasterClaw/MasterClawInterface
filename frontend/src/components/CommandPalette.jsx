@@ -29,6 +29,7 @@ const COMMANDS = [
   { id: 'system', label: 'System Monitor', icon: '🖥️', shortcut: '/system', action: 'panel', target: 'system' },
   { id: 'whiteboard', label: 'Whiteboard', icon: '🎨', shortcut: '/whiteboard', action: 'panel', target: 'whiteboard' },
   { id: 'gratitude', label: 'Gratitude Log', icon: '🙏', shortcut: '/gratitude', action: 'panel', target: 'gratitude' },
+  { id: 'reading', label: 'Reading List', icon: '📚', shortcut: '/reading', action: 'panel', target: 'reading' },
   { id: 'theme-dark', label: 'Switch to Dark Theme', icon: '🌙', shortcut: 'theme dark', action: 'theme', value: 'dark' },
   { id: 'theme-light', label: 'Switch to Light Theme', icon: '☀️', shortcut: 'theme light', action: 'theme', value: 'light' },
   { id: 'voice', label: 'Voice Input', icon: '🎤', shortcut: 'voice', action: 'voice' },

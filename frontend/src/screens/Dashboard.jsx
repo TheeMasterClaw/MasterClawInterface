@@ -23,6 +23,7 @@ import KnowledgeGarden from '../components/KnowledgeGarden';
 import SystemMonitor from '../components/SystemMonitor';
 import Whiteboard from '../components/Whiteboard';
 import GratitudeLog from '../components/GratitudeLog';
+import ReadingList from '../components/ReadingList';
 import './Dashboard.css';
 
 // Browser detection
@@ -56,6 +57,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showSystemMonitor, setShowSystemMonitor] = useState(false);
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const [showGratitudeLog, setShowGratitudeLog] = useState(false);
+  const [showReadingList, setShowReadingList] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -288,6 +290,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowSystemMonitor(false);
         setShowWhiteboard(false);
         setShowGratitudeLog(false);
+        setShowReadingList(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -482,6 +485,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         type: 'command',
         title: 'Command executed',
         description: 'Opened Gratitude Log'
+      });
+      return;
+    }
+
+    if (userText === '/reading' || userText === '/books') {
+      setShowReadingList(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Reading List'
       });
       return;
     }
@@ -704,6 +719,10 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'gratitude':
             setShowGratitudeLog(true);
             break;
+          case 'reading':
+          case 'books':
+            setShowReadingList(true);
+            break;
         }
         break;
       case 'settings':
@@ -893,6 +912,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showReadingList && (
+        <ReadingList
+          isOpen={showReadingList}
+          onClose={() => setShowReadingList(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -942,6 +968,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/system</strong> – Open System Monitor</li>
                   <li><strong>/whiteboard</strong> – Open Whiteboard</li>
                   <li><strong>/gratitude</strong> – Open Gratitude Log</li>
+                  <li><strong>/reading</strong> – Open Reading List</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -988,6 +1015,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowSystemMonitor(true)} title="System Monitor">🖥️</button>
             <button className="icon-btn" onClick={() => setShowWhiteboard(true)} title="Whiteboard">🎨</button>
             <button className="icon-btn" onClick={() => setShowGratitudeLog(true)} title="Gratitude Log">🙏</button>
+            <button className="icon-btn" onClick={() => setShowReadingList(true)} title="Reading List">📚</button>
           </div>
         </div>
 
