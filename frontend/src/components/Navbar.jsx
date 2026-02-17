@@ -23,7 +23,8 @@ export default function Navbar({
   onSnippetsClick,
   onKnowledgeGardenClick,
   onGoalPlannerClick,
-  onSystemMonitorClick
+  onSystemMonitorClick,
+  onWhiteboardClick
 }) {
   return (
     <nav className="navbar">
@@ -58,6 +59,13 @@ export default function Navbar({
               title="System Monitor"
             >
               🖥️
+            </button>
+            <button
+              className="navbar-btn navbar-btn-whiteboard"
+              onClick={onWhiteboardClick}
+              title="Whiteboard"
+            >
+              🎨
             </button>
             <button
               className="navbar-btn navbar-btn-goals"

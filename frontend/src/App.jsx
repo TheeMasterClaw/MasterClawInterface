@@ -23,6 +23,7 @@ import SnippetsPanel from './components/SnippetsPanel';
 import KnowledgeGarden from './components/KnowledgeGarden';
 import GoalPlanner from './components/GoalPlanner';
 import SystemMonitor from './components/SystemMonitor';
+import Whiteboard from './components/Whiteboard';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -54,6 +55,7 @@ export default function App() {
   const [showKnowledgeGarden, setShowKnowledgeGarden] = useState(false);
   const [showGoalPlanner, setShowGoalPlanner] = useState(false);
   const [showSystemMonitor, setShowSystemMonitor] = useState(false);
+  const [showWhiteboard, setShowWhiteboard] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -159,6 +161,7 @@ export default function App() {
         onKnowledgeGardenClick={() => setShowKnowledgeGarden(true)}
         onGoalPlannerClick={() => setShowGoalPlanner(true)}
         onSystemMonitorClick={() => setShowSystemMonitor(true)}
+        onWhiteboardClick={() => setShowWhiteboard(true)}
       />
 
       {showSettings && (
@@ -299,6 +302,13 @@ export default function App() {
         <SystemMonitor
           isOpen={showSystemMonitor}
           onClose={() => setShowSystemMonitor(false)}
+        />
+      )}
+
+      {showWhiteboard && (
+        <Whiteboard
+          isOpen={showWhiteboard}
+          onClose={() => setShowWhiteboard(false)}
         />
       )}
 
