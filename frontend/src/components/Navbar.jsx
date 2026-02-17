@@ -29,7 +29,9 @@ export default function Navbar({
   onReadingListClick,
   onAmbientMixerClick,
   onSkillTrackerClick,
-  onWeeklyReviewClick
+  onWeeklyReviewClick,
+  onDecisionJournalClick,
+  onIdeaIncubatorClick
 }) {
   return (
     <nav className="navbar">
@@ -225,6 +227,13 @@ export default function Navbar({
               title="Weekly Review"
             >
               🗓️
+            </button>
+            <button
+              className="navbar-btn navbar-btn-idea-incubator"
+              onClick={onIdeaIncubatorClick}
+              title="Idea Incubator"
+            >
+              💡
             </button>
             <button
               className="navbar-btn navbar-btn-settings"

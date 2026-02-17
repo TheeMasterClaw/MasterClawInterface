@@ -27,6 +27,8 @@ import ReadingList from '../components/ReadingList';
 import AmbientMixer from '../components/AmbientMixer';
 import SkillTracker from '../components/SkillTracker';
 import WeeklyReview from '../components/WeeklyReview';
+import DecisionJournal from '../components/DecisionJournal';
+import IdeaIncubator from '../components/IdeaIncubator';
 import './Dashboard.css';
 
 // Browser detection
@@ -64,6 +66,8 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showAmbientMixer, setShowAmbientMixer] = useState(false);
   const [showSkillTracker, setShowSkillTracker] = useState(false);
   const [showWeeklyReview, setShowWeeklyReview] = useState(false);
+  const [showDecisionJournal, setShowDecisionJournal] = useState(false);
+  const [showIdeaIncubator, setShowIdeaIncubator] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -300,6 +304,8 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowAmbientMixer(false);
         setShowSkillTracker(false);
         setShowWeeklyReview(false);
+        setShowDecisionJournal(false);
+        setShowIdeaIncubator(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -546,6 +552,19 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/idea' || userText === '/ideas') {
+      setShowIdeaIncubator(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Idea Incubator'
+      });
+      return;
+    }
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -780,6 +799,10 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'review':
             setShowWeeklyReview(true);
             break;
+          case 'idea':
+          case 'ideas':
+            setShowIdeaIncubator(true);
+            break;
         }
         break;
       case 'settings':
@@ -997,6 +1020,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showIdeaIncubator && (
+        <IdeaIncubator
+          isOpen={showIdeaIncubator}
+          onClose={() => setShowIdeaIncubator(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1050,6 +1080,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/ambient</strong> – Open Ambient Sound Mixer</li>
                   <li><strong>/skills</strong> – Open Skill Tracker</li>
                   <li><strong>/review</strong> – Open Weekly Review</li>
+                  <li><strong>/idea</strong> – Open Idea Incubator</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1100,6 +1131,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowAmbientMixer(true)} title="Ambient Sound Mixer">🎧</button>
             <button className="icon-btn" onClick={() => setShowSkillTracker(true)} title="Skill Tracker">🎯</button>
             <button className="icon-btn" onClick={() => setShowWeeklyReview(true)} title="Weekly Review">🗓️</button>
+            <button className="icon-btn" onClick={() => setShowIdeaIncubator(true)} title="Idea Incubator">💡</button>
           </div>
         </div>
 

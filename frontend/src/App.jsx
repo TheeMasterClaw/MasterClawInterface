@@ -29,6 +29,8 @@ import ReadingList from './components/ReadingList';
 import AmbientMixer from './components/AmbientMixer';
 import SkillTracker from './components/SkillTracker';
 import WeeklyReview from './components/WeeklyReview';
+import DecisionJournal from './components/DecisionJournal';
+import IdeaIncubator from './components/IdeaIncubator';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -66,6 +68,8 @@ export default function App() {
   const [showAmbientMixer, setShowAmbientMixer] = useState(false);
   const [showSkillTracker, setShowSkillTracker] = useState(false);
   const [showWeeklyReview, setShowWeeklyReview] = useState(false);
+  const [showDecisionJournal, setShowDecisionJournal] = useState(false);
+  const [showIdeaIncubator, setShowIdeaIncubator] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -177,6 +181,8 @@ export default function App() {
         onAmbientMixerClick={() => setShowAmbientMixer(true)}
         onSkillTrackerClick={() => setShowSkillTracker(true)}
         onWeeklyReviewClick={() => setShowWeeklyReview(true)}
+        onDecisionJournalClick={() => setShowDecisionJournal(true)}
+        onIdeaIncubatorClick={() => setShowIdeaIncubator(true)}
       />
 
       {showSettings && (
@@ -359,6 +365,20 @@ export default function App() {
         <WeeklyReview
           isOpen={showWeeklyReview}
           onClose={() => setShowWeeklyReview(false)}
+        />
+      )}
+
+      {showDecisionJournal && (
+        <DecisionJournal
+          isOpen={showDecisionJournal}
+          onClose={() => setShowDecisionJournal(false)}
+        />
+      )}
+
+      {showIdeaIncubator && (
+        <IdeaIncubator
+          isOpen={showIdeaIncubator}
+          onClose={() => setShowIdeaIncubator(false)}
         />
       )}
 
