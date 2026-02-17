@@ -20,6 +20,7 @@ import ProductivityAnalytics from '../components/ProductivityAnalytics';
 import JournalPanel from '../components/JournalPanel';
 import SnippetsPanel from '../components/SnippetsPanel';
 import KnowledgeGarden from '../components/KnowledgeGarden';
+import SystemMonitor from '../components/SystemMonitor';
 import './Dashboard.css';
 
 // Browser detection
@@ -50,6 +51,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showJournalPanel, setShowJournalPanel] = useState(false);
   const [showSnippetsPanel, setShowSnippetsPanel] = useState(false);
   const [showKnowledgeGarden, setShowKnowledgeGarden] = useState(false);
+  const [showSystemMonitor, setShowSystemMonitor] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -279,6 +281,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowJournalPanel(false);
         setShowSnippetsPanel(false);
         setShowKnowledgeGarden(false);
+        setShowSystemMonitor(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -437,6 +440,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         type: 'command',
         title: 'Command executed',
         description: 'Opened Knowledge Garden'
+      });
+      return;
+    }
+
+    if (userText === '/system') {
+      setShowSystemMonitor(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened System Monitor'
       });
       return;
     }
@@ -650,6 +665,9 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'knowledge':
             setShowKnowledgeGarden(true);
             break;
+          case 'system':
+            setShowSystemMonitor(true);
+            break;
         }
         break;
       case 'settings':
@@ -818,6 +836,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showSystemMonitor && (
+        <SystemMonitor
+          isOpen={showSystemMonitor}
+          onClose={() => setShowSystemMonitor(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -864,6 +889,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/journal</strong> – Open Journal</li>
                   <li><strong>/snippets</strong> – Open Snippets Vault</li>
                   <li><strong>/garden</strong> – Open Knowledge Garden</li>
+                  <li><strong>/system</strong> – Open System Monitor</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -907,6 +933,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowJournalPanel(true)} title="Journal">📔</button>
             <button className="icon-btn" onClick={() => setShowSnippetsPanel(true)} title="Snippets Vault">📦</button>
             <button className="icon-btn" onClick={() => setShowKnowledgeGarden(true)} title="Knowledge Garden">🌱</button>
+            <button className="icon-btn" onClick={() => setShowSystemMonitor(true)} title="System Monitor">🖥️</button>
           </div>
         </div>
 

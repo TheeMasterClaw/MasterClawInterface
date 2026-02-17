@@ -26,6 +26,7 @@ const COMMANDS = [
   { id: 'journal', label: 'Journal', icon: '📔', shortcut: '/journal', action: 'panel', target: 'journal' },
   { id: 'snippets', label: 'Snippets Vault', icon: '📦', shortcut: '/snippets', action: 'panel', target: 'snippets' },
   { id: 'knowledge', label: 'Knowledge Garden', icon: '🌱', shortcut: '/garden', action: 'panel', target: 'knowledge' },
+  { id: 'system', label: 'System Monitor', icon: '🖥️', shortcut: '/system', action: 'panel', target: 'system' },
   { id: 'theme-dark', label: 'Switch to Dark Theme', icon: '🌙', shortcut: 'theme dark', action: 'theme', value: 'dark' },
   { id: 'theme-light', label: 'Switch to Light Theme', icon: '☀️', shortcut: 'theme light', action: 'theme', value: 'light' },
   { id: 'voice', label: 'Voice Input', icon: '🎤', shortcut: 'voice', action: 'voice' },

@@ -22,7 +22,8 @@ export default function Navbar({
   onQuestLogClick,
   onSnippetsClick,
   onKnowledgeGardenClick,
-  onGoalPlannerClick
+  onGoalPlannerClick,
+  onSystemMonitorClick
 }) {
   return (
     <nav className="navbar">
@@ -51,6 +52,13 @@ export default function Navbar({
         {/* Right section - Tool buttons */}
         {phase !== 'dashboard' && (
           <div className="navbar-right">
+            <button
+              className="navbar-btn navbar-btn-system"
+              onClick={onSystemMonitorClick}
+              title="System Monitor"
+            >
+              🖥️
+            </button>
             <button
               className="navbar-btn navbar-btn-goals"
               onClick={onGoalPlannerClick}

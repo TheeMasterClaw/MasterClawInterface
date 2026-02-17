@@ -12,9 +12,10 @@ import { chatRouter } from './routes/chat.js';
 import { timeRouter } from './routes/time.js';
 import { skillsRouter } from './routes/skills.js';
 import { snippetsRouter } from './routes/snippets.js';
+import systemRouter from './routes/system.js';
 import { errorHandler, sanitizeBody, authenticateApiToken } from './middleware/security.js';
 import { requestTimeout, timeoutFor } from './middleware/timeout.js';
-import { auditLogMiddleware, getRecentAuditLogs, getAuditStats, logSecurityEvent, SecurityEventType, Severity } from './middleware/auditLog.js';
+import { auditLogMiddleware, getRecentAuditLogs, getAuditStats, logSecurityEvent, logCspViolation, SecurityEventType, Severity } from './middleware/auditLog.js';
 import { createSocketServer } from './socket.js';
 
 dotenv.config();
@@ -27,6 +28,7 @@ const PORT = process.env.PORT || 3001;
 app.use(auditLogMiddleware);
 
 // Security middleware: Helmet for security headers
+// CSP report-uri is configured to enable browsers to report violations
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -34,6 +36,7 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
+      reportUri: '/security/csp-report',
     },
   },
   crossOriginEmbedderPolicy: false, // Allow for development flexibility
@@ -61,6 +64,21 @@ const chatLimiter = rateLimit({
     error: 'Chat rate limit exceeded. Please slow down.',
     code: 'CHAT_RATE_LIMIT_EXCEEDED'
   }
+});
+
+// CSP report rate limiter - more permissive but still protected against abuse
+// Browsers can send many reports, so we allow more requests
+const cspReportLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 50, // 50 CSP reports per minute per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'CSP report rate limit exceeded.',
+    code: 'CSP_REPORT_RATE_LIMIT_EXCEEDED'
+  },
+  // Skip rate limiting for health checks
+  skip: (req) => req.path === '/health'
 });
 
 app.use(limiter);
@@ -124,6 +142,7 @@ app.use('/tts', ttsRouter);
 app.use('/chat', chatRouter);
 app.use('/skills', skillsRouter);
 app.use('/snippets', snippetsRouter);
+app.use('/system', systemRouter);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -166,6 +185,95 @@ app.get('/security/audit/stats', (req, res) => {
   res.json(stats);
 });
 
+// =============================================================================
+// CSP (Content Security Policy) Violation Reporting
+// =============================================================================
+
+/**
+ * POST /security/csp-report
+ * Receive CSP violation reports from browsers
+ * Browsers automatically send reports when CSP violations occur
+ * This helps detect XSS attacks and misconfigurations
+ */
+app.post('/security/csp-report', cspReportLimiter, express.json({ limit: '50kb' }), (req, res) => {
+  // Browsers send CSP reports with a 'csp-report' field
+  const report = req.body?.['csp-report'] || req.body;
+  
+  if (!report || typeof report !== 'object') {
+    return res.status(400).json({ 
+      error: 'Invalid CSP report format',
+      code: 'INVALID_CSP_REPORT'
+    });
+  }
+  
+  // Log the CSP violation
+  const eventId = logCspViolation(report, req);
+  
+  // Return 204 No Content - browsers don't expect a response body
+  res.status(204).send();
+});
+
+/**
+ * GET /security/csp-violations
+ * Retrieve recent CSP violations for security monitoring
+ * Filterable by severity and time range
+ */
+app.get('/security/csp-violations', (req, res) => {
+  const { lines = 100, severity, since, blockedUri } = req.query;
+  
+  const options = {
+    lines: parseInt(lines, 10) || 100,
+    eventType: SecurityEventType.CSP_VIOLATION,
+    severity,
+    since
+  };
+  
+  let violations = getRecentAuditLogs(options);
+  
+  // Additional filter for blocked URI pattern
+  if (blockedUri) {
+    violations = violations.filter(v => 
+      v.details?.blocked_uri?.includes(blockedUri)
+    );
+  }
+  
+  // Calculate summary statistics
+  const summary = {
+    total: violations.length,
+    by_severity: {},
+    by_directive: {},
+    common_blocked_uris: {}
+  };
+  
+  for (const v of violations) {
+    const sev = v.severity;
+    const directive = v.details?.violated_directive || 'unknown';
+    const blockedUri = v.details?.blocked_uri || 'unknown';
+    
+    summary.by_severity[sev] = (summary.by_severity[sev] || 0) + 1;
+    summary.by_directive[directive] = (summary.by_directive[directive] || 0) + 1;
+    summary.common_blocked_uris[blockedUri] = (summary.common_blocked_uris[blockedUri] || 0) + 1;
+  }
+  
+  res.json({
+    count: violations.length,
+    summary,
+    violations: violations.map(v => ({
+      event_id: v.event_id,
+      timestamp: v.timestamp,
+      severity: v.severity,
+      document_uri: v.details?.document_uri,
+      blocked_uri: v.details?.blocked_uri,
+      violated_directive: v.details?.violated_directive,
+      source_file: v.details?.source_file,
+      line_number: v.details?.line_number,
+      client_ip: v.client_ip,
+      user_agent: v.user_agent
+    })),
+    filters: { severity, since, blockedUri }
+  });
+});
+
 // Log system startup for security audit
 logSecurityEvent(
   SecurityEventType.SYSTEM_STARTUP,
@@ -185,11 +293,18 @@ app.get('/', (req, res) => {
       apiAuth: !!process.env.MASTERCLAW_API_TOKEN,
       bodySizeLimit: GENERAL_BODY_LIMIT,
       requestTimeout: REQUEST_TIMEOUT_MS,
-      auditLogging: true
+      auditLogging: true,
+      cspReporting: true
     },
     audit: {
-      endpoints: ['/security/audit', '/security/audit/logs', '/security/audit/stats'],
-      description: 'Security audit logging and monitoring'
+      endpoints: [
+        '/security/audit',
+        '/security/audit/logs',
+        '/security/audit/stats',
+        '/security/csp-report',
+        '/security/csp-violations'
+      ],
+      description: 'Security audit logging, CSP violation reporting, and monitoring'
     }
   });
 });
