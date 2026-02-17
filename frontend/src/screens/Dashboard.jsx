@@ -31,6 +31,7 @@ import DecisionJournal from '../components/DecisionJournal';
 import IdeaIncubator from '../components/IdeaIncubator';
 import WorkoutTracker from '../components/WorkoutTracker';
 import ChallengeTracker from '../components/ChallengeTracker';
+import ExpenseTracker from '../components/ExpenseTracker';
 import './Dashboard.css';
 
 // Browser detection
@@ -72,6 +73,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showIdeaIncubator, setShowIdeaIncubator] = useState(false);
   const [showWorkoutTracker, setShowWorkoutTracker] = useState(false);
   const [showChallengeTracker, setShowChallengeTracker] = useState(false);
+  const [showExpenseTracker, setShowExpenseTracker] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -311,6 +313,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowDecisionJournal(false);
         setShowIdeaIncubator(false);
         setShowChallengeTracker(false);
+        setShowExpenseTracker(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -581,6 +584,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/expense' || userText === '/expenses' || userText === '/finance') {
+      setShowExpenseTracker(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Expense Tracker'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -823,6 +838,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'challenges':
             setShowChallengeTracker(true);
             break;
+          case 'expense':
+          case 'expenses':
+          case 'finance':
+            setShowExpenseTracker(true);
+            break;
         }
         break;
       case 'settings':
@@ -1054,6 +1074,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showExpenseTracker && (
+        <ExpenseTracker
+          isOpen={showExpenseTracker}
+          onClose={() => setShowExpenseTracker(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1109,6 +1136,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/review</strong> – Open Weekly Review</li>
                   <li><strong>/idea</strong> – Open Idea Incubator</li>
                   <li><strong>/challenge</strong> – Open Challenge Tracker</li>
+                  <li><strong>/expense</strong> – Open Expense Tracker</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1161,6 +1189,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowWeeklyReview(true)} title="Weekly Review">🗓️</button>
             <button className="icon-btn" onClick={() => setShowIdeaIncubator(true)} title="Idea Incubator">💡</button>
             <button className="icon-btn" onClick={() => setShowChallengeTracker(true)} title="Challenge Tracker">🎯</button>
+            <button className="icon-btn" onClick={() => setShowExpenseTracker(true)} title="Expense Tracker">💰</button>
           </div>
         </div>
 

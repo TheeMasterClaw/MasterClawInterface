@@ -33,7 +33,8 @@ export default function Navbar({
   onDecisionJournalClick,
   onIdeaIncubatorClick,
   onWorkoutTrackerClick,
-  onSleepTrackerClick
+  onSleepTrackerClick,
+  onExpenseTrackerClick
 }) {
   return (
     <nav className="navbar">
@@ -250,6 +251,13 @@ export default function Navbar({
               title="Sleep Tracker"
             >
               🌙
+            </button>
+            <button
+              className="navbar-btn navbar-btn-expense"
+              onClick={onExpenseTrackerClick}
+              title="Expense Tracker"
+            >
+              💰
             </button>
             <button
               className="navbar-btn navbar-btn-settings"
