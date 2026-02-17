@@ -12,6 +12,7 @@ import { chatRouter } from './routes/chat.js';
 import { timeRouter } from './routes/time.js';
 import { skillsRouter } from './routes/skills.js';
 import { snippetsRouter } from './routes/snippets.js';
+import { skillsTrackerRouter } from './routes/skillsTracker.js';
 import systemRouter from './routes/system.js';
 import { errorHandler, sanitizeBody, authenticateApiToken } from './middleware/security.js';
 import { requestTimeout, timeoutFor } from './middleware/timeout.js';
@@ -143,6 +144,7 @@ app.use('/chat', chatRouter);
 app.use('/skills', skillsRouter);
 app.use('/snippets', snippetsRouter);
 app.use('/system', systemRouter);
+app.use('/skills-tracker', skillsTrackerRouter);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

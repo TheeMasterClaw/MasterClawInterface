@@ -26,6 +26,8 @@ import SystemMonitor from './components/SystemMonitor';
 import Whiteboard from './components/Whiteboard';
 import GratitudeLog from './components/GratitudeLog';
 import ReadingList from './components/ReadingList';
+import AmbientMixer from './components/AmbientMixer';
+import SkillTracker from './components/SkillTracker';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -60,6 +62,8 @@ export default function App() {
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const [showGratitudeLog, setShowGratitudeLog] = useState(false);
   const [showReadingList, setShowReadingList] = useState(false);
+  const [showAmbientMixer, setShowAmbientMixer] = useState(false);
+  const [showSkillTracker, setShowSkillTracker] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -168,6 +172,8 @@ export default function App() {
         onWhiteboardClick={() => setShowWhiteboard(true)}
         onGratitudeLogClick={() => setShowGratitudeLog(true)}
         onReadingListClick={() => setShowReadingList(true)}
+        onAmbientMixerClick={() => setShowAmbientMixer(true)}
+        onSkillTrackerClick={() => setShowSkillTracker(true)}
       />
 
       {showSettings && (
@@ -329,6 +335,20 @@ export default function App() {
         <ReadingList
           isOpen={showReadingList}
           onClose={() => setShowReadingList(false)}
+        />
+      )}
+
+      {showAmbientMixer && (
+        <AmbientMixer
+          isOpen={showAmbientMixer}
+          onClose={() => setShowAmbientMixer(false)}
+        />
+      )}
+
+      {showSkillTracker && (
+        <SkillTracker
+          isOpen={showSkillTracker}
+          onClose={() => setShowSkillTracker(false)}
         />
       )}
 

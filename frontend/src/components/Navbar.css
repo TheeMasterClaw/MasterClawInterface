@@ -151,6 +151,20 @@
 }
 
 /* Individual button colors */
+.navbar-btn-skills {
+  background: rgba(236, 72, 153, 0.2);
+  border-color: rgba(236, 72, 153, 0.3);
+  color: #f9a8d4;
+}
+
+.navbar-btn-skills:hover {
+  background: rgba(236, 72, 153, 0.3);
+  border-color: rgba(236, 72, 153, 0.5);
+  color: #e2e8f0;
+  box-shadow: 0 8px 24px rgba(236, 72, 153, 0.4),
+              0 0 30px rgba(236, 72, 153, 0.3);
+}
+
 .navbar-btn-settings {
   background: rgba(99, 102, 241, 0.2);
   border-color: rgba(99, 102, 241, 0.3);

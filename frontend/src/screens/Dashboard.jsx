@@ -24,6 +24,8 @@ import SystemMonitor from '../components/SystemMonitor';
 import Whiteboard from '../components/Whiteboard';
 import GratitudeLog from '../components/GratitudeLog';
 import ReadingList from '../components/ReadingList';
+import AmbientMixer from '../components/AmbientMixer';
+import SkillTracker from '../components/SkillTracker';
 import './Dashboard.css';
 
 // Browser detection
@@ -58,6 +60,8 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const [showGratitudeLog, setShowGratitudeLog] = useState(false);
   const [showReadingList, setShowReadingList] = useState(false);
+  const [showAmbientMixer, setShowAmbientMixer] = useState(false);
+  const [showSkillTracker, setShowSkillTracker] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -291,6 +295,8 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowWhiteboard(false);
         setShowGratitudeLog(false);
         setShowReadingList(false);
+        setShowAmbientMixer(false);
+        setShowSkillTracker(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -497,6 +503,30 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         type: 'command',
         title: 'Command executed',
         description: 'Opened Reading List'
+      });
+      return;
+    }
+
+    if (userText === '/ambient' || userText === '/sound' || userText === '/mixer') {
+      setShowAmbientMixer(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Ambient Sound Mixer'
+      });
+      return;
+    }
+
+    if (userText === '/skills' || userText === '/learning') {
+      setShowSkillTracker(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Skill Tracker'
       });
       return;
     }
@@ -723,6 +753,14 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'books':
             setShowReadingList(true);
             break;
+          case 'ambient':
+          case 'mixer':
+            setShowAmbientMixer(true);
+            break;
+          case 'skills':
+          case 'learning':
+            setShowSkillTracker(true);
+            break;
         }
         break;
       case 'settings':
@@ -919,6 +957,20 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showAmbientMixer && (
+        <AmbientMixer
+          isOpen={showAmbientMixer}
+          onClose={() => setShowAmbientMixer(false)}
+        />
+      )}
+
+      {showSkillTracker && (
+        <SkillTracker
+          isOpen={showSkillTracker}
+          onClose={() => setShowSkillTracker(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -969,6 +1021,8 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/whiteboard</strong> – Open Whiteboard</li>
                   <li><strong>/gratitude</strong> – Open Gratitude Log</li>
                   <li><strong>/reading</strong> – Open Reading List</li>
+                  <li><strong>/ambient</strong> – Open Ambient Sound Mixer</li>
+                  <li><strong>/skills</strong> – Open Skill Tracker</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1016,6 +1070,8 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowWhiteboard(true)} title="Whiteboard">🎨</button>
             <button className="icon-btn" onClick={() => setShowGratitudeLog(true)} title="Gratitude Log">🙏</button>
             <button className="icon-btn" onClick={() => setShowReadingList(true)} title="Reading List">📚</button>
+            <button className="icon-btn" onClick={() => setShowAmbientMixer(true)} title="Ambient Sound Mixer">🎧</button>
+            <button className="icon-btn" onClick={() => setShowSkillTracker(true)} title="Skill Tracker">🎯</button>
           </div>
         </div>
 

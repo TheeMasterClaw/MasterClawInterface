@@ -288,6 +288,195 @@ export function getTimeStats(period = 'today') {
   };
 }
 
+// ============================================================================
+// SKILL TRACKER - Helper functions for learning/skills management
+// ============================================================================
+
+export function querySkills(filter = {}) {
+  if (!db.skills) db.skills = [];
+  let skills = db.skills;
+  
+  if (filter.category) {
+    skills = skills.filter(s => s.category?.toLowerCase() === filter.category.toLowerCase());
+  }
+  
+  if (filter.status) {
+    skills = skills.filter(s => s.status === filter.status);
+  }
+  
+  if (filter.search) {
+    const searchLower = filter.search.toLowerCase();
+    skills = skills.filter(s => 
+      s.name?.toLowerCase().includes(searchLower) ||
+      s.description?.toLowerCase().includes(searchLower)
+    );
+  }
+  
+  return skills.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
+
+export function getSkill(id) {
+  if (!db.skills) db.skills = [];
+  return db.skills.find(s => s.id === id);
+}
+
+export function createSkill(skill) {
+  if (!db.skills) db.skills = [];
+  
+  const newSkill = {
+    id: genId(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: 'active',
+    ...skill
+  };
+  
+  db.skills.push(newSkill);
+  saveDb();
+  return newSkill;
+}
+
+export function updateSkill(id, updates) {
+  if (!db.skills) db.skills = [];
+  
+  const skill = getSkill(id);
+  if (!skill) return null;
+  
+  Object.assign(skill, updates, { updatedAt: new Date().toISOString() });
+  saveDb();
+  return skill;
+}
+
+export function deleteSkill(id) {
+  if (!db.skills) db.skills = [];
+  db.skills = db.skills.filter(s => s.id !== id);
+  
+  // Also delete associated practice sessions
+  if (db.practice_sessions) {
+    db.practice_sessions = db.practice_sessions.filter(ps => ps.skillId !== id);
+  }
+  
+  saveDb();
+}
+
+export function queryPracticeSessions(filter = {}) {
+  if (!db.practice_sessions) db.practice_sessions = [];
+  let sessions = db.practice_sessions;
+  
+  if (filter.skillId) {
+    sessions = sessions.filter(ps => ps.skillId === filter.skillId);
+  }
+  
+  if (filter.after) {
+    const afterDate = new Date(filter.after);
+    sessions = sessions.filter(ps => new Date(ps.date) >= afterDate);
+  }
+  
+  if (filter.before) {
+    const beforeDate = new Date(filter.before);
+    sessions = sessions.filter(ps => new Date(ps.date) <= beforeDate);
+  }
+  
+  return sessions.sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+export function getPracticeSession(id) {
+  if (!db.practice_sessions) db.practice_sessions = [];
+  return db.practice_sessions.find(ps => ps.id === id);
+}
+
+export function createPracticeSession(session) {
+  if (!db.practice_sessions) db.practice_sessions = [];
+  
+  const newSession = {
+    id: genId(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    ...session
+  };
+  
+  db.practice_sessions.push(newSession);
+  saveDb();
+  return newSession;
+}
+
+export function updatePracticeSession(id, updates) {
+  if (!db.practice_sessions) db.practice_sessions = [];
+  
+  const session = getPracticeSession(id);
+  if (!session) return null;
+  
+  Object.assign(session, updates, { updatedAt: new Date().toISOString() });
+  saveDb();
+  return session;
+}
+
+export function deletePracticeSession(id) {
+  if (!db.practice_sessions) db.practice_sessions = [];
+  db.practice_sessions = db.practice_sessions.filter(ps => ps.id !== id);
+  saveDb();
+}
+
+export function getSkillStats() {
+  if (!db.skills) db.skills = [];
+  if (!db.practice_sessions) db.practice_sessions = [];
+  
+  const totalSkills = db.skills.length;
+  const activeSkills = db.skills.filter(s => s.status === 'active').length;
+  const completedSkills = db.skills.filter(s => s.status === 'completed').length;
+  
+  const totalSessions = db.practice_sessions.length;
+  const totalMinutes = db.practice_sessions.reduce((acc, s) => acc + (s.duration || 0), 0);
+  const totalHours = Math.round(totalMinutes / 60 * 10) / 10;
+  
+  // Calculate this week's stats
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  
+  const thisWeekSessions = db.practice_sessions.filter(s => 
+    new Date(s.date) >= weekAgo
+  );
+  const thisWeekMinutes = thisWeekSessions.reduce((acc, s) => acc + (s.duration || 0), 0);
+  
+  // Group by category
+  const byCategory = db.skills.reduce((acc, skill) => {
+    const category = skill.category || 'Other';
+    const sessions = db.practice_sessions.filter(ps => ps.skillId === skill.id);
+    const minutes = sessions.reduce((sum, s) => sum + (s.duration || 0), 0);
+    
+    if (!acc[category]) {
+      acc[category] = { skills: 0, hours: 0, sessions: 0 };
+    }
+    acc[category].skills++;
+    acc[category].hours += Math.round(minutes / 60 * 10) / 10;
+    acc[category].sessions += sessions.length;
+    
+    return acc;
+  }, {});
+  
+  // Group by level
+  const byLevel = db.skills.reduce((acc, skill) => {
+    const level = skill.currentLevel || 'beginner';
+    acc[level] = (acc[level] || 0) + 1;
+    return acc;
+  }, {});
+  
+  return {
+    totalSkills,
+    activeSkills,
+    completedSkills,
+    totalSessions,
+    totalHours,
+    totalMinutes,
+    thisWeekSessions: thisWeekSessions.length,
+    thisWeekHours: Math.round(thisWeekMinutes / 60 * 10) / 10,
+    thisWeekMinutes,
+    averageSessionMinutes: totalSessions > 0 ? Math.round(totalMinutes / totalSessions) : 0,
+    byCategory,
+    byLevel
+  };
+}
+
 // Helper functions for chat history
 export function createChatMessage(message) {
   const newMessage = {

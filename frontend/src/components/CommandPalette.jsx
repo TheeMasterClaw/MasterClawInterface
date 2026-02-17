@@ -30,6 +30,8 @@ const COMMANDS = [
   { id: 'whiteboard', label: 'Whiteboard', icon: '🎨', shortcut: '/whiteboard', action: 'panel', target: 'whiteboard' },
   { id: 'gratitude', label: 'Gratitude Log', icon: '🙏', shortcut: '/gratitude', action: 'panel', target: 'gratitude' },
   { id: 'reading', label: 'Reading List', icon: '📚', shortcut: '/reading', action: 'panel', target: 'reading' },
+  { id: 'ambient', label: 'Ambient Sound Mixer', icon: '🎧', shortcut: '/ambient', action: 'panel', target: 'ambient' },
+  { id: 'skills', label: 'Skill Tracker', icon: '🎯', shortcut: '/skills', action: 'panel', target: 'skills' },
   { id: 'theme-dark', label: 'Switch to Dark Theme', icon: '🌙', shortcut: 'theme dark', action: 'theme', value: 'dark' },
   { id: 'theme-light', label: 'Switch to Light Theme', icon: '☀️', shortcut: 'theme light', action: 'theme', value: 'light' },
   { id: 'voice', label: 'Voice Input', icon: '🎤', shortcut: 'voice', action: 'voice' },

@@ -26,7 +26,9 @@ export default function Navbar({
   onSystemMonitorClick,
   onWhiteboardClick,
   onGratitudeLogClick,
-  onReadingListClick
+  onReadingListClick,
+  onAmbientMixerClick,
+  onSkillTrackerClick
 }) {
   return (
     <nav className="navbar">
@@ -201,6 +203,20 @@ export default function Navbar({
               title="Health Monitor"
             >
               🏥
+            </button>
+            <button
+              className="navbar-btn navbar-btn-ambient"
+              onClick={onAmbientMixerClick}
+              title="Ambient Sound Mixer"
+            >
+              🎧
+            </button>
+            <button
+              className="navbar-btn navbar-btn-skills"
+              onClick={onSkillTrackerClick}
+              title="Skill Tracker"
+            >
+              🎯
             </button>
             <button
               className="navbar-btn navbar-btn-settings"
