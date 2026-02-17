@@ -31,7 +31,9 @@ export default function Navbar({
   onSkillTrackerClick,
   onWeeklyReviewClick,
   onDecisionJournalClick,
-  onIdeaIncubatorClick
+  onIdeaIncubatorClick,
+  onWorkoutTrackerClick,
+  onSleepTrackerClick
 }) {
   return (
     <nav className="navbar">
@@ -234,6 +236,20 @@ export default function Navbar({
               title="Idea Incubator"
             >
               💡
+            </button>
+            <button
+              className="navbar-btn navbar-btn-workout"
+              onClick={onWorkoutTrackerClick}
+              title="Workout Tracker"
+            >
+              💪
+            </button>
+            <button
+              className="navbar-btn navbar-btn-sleep"
+              onClick={onSleepTrackerClick}
+              title="Sleep Tracker"
+            >
+              🌙
             </button>
             <button
               className="navbar-btn navbar-btn-settings"

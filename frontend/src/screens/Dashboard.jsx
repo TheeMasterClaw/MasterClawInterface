@@ -29,6 +29,7 @@ import SkillTracker from '../components/SkillTracker';
 import WeeklyReview from '../components/WeeklyReview';
 import DecisionJournal from '../components/DecisionJournal';
 import IdeaIncubator from '../components/IdeaIncubator';
+import WorkoutTracker from '../components/WorkoutTracker';
 import './Dashboard.css';
 
 // Browser detection
@@ -68,6 +69,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showWeeklyReview, setShowWeeklyReview] = useState(false);
   const [showDecisionJournal, setShowDecisionJournal] = useState(false);
   const [showIdeaIncubator, setShowIdeaIncubator] = useState(false);
+  const [showWorkoutTracker, setShowWorkoutTracker] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);

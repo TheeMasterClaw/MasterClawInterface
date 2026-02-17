@@ -31,6 +31,8 @@ import SkillTracker from './components/SkillTracker';
 import WeeklyReview from './components/WeeklyReview';
 import DecisionJournal from './components/DecisionJournal';
 import IdeaIncubator from './components/IdeaIncubator';
+import WorkoutTracker from './components/WorkoutTracker';
+import SleepTracker from './components/SleepTracker';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -70,6 +72,8 @@ export default function App() {
   const [showWeeklyReview, setShowWeeklyReview] = useState(false);
   const [showDecisionJournal, setShowDecisionJournal] = useState(false);
   const [showIdeaIncubator, setShowIdeaIncubator] = useState(false);
+  const [showWorkoutTracker, setShowWorkoutTracker] = useState(false);
+  const [showSleepTracker, setShowSleepTracker] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -183,6 +187,8 @@ export default function App() {
         onWeeklyReviewClick={() => setShowWeeklyReview(true)}
         onDecisionJournalClick={() => setShowDecisionJournal(true)}
         onIdeaIncubatorClick={() => setShowIdeaIncubator(true)}
+        onWorkoutTrackerClick={() => setShowWorkoutTracker(true)}
+        onSleepTrackerClick={() => setShowSleepTracker(true)}
       />
 
       {showSettings && (
@@ -379,6 +385,20 @@ export default function App() {
         <IdeaIncubator
           isOpen={showIdeaIncubator}
           onClose={() => setShowIdeaIncubator(false)}
+        />
+      )}
+
+      {showWorkoutTracker && (
+        <WorkoutTracker
+          isOpen={showWorkoutTracker}
+          onClose={() => setShowWorkoutTracker(false)}
+        />
+      )}
+
+      {showSleepTracker && (
+        <SleepTracker
+          isOpen={showSleepTracker}
+          onClose={() => setShowSleepTracker(false)}
         />
       )}
 
