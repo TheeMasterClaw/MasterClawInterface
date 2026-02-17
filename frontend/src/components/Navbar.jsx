@@ -24,7 +24,8 @@ export default function Navbar({
   onKnowledgeGardenClick,
   onGoalPlannerClick,
   onSystemMonitorClick,
-  onWhiteboardClick
+  onWhiteboardClick,
+  onGratitudeLogClick
 }) {
   return (
     <nav className="navbar">
@@ -94,6 +95,13 @@ export default function Navbar({
               title="Quest Log"
             >
               🗡️
+            </button>
+            <button
+              className="navbar-btn navbar-btn-gratitude"
+              onClick={onGratitudeLogClick}
+              title="Gratitude Log"
+            >
+              🙏
             </button>
             <button
               className="navbar-btn navbar-btn-journal"

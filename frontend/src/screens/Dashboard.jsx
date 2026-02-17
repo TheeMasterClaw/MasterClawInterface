@@ -22,6 +22,7 @@ import SnippetsPanel from '../components/SnippetsPanel';
 import KnowledgeGarden from '../components/KnowledgeGarden';
 import SystemMonitor from '../components/SystemMonitor';
 import Whiteboard from '../components/Whiteboard';
+import GratitudeLog from '../components/GratitudeLog';
 import './Dashboard.css';
 
 // Browser detection
@@ -54,6 +55,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showKnowledgeGarden, setShowKnowledgeGarden] = useState(false);
   const [showSystemMonitor, setShowSystemMonitor] = useState(false);
   const [showWhiteboard, setShowWhiteboard] = useState(false);
+  const [showGratitudeLog, setShowGratitudeLog] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -285,6 +287,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowKnowledgeGarden(false);
         setShowSystemMonitor(false);
         setShowWhiteboard(false);
+        setShowGratitudeLog(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -467,6 +470,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         type: 'command',
         title: 'Command executed',
         description: 'Opened Whiteboard'
+      });
+      return;
+    }
+
+    if (userText === '/gratitude' || userText === '/grateful') {
+      setShowGratitudeLog(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Gratitude Log'
       });
       return;
     }
@@ -686,6 +701,9 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'whiteboard':
             setShowWhiteboard(true);
             break;
+          case 'gratitude':
+            setShowGratitudeLog(true);
+            break;
         }
         break;
       case 'settings':
@@ -868,6 +886,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showGratitudeLog && (
+        <GratitudeLog
+          isOpen={showGratitudeLog}
+          onClose={() => setShowGratitudeLog(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -916,6 +941,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/garden</strong> – Open Knowledge Garden</li>
                   <li><strong>/system</strong> – Open System Monitor</li>
                   <li><strong>/whiteboard</strong> – Open Whiteboard</li>
+                  <li><strong>/gratitude</strong> – Open Gratitude Log</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -961,6 +987,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowKnowledgeGarden(true)} title="Knowledge Garden">🌱</button>
             <button className="icon-btn" onClick={() => setShowSystemMonitor(true)} title="System Monitor">🖥️</button>
             <button className="icon-btn" onClick={() => setShowWhiteboard(true)} title="Whiteboard">🎨</button>
+            <button className="icon-btn" onClick={() => setShowGratitudeLog(true)} title="Gratitude Log">🙏</button>
           </div>
         </div>
 

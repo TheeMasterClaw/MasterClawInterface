@@ -24,6 +24,7 @@ import KnowledgeGarden from './components/KnowledgeGarden';
 import GoalPlanner from './components/GoalPlanner';
 import SystemMonitor from './components/SystemMonitor';
 import Whiteboard from './components/Whiteboard';
+import GratitudeLog from './components/GratitudeLog';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -56,6 +57,7 @@ export default function App() {
   const [showGoalPlanner, setShowGoalPlanner] = useState(false);
   const [showSystemMonitor, setShowSystemMonitor] = useState(false);
   const [showWhiteboard, setShowWhiteboard] = useState(false);
+  const [showGratitudeLog, setShowGratitudeLog] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -162,6 +164,7 @@ export default function App() {
         onGoalPlannerClick={() => setShowGoalPlanner(true)}
         onSystemMonitorClick={() => setShowSystemMonitor(true)}
         onWhiteboardClick={() => setShowWhiteboard(true)}
+        onGratitudeLogClick={() => setShowGratitudeLog(true)}
       />
 
       {showSettings && (
@@ -309,6 +312,13 @@ export default function App() {
         <Whiteboard
           isOpen={showWhiteboard}
           onClose={() => setShowWhiteboard(false)}
+        />
+      )}
+
+      {showGratitudeLog && (
+        <GratitudeLog
+          isOpen={showGratitudeLog}
+          onClose={() => setShowGratitudeLog(false)}
         />
       )}
 

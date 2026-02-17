@@ -80,6 +80,7 @@ export const SecurityEventType = {
   RATE_LIMIT_EXCEEDED: 'security:rate_limit_exceeded',
   INVALID_INPUT: 'security:invalid_input',
   SUSPICIOUS_ACTIVITY: 'security:suspicious_activity',
+  CSP_VIOLATION: 'security:csp_violation',
   
   // Configuration events
   CONFIG_CHANGE: 'config:change',
@@ -468,6 +469,46 @@ export function getAuditStats(since = null) {
   }
   
   return stats;
+}
+
+/**
+ * Log a CSP (Content Security Policy) violation
+ * CSP violations indicate potential XSS attacks or resource loading issues
+ * 
+ * @param {Object} violation - CSP violation report from browser
+ * @param {Object} req - Express request object
+ * @returns {string} Event ID
+ */
+export function logCspViolation(violation, req) {
+  // Determine severity based on violation type
+  let severity = Severity.LOW;
+  
+  // Blocked scripts are higher severity (potential XSS)
+  if (violation['blocked-uri']?.includes('script') || 
+      violation['violated-directive']?.includes('script-src')) {
+    severity = Severity.HIGH;
+  }
+  
+  // Inline script violations are suspicious
+  if (violation['violated-directive']?.includes('inline')) {
+    severity = Severity.MEDIUM;
+  }
+  
+  return logSecurityEvent(
+    SecurityEventType.CSP_VIOLATION,
+    severity,
+    {
+      document_uri: violation['document-uri'],
+      referrer: violation['referrer'],
+      blocked_uri: violation['blocked-uri'],
+      violated_directive: violation['violated-directive'],
+      original_policy: violation['original-policy'],
+      source_file: violation['source-file'],
+      line_number: violation['line-number'],
+      column_number: violation['column-number'],
+    },
+    { req }
+  );
 }
 
 export default {

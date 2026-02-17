@@ -28,6 +28,7 @@ const COMMANDS = [
   { id: 'knowledge', label: 'Knowledge Garden', icon: '🌱', shortcut: '/garden', action: 'panel', target: 'knowledge' },
   { id: 'system', label: 'System Monitor', icon: '🖥️', shortcut: '/system', action: 'panel', target: 'system' },
   { id: 'whiteboard', label: 'Whiteboard', icon: '🎨', shortcut: '/whiteboard', action: 'panel', target: 'whiteboard' },
+  { id: 'gratitude', label: 'Gratitude Log', icon: '🙏', shortcut: '/gratitude', action: 'panel', target: 'gratitude' },
   { id: 'theme-dark', label: 'Switch to Dark Theme', icon: '🌙', shortcut: 'theme dark', action: 'theme', value: 'dark' },
   { id: 'theme-light', label: 'Switch to Light Theme', icon: '☀️', shortcut: 'theme light', action: 'theme', value: 'light' },
   { id: 'voice', label: 'Voice Input', icon: '🎤', shortcut: 'voice', action: 'voice' },
