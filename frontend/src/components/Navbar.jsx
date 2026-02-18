@@ -61,7 +61,8 @@ export default function Navbar({
   onCodePlaygroundClick,
   onInspirationWallClick,
   onLearningPathClick,
-  onReminderClick
+  onReminderClick,
+  onConversationHistoryClick
 }) {
   return (
     <nav className="navbar">
@@ -474,6 +475,13 @@ export default function Navbar({
               title="Smart Reminders"
             >
               ⏰
+            </button>
+            <button
+              className="navbar-btn navbar-btn-conversation-history"
+              onClick={onConversationHistoryClick}
+              title="Conversation History"
+            >
+              💬
             </button>
             <button
               className="navbar-btn navbar-btn-settings"

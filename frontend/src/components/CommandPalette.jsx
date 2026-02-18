@@ -46,6 +46,7 @@ const COMMANDS = [
   { id: 'time-capsule', label: 'Time Capsule', icon: '⏳', shortcut: '/capsule', action: 'panel', target: 'capsule' },
   { id: 'digital-detox', label: 'Digital Detox Tracker', icon: '🧘', shortcut: '/detox', action: 'panel', target: 'detox' },
   { id: 'reminder', label: 'Smart Reminders', icon: '⏰', shortcut: '/reminder', action: 'panel', target: 'reminder' },
+  { id: 'conversation-history', label: 'Conversation History', icon: '💬', shortcut: '/history', action: 'panel', target: 'history' },
   { id: 'theme-dark', label: 'Switch to Dark Theme', icon: '🌙', shortcut: 'theme dark', action: 'theme', value: 'dark' },
   { id: 'theme-light', label: 'Switch to Light Theme', icon: '☀️', shortcut: 'theme light', action: 'theme', value: 'light' },
   { id: 'voice', label: 'Voice Input', icon: '🎤', shortcut: 'voice', action: 'voice' },

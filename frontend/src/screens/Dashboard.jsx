@@ -47,6 +47,7 @@ import DigitalDetoxTracker from '../components/DigitalDetoxTracker';
 import ReflectionRoulette from '../components/ReflectionRoulette';
 import CodePlayground from '../components/CodePlayground';
 import ReminderManager from '../components/ReminderManager';
+import ConversationHistory from '../components/ConversationHistory';
 import './Dashboard.css';
 
 // Browser detection
@@ -104,6 +105,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showReflectionRoulette, setShowReflectionRoulette] = useState(false);
   const [showCodePlayground, setShowCodePlayground] = useState(false);
   const [showReminderManager, setShowReminderManager] = useState(false);
+  const [showConversationHistory, setShowConversationHistory] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -359,6 +361,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowReflectionRoulette(false);
         setShowCodePlayground(false);
         setShowReminderManager(false);
+        setShowConversationHistory(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -785,6 +788,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/history' || userText === '/chat' || userText === '/conversations') {
+      setShowConversationHistory(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Conversation History'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1083,6 +1098,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'reminders':
           case 'alarm':
             setShowReminderManager(true);
+            break;
+          case 'history':
+          case 'chat':
+          case 'conversations':
+            setShowConversationHistory(true);
             break;
         }
         break;
@@ -1424,6 +1444,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showConversationHistory && (
+        <ConversationHistory
+          isOpen={showConversationHistory}
+          onClose={() => setShowConversationHistory(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1491,6 +1518,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/capsule</strong> – Open Time Capsule</li>
                   <li><strong>/detox</strong> – Open Digital Detox Tracker</li>
                   <li><strong>/reminder</strong> – Open Smart Reminder Manager</li>
+                  <li><strong>/history</strong> – Open Conversation History</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
