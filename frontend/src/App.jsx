@@ -57,6 +57,7 @@ import DigitalDetoxTracker from './components/DigitalDetoxTracker';
 import TaskBoard from './components/TaskBoard';
 import ReflectionRoulette from './components/ReflectionRoulette';
 import QuickCapture from './components/QuickCapture';
+import CodePlayground from './components/CodePlayground';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -122,6 +123,7 @@ export default function App() {
   const [showTaskBoard, setShowTaskBoard] = useState(false);
   const [showReflectionRoulette, setShowReflectionRoulette] = useState(false);
   const [showQuickCapture, setShowQuickCapture] = useState(false);
+  const [showCodePlayground, setShowCodePlayground] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -261,6 +263,7 @@ export default function App() {
         onTaskBoardClick={() => setShowTaskBoard(true)}
         onReflectionRouletteClick={() => setShowReflectionRoulette(true)}
         onQuickCaptureClick={() => setShowQuickCapture(true)}
+        onCodePlaygroundClick={() => setShowCodePlayground(true)}
       />
 
       {showSettings && (
@@ -639,6 +642,13 @@ export default function App() {
         <QuickCapture
           isOpen={showQuickCapture}
           onClose={() => setShowQuickCapture(false)}
+        />
+      )}
+
+      {showCodePlayground && (
+        <CodePlayground
+          isOpen={showCodePlayground}
+          onClose={() => setShowCodePlayground(false)}
         />
       )}
 

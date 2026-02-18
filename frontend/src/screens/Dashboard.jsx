@@ -45,6 +45,7 @@ import StudyPlanner from '../components/StudyPlanner';
 import TimeCapsule from '../components/TimeCapsule';
 import DigitalDetoxTracker from '../components/DigitalDetoxTracker';
 import ReflectionRoulette from '../components/ReflectionRoulette';
+import CodePlayground from '../components/CodePlayground';
 import './Dashboard.css';
 
 // Browser detection
@@ -100,6 +101,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showTimeCapsule, setShowTimeCapsule] = useState(false);
   const [showDigitalDetoxTracker, setShowDigitalDetoxTracker] = useState(false);
   const [showReflectionRoulette, setShowReflectionRoulette] = useState(false);
+  const [showCodePlayground, setShowCodePlayground] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -1387,6 +1389,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showCodePlayground && (
+        <CodePlayground
+          isOpen={showCodePlayground}
+          onClose={() => setShowCodePlayground(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1517,6 +1526,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowTimeCapsule(true)} title="Time Capsule">⏳</button>
             <button className="icon-btn" onClick={() => setShowDigitalDetoxTracker(true)} title="Digital Detox Tracker">🧘</button>
             <button className="icon-btn" onClick={() => setShowReflectionRoulette(true)} title="Reflection Roulette">🎲</button>
+            <button className="icon-btn" onClick={() => setShowCodePlayground(true)} title="Code Playground">💻</button>
           </div>
         </div>
 

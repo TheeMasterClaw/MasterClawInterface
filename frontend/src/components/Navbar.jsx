@@ -57,7 +57,8 @@ export default function Navbar({
   onDigitalDetoxTrackerClick,
   onTaskBoardClick,
   onReflectionRouletteClick,
-  onQuickCaptureClick
+  onQuickCaptureClick,
+  onCodePlaygroundClick
 }) {
   return (
     <nav className="navbar">
@@ -442,6 +443,13 @@ export default function Navbar({
               title="Energy Tracker"
             >
               ⚡
+            </button>
+            <button
+              className="navbar-btn navbar-btn-code-playground"
+              onClick={onCodePlaygroundClick}
+              title="Code Playground"
+            >
+              💻
             </button>
             <button
               className="navbar-btn navbar-btn-settings"
