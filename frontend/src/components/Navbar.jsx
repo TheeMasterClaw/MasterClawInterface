@@ -39,7 +39,8 @@ export default function Navbar({
   onDailyBriefingClick,
   onMeetingCompanionClick,
   onProjectDashboardClick,
-  onSubscriptionTrackerClick
+  onSubscriptionTrackerClick,
+  onVisionBoardClick
 }) {
   return (
     <nav className="navbar">
@@ -109,6 +110,13 @@ export default function Navbar({
               title="Project Dashboard"
             >
               📊
+            </button>
+            <button
+              className="navbar-btn navbar-btn-vision"
+              onClick={onVisionBoardClick}
+              title="Vision Board"
+            >
+              🖼️
             </button>
             <button
               className="navbar-btn navbar-btn-snippets"

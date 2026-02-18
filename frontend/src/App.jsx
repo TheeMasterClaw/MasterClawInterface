@@ -39,6 +39,7 @@ import SleepTracker from './components/SleepTracker';
 import ExpenseTracker from './components/ExpenseTracker';
 import EnergyTracker from './components/EnergyTracker';
 import SubscriptionTracker from './components/SubscriptionTracker';
+import VisionBoard from './components/VisionBoard';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -86,6 +87,7 @@ export default function App() {
   const [showMeetingCompanion, setShowMeetingCompanion] = useState(false);
   const [showProjectDashboard, setShowProjectDashboard] = useState(false);
   const [showSubscriptionTracker, setShowSubscriptionTracker] = useState(false);
+  const [showVisionBoard, setShowVisionBoard] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -207,6 +209,7 @@ export default function App() {
         onMeetingCompanionClick={() => setShowMeetingCompanion(true)}
         onProjectDashboardClick={() => setShowProjectDashboard(true)}
         onSubscriptionTrackerClick={() => setShowSubscriptionTracker(true)}
+        onVisionBoardClick={() => setShowVisionBoard(true)}
       />
 
       {showSettings && (
@@ -459,6 +462,13 @@ export default function App() {
         <SubscriptionTracker
           isOpen={showSubscriptionTracker}
           onClose={() => setShowSubscriptionTracker(false)}
+        />
+      )}
+
+      {showVisionBoard && (
+        <VisionBoard
+          isOpen={showVisionBoard}
+          onClose={() => setShowVisionBoard(false)}
         />
       )}
 

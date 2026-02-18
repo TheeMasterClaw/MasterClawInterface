@@ -35,6 +35,7 @@ import ExpenseTracker from '../components/ExpenseTracker';
 import EnergyTracker from '../components/EnergyTracker';
 import MeetingCompanion from '../components/MeetingCompanion';
 import ProjectDashboard from '../components/ProjectDashboard';
+import VisionBoard from '../components/VisionBoard';
 import './Dashboard.css';
 
 // Browser detection
@@ -80,6 +81,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showEnergyTracker, setShowEnergyTracker] = useState(false);
   const [showMeetingCompanion, setShowMeetingCompanion] = useState(false);
   const [showProjectDashboard, setShowProjectDashboard] = useState(false);
+  const [showVisionBoard, setShowVisionBoard] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -323,6 +325,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowEnergyTracker(false);
         setShowMeetingCompanion(false);
         setShowProjectDashboard(false);
+        setShowVisionBoard(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -629,6 +632,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/vision' || userText === '/visions' || userText === '/board') {
+      setShowVisionBoard(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Vision Board'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -887,6 +902,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'project':
             setShowProjectDashboard(true);
             break;
+          case 'vision':
+          case 'visions':
+          case 'board':
+            setShowVisionBoard(true);
+            break;
         }
         break;
       case 'settings':
@@ -1139,6 +1159,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showVisionBoard && (
+        <VisionBoard
+          isOpen={showVisionBoard}
+          onClose={() => setShowVisionBoard(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1197,6 +1224,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/expense</strong> – Open Expense Tracker</li>
                   <li><strong>/meeting</strong> – Open Meeting Companion</li>
                   <li><strong>/projects</strong> – Open Project Dashboard</li>
+                  <li><strong>/vision</strong> – Open Vision Board</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1252,6 +1280,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowExpenseTracker(true)} title="Expense Tracker">💰</button>
             <button className="icon-btn" onClick={() => setShowMeetingCompanion(true)} title="Meeting Companion">🤝</button>
             <button className="icon-btn" onClick={() => setShowProjectDashboard(true)} title="Project Dashboard">📊</button>
+            <button className="icon-btn" onClick={() => setShowVisionBoard(true)} title="Vision Board">🖼️</button>
           </div>
         </div>
 
