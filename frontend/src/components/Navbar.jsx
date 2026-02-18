@@ -37,7 +37,8 @@ export default function Navbar({
   onExpenseTrackerClick,
   onEnergyTrackerClick,
   onDailyBriefingClick,
-  onMeetingCompanionClick
+  onMeetingCompanionClick,
+  onProjectDashboardClick
 }) {
   return (
     <nav className="navbar">
@@ -100,6 +101,13 @@ export default function Navbar({
               title="Goal Planner"
             >
               🏆
+            </button>
+            <button
+              className="navbar-btn navbar-btn-projects"
+              onClick={onProjectDashboardClick}
+              title="Project Dashboard"
+            >
+              📊
             </button>
             <button
               className="navbar-btn navbar-btn-snippets"

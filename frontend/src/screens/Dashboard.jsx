@@ -34,6 +34,7 @@ import ChallengeTracker from '../components/ChallengeTracker';
 import ExpenseTracker from '../components/ExpenseTracker';
 import EnergyTracker from '../components/EnergyTracker';
 import MeetingCompanion from '../components/MeetingCompanion';
+import ProjectDashboard from '../components/ProjectDashboard';
 import './Dashboard.css';
 
 // Browser detection
@@ -78,6 +79,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showExpenseTracker, setShowExpenseTracker] = useState(false);
   const [showEnergyTracker, setShowEnergyTracker] = useState(false);
   const [showMeetingCompanion, setShowMeetingCompanion] = useState(false);
+  const [showProjectDashboard, setShowProjectDashboard] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -320,6 +322,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowExpenseTracker(false);
         setShowEnergyTracker(false);
         setShowMeetingCompanion(false);
+        setShowProjectDashboard(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -614,6 +617,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/projects' || userText === '/project') {
+      setShowProjectDashboard(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Project Dashboard'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -868,6 +883,10 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'meetings':
             setShowMeetingCompanion(true);
             break;
+          case 'projects':
+          case 'project':
+            setShowProjectDashboard(true);
+            break;
         }
         break;
       case 'settings':
@@ -1113,6 +1132,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showProjectDashboard && (
+        <ProjectDashboard
+          isOpen={showProjectDashboard}
+          onClose={() => setShowProjectDashboard(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1170,6 +1196,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/challenge</strong> – Open Challenge Tracker</li>
                   <li><strong>/expense</strong> – Open Expense Tracker</li>
                   <li><strong>/meeting</strong> – Open Meeting Companion</li>
+                  <li><strong>/projects</strong> – Open Project Dashboard</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1224,6 +1251,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowChallengeTracker(true)} title="Challenge Tracker">🎯</button>
             <button className="icon-btn" onClick={() => setShowExpenseTracker(true)} title="Expense Tracker">💰</button>
             <button className="icon-btn" onClick={() => setShowMeetingCompanion(true)} title="Meeting Companion">🤝</button>
+            <button className="icon-btn" onClick={() => setShowProjectDashboard(true)} title="Project Dashboard">📊</button>
           </div>
         </div>
 
