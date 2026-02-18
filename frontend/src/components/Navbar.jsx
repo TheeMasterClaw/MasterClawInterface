@@ -38,7 +38,8 @@ export default function Navbar({
   onEnergyTrackerClick,
   onDailyBriefingClick,
   onMeetingCompanionClick,
-  onProjectDashboardClick
+  onProjectDashboardClick,
+  onSubscriptionTrackerClick
 }) {
   return (
     <nav className="navbar">
@@ -283,6 +284,13 @@ export default function Navbar({
               title="Expense Tracker"
             >
               💰
+            </button>
+            <button
+              className="navbar-btn navbar-btn-subscription"
+              onClick={onSubscriptionTrackerClick}
+              title="Subscription Tracker"
+            >
+              💳
             </button>
             <button
               className="navbar-btn navbar-btn-energy"
