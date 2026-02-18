@@ -44,7 +44,8 @@ export default function Navbar({
   onPasswordVaultClick,
   onLifeBalanceWheelClick,
   onRelationshipNetworkClick,
-  onDeepWorkTrackerClick
+  onDeepWorkTrackerClick,
+  onDailyWinsClick
 }) {
   return (
     <nav className="navbar">
@@ -177,6 +178,13 @@ export default function Navbar({
               title="Gratitude Log"
             >
               🙏
+            </button>
+            <button
+              className="navbar-btn navbar-btn-daily-wins"
+              onClick={onDailyWinsClick}
+              title="Daily Wins"
+            >
+              🏆
             </button>
             <button
               className="navbar-btn navbar-btn-reading"

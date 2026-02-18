@@ -44,6 +44,7 @@ import PasswordVault from './components/PasswordVault';
 import LifeBalanceWheel from './components/LifeBalanceWheel';
 import RelationshipNetwork from './components/RelationshipNetwork';
 import DeepWorkTracker from './components/DeepWorkTracker';
+import DailyWins from './components/DailyWins';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -96,6 +97,7 @@ export default function App() {
   const [showLifeBalanceWheel, setShowLifeBalanceWheel] = useState(false);
   const [showRelationshipNetwork, setShowRelationshipNetwork] = useState(false);
   const [showDeepWorkTracker, setShowDeepWorkTracker] = useState(false);
+  const [showDailyWins, setShowDailyWins] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -222,6 +224,7 @@ export default function App() {
         onLifeBalanceWheelClick={() => setShowLifeBalanceWheel(true)}
         onRelationshipNetworkClick={() => setShowRelationshipNetwork(true)}
         onDeepWorkTrackerClick={() => setShowDeepWorkTracker(true)}
+        onDailyWinsClick={() => setShowDailyWins(true)}
       />
 
       {showSettings && (
@@ -509,6 +512,13 @@ export default function App() {
         <DeepWorkTracker
           isOpen={showDeepWorkTracker}
           onClose={() => setShowDeepWorkTracker(false)}
+        />
+      )}
+
+      {showDailyWins && (
+        <DailyWins
+          isOpen={showDailyWins}
+          onClose={() => setShowDailyWins(false)}
         />
       )}
 
