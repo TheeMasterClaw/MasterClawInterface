@@ -46,6 +46,7 @@ import RelationshipNetwork from './components/RelationshipNetwork';
 import DeepWorkTracker from './components/DeepWorkTracker';
 import DailyWins from './components/DailyWins';
 import TravelPlanner from './components/TravelPlanner';
+import PromptLibrary from './components/PromptLibrary';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -100,6 +101,7 @@ export default function App() {
   const [showDeepWorkTracker, setShowDeepWorkTracker] = useState(false);
   const [showDailyWins, setShowDailyWins] = useState(false);
   const [showTravelPlanner, setShowTravelPlanner] = useState(false);
+  const [showPromptLibrary, setShowPromptLibrary] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -228,6 +230,7 @@ export default function App() {
         onDeepWorkTrackerClick={() => setShowDeepWorkTracker(true)}
         onDailyWinsClick={() => setShowDailyWins(true)}
         onTravelPlannerClick={() => setShowTravelPlanner(true)}
+        onPromptLibraryClick={() => setShowPromptLibrary(true)}
       />
 
       {showSettings && (
@@ -529,6 +532,13 @@ export default function App() {
         <TravelPlanner
           isOpen={showTravelPlanner}
           onClose={() => setShowTravelPlanner(false)}
+        />
+      )}
+
+      {showPromptLibrary && (
+        <PromptLibrary
+          isOpen={showPromptLibrary}
+          onClose={() => setShowPromptLibrary(false)}
         />
       )}
 

@@ -41,6 +41,7 @@ const COMMANDS = [
   { id: 'password-vault', label: 'Password Vault', icon: '🔐', shortcut: '/vault', action: 'panel', target: 'vault' },
   { id: 'life-balance', label: 'Life Balance Wheel', icon: '⚖️', shortcut: '/balance', action: 'panel', target: 'balance' },
   { id: 'deepwork', label: 'Deep Work Tracker', icon: '🎯', shortcut: '/deepwork', action: 'panel', target: 'deepwork' },
+  { id: 'prompt-library', label: 'Prompt Library', icon: '📚', shortcut: '/prompts', action: 'panel', target: 'prompts' },
   { id: 'theme-dark', label: 'Switch to Dark Theme', icon: '🌙', shortcut: 'theme dark', action: 'theme', value: 'dark' },
   { id: 'theme-light', label: 'Switch to Light Theme', icon: '☀️', shortcut: 'theme light', action: 'theme', value: 'light' },
   { id: 'voice', label: 'Voice Input', icon: '🎤', shortcut: 'voice', action: 'voice' },

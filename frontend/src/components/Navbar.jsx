@@ -46,7 +46,8 @@ export default function Navbar({
   onRelationshipNetworkClick,
   onDeepWorkTrackerClick,
   onDailyWinsClick,
-  onTravelPlannerClick
+  onTravelPlannerClick,
+  onPromptLibraryClick
 }) {
   return (
     <nav className="navbar">
@@ -193,6 +194,13 @@ export default function Navbar({
               title="Travel Planner"
             >
               🧳
+            </button>
+            <button
+              className="navbar-btn navbar-btn-prompts"
+              onClick={onPromptLibraryClick}
+              title="Prompt Library"
+            >
+              📚
             </button>
             <button
               className="navbar-btn navbar-btn-reading"
