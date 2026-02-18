@@ -460,6 +460,20 @@
               0 0 30px rgba(14, 165, 233, 0.3);
 }
 
+.navbar-btn-voice {
+  background: rgba(236, 72, 153, 0.2);
+  border-color: rgba(236, 72, 153, 0.3);
+  color: #f9a8d4;
+}
+
+.navbar-btn-voice:hover {
+  background: rgba(236, 72, 153, 0.3);
+  border-color: rgba(236, 72, 153, 0.5);
+  color: #e2e8f0;
+  box-shadow: 0 8px 24px rgba(236, 72, 153, 0.4),
+              0 0 30px rgba(236, 72, 153, 0.3);
+}
+
 /* Responsive adjustments */
 @media (max-width: 1200px) {
   .navbar-right {

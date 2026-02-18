@@ -50,6 +50,7 @@ import PromptLibrary from './components/PromptLibrary';
 import ContentTracker from './components/ContentTracker';
 import MealTracker from './components/MealTracker';
 import StudyPlanner from './components/StudyPlanner';
+import VoiceMemos from './components/VoiceMemos';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -108,6 +109,7 @@ export default function App() {
   const [showContentTracker, setShowContentTracker] = useState(false);
   const [showMealTracker, setShowMealTracker] = useState(false);
   const [showStudyPlanner, setShowStudyPlanner] = useState(false);
+  const [showVoiceMemos, setShowVoiceMemos] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -240,6 +242,7 @@ export default function App() {
         onContentTrackerClick={() => setShowContentTracker(true)}
         onMealTrackerClick={() => setShowMealTracker(true)}
         onStudyPlannerClick={() => setShowStudyPlanner(true)}
+        onVoiceMemosClick={() => setShowVoiceMemos(true)}
       />
 
       {showSettings && (
@@ -569,6 +572,13 @@ export default function App() {
         <StudyPlanner
           isOpen={showStudyPlanner}
           onClose={() => setShowStudyPlanner(false)}
+        />
+      )}
+
+      {showVoiceMemos && (
+        <VoiceMemos
+          isOpen={showVoiceMemos}
+          onClose={() => setShowVoiceMemos(false)}
         />
       )}
 

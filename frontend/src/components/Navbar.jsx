@@ -50,7 +50,8 @@ export default function Navbar({
   onPromptLibraryClick,
   onContentTrackerClick,
   onMealTrackerClick,
-  onStudyPlannerClick
+  onStudyPlannerClick,
+  onVoiceMemosClick
 }) {
   return (
     <nav className="navbar">
@@ -358,6 +359,13 @@ export default function Navbar({
               title="Study Planner"
             >
               📚
+            </button>
+            <button
+              className="navbar-btn navbar-btn-voice"
+              onClick={onVoiceMemosClick}
+              title="Voice Memos"
+            >
+              🎙️
             </button>
             <button
               className="navbar-btn navbar-btn-sleep"
