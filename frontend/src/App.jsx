@@ -42,6 +42,7 @@ import SubscriptionTracker from './components/SubscriptionTracker';
 import VisionBoard from './components/VisionBoard';
 import PasswordVault from './components/PasswordVault';
 import LifeBalanceWheel from './components/LifeBalanceWheel';
+import RelationshipNetwork from './components/RelationshipNetwork';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -92,6 +93,7 @@ export default function App() {
   const [showVisionBoard, setShowVisionBoard] = useState(false);
   const [showPasswordVault, setShowPasswordVault] = useState(false);
   const [showLifeBalanceWheel, setShowLifeBalanceWheel] = useState(false);
+  const [showRelationshipNetwork, setShowRelationshipNetwork] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -216,6 +218,7 @@ export default function App() {
         onVisionBoardClick={() => setShowVisionBoard(true)}
         onPasswordVaultClick={() => setShowPasswordVault(true)}
         onLifeBalanceWheelClick={() => setShowLifeBalanceWheel(true)}
+        onRelationshipNetworkClick={() => setShowRelationshipNetwork(true)}
       />
 
       {showSettings && (
@@ -489,6 +492,13 @@ export default function App() {
         <LifeBalanceWheel
           isOpen={showLifeBalanceWheel}
           onClose={() => setShowLifeBalanceWheel(false)}
+        />
+      )}
+
+      {showRelationshipNetwork && (
+        <RelationshipNetwork
+          isOpen={showRelationshipNetwork}
+          onClose={() => setShowRelationshipNetwork(false)}
         />
       )}
 

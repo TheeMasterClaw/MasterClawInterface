@@ -38,6 +38,7 @@ import ProjectDashboard from '../components/ProjectDashboard';
 import VisionBoard from '../components/VisionBoard';
 import PasswordVault from '../components/PasswordVault';
 import LifeBalanceWheel from '../components/LifeBalanceWheel';
+import RelationshipNetwork from '../components/RelationshipNetwork';
 import './Dashboard.css';
 
 // Browser detection
@@ -86,6 +87,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showVisionBoard, setShowVisionBoard] = useState(false);
   const [showPasswordVault, setShowPasswordVault] = useState(false);
   const [showLifeBalanceWheel, setShowLifeBalanceWheel] = useState(false);
+  const [showRelationshipNetwork, setShowRelationshipNetwork] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -332,6 +334,8 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowVisionBoard(false);
         setShowPasswordVault(false);
         setShowLifeBalanceWheel(false);
+        setShowRelationshipNetwork(false);
+      }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         const tagName = document.activeElement?.tagName;
@@ -1214,6 +1218,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         <LifeBalanceWheel
           isOpen={showLifeBalanceWheel}
           onClose={() => setShowLifeBalanceWheel(false)}
+        />
+      )}
+
+      {showRelationshipNetwork && (
+        <RelationshipNetwork
+          isOpen={showRelationshipNetwork}
+          onClose={() => setShowRelationshipNetwork(false)}
         />
       )}
 

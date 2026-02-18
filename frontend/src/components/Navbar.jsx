@@ -42,7 +42,8 @@ export default function Navbar({
   onSubscriptionTrackerClick,
   onVisionBoardClick,
   onPasswordVaultClick,
-  onLifeBalanceWheelClick
+  onLifeBalanceWheelClick,
+  onRelationshipNetworkClick
 }) {
   return (
     <nav className="navbar">
@@ -133,6 +134,13 @@ export default function Navbar({
               title="Life Balance Wheel"
             >
               ⚖️
+            </button>
+            <button
+              className="navbar-btn navbar-btn-network"
+              onClick={onRelationshipNetworkClick}
+              title="Relationship Network"
+            >
+              🌐
             </button>
             <button
               className="navbar-btn navbar-btn-snippets"
