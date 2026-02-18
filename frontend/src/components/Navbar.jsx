@@ -49,7 +49,8 @@ export default function Navbar({
   onTravelPlannerClick,
   onPromptLibraryClick,
   onContentTrackerClick,
-  onMealTrackerClick
+  onMealTrackerClick,
+  onStudyPlannerClick
 }) {
   return (
     <nav className="navbar">
@@ -350,6 +351,13 @@ export default function Navbar({
               title="Meal Tracker"
             >
               🍎
+            </button>
+            <button
+              className="navbar-btn navbar-btn-study"
+              onClick={onStudyPlannerClick}
+              title="Study Planner"
+            >
+              📚
             </button>
             <button
               className="navbar-btn navbar-btn-sleep"

@@ -49,6 +49,7 @@ import TravelPlanner from './components/TravelPlanner';
 import PromptLibrary from './components/PromptLibrary';
 import ContentTracker from './components/ContentTracker';
 import MealTracker from './components/MealTracker';
+import StudyPlanner from './components/StudyPlanner';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -106,6 +107,7 @@ export default function App() {
   const [showPromptLibrary, setShowPromptLibrary] = useState(false);
   const [showContentTracker, setShowContentTracker] = useState(false);
   const [showMealTracker, setShowMealTracker] = useState(false);
+  const [showStudyPlanner, setShowStudyPlanner] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -237,6 +239,7 @@ export default function App() {
         onPromptLibraryClick={() => setShowPromptLibrary(true)}
         onContentTrackerClick={() => setShowContentTracker(true)}
         onMealTrackerClick={() => setShowMealTracker(true)}
+        onStudyPlannerClick={() => setShowStudyPlanner(true)}
       />
 
       {showSettings && (
@@ -559,6 +562,13 @@ export default function App() {
         <MealTracker
           isOpen={showMealTracker}
           onClose={() => setShowMealTracker(false)}
+        />
+      )}
+
+      {showStudyPlanner && (
+        <StudyPlanner
+          isOpen={showStudyPlanner}
+          onClose={() => setShowStudyPlanner(false)}
         />
       )}
 
