@@ -43,7 +43,8 @@ export default function Navbar({
   onVisionBoardClick,
   onPasswordVaultClick,
   onLifeBalanceWheelClick,
-  onRelationshipNetworkClick
+  onRelationshipNetworkClick,
+  onDeepWorkTrackerClick
 }) {
   return (
     <nav className="navbar">
@@ -141,6 +142,13 @@ export default function Navbar({
               title="Relationship Network"
             >
               🌐
+            </button>
+            <button
+              className="navbar-btn navbar-btn-deepwork"
+              onClick={onDeepWorkTrackerClick}
+              title="Deep Work Tracker"
+            >
+              🎯
             </button>
             <button
               className="navbar-btn navbar-btn-snippets"

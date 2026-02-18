@@ -39,6 +39,7 @@ import VisionBoard from '../components/VisionBoard';
 import PasswordVault from '../components/PasswordVault';
 import LifeBalanceWheel from '../components/LifeBalanceWheel';
 import RelationshipNetwork from '../components/RelationshipNetwork';
+import DeepWorkTracker from '../components/DeepWorkTracker';
 import './Dashboard.css';
 
 // Browser detection
@@ -88,6 +89,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showPasswordVault, setShowPasswordVault] = useState(false);
   const [showLifeBalanceWheel, setShowLifeBalanceWheel] = useState(false);
   const [showRelationshipNetwork, setShowRelationshipNetwork] = useState(false);
+  const [showDeepWorkTracker, setShowDeepWorkTracker] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -335,6 +337,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowPasswordVault(false);
         setShowLifeBalanceWheel(false);
         setShowRelationshipNetwork(false);
+        setShowDeepWorkTracker(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -677,6 +680,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/deepwork' || userText === '/focuslog' || userText === '/work') {
+      setShowDeepWorkTracker(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Deep Work Tracker'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -947,6 +962,10 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'balance':
           case 'wheel':
             setShowLifeBalanceWheel(true);
+            break;
+          case 'deepwork':
+          case 'deep':
+            setShowDeepWorkTracker(true);
             break;
         }
         break;
@@ -1228,6 +1247,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showDeepWorkTracker && (
+        <DeepWorkTracker
+          isOpen={showDeepWorkTracker}
+          onClose={() => setShowDeepWorkTracker(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1289,6 +1315,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/vision</strong> – Open Vision Board</li>
                   <li><strong>/vault</strong> – Open Password Vault</li>
                   <li><strong>/balance</strong> – Open Life Balance Wheel</li>
+                  <li><strong>/deepwork</strong> – Open Deep Work Tracker</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1347,6 +1374,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowVisionBoard(true)} title="Vision Board">🖼️</button>
             <button className="icon-btn" onClick={() => setShowPasswordVault(true)} title="Password Vault">🔐</button>
             <button className="icon-btn" onClick={() => setShowLifeBalanceWheel(true)} title="Life Balance Wheel">⚖️</button>
+            <button className="icon-btn" onClick={() => setShowDeepWorkTracker(true)} title="Deep Work Tracker">🎯</button>
           </div>
         </div>
 

@@ -43,6 +43,7 @@ import VisionBoard from './components/VisionBoard';
 import PasswordVault from './components/PasswordVault';
 import LifeBalanceWheel from './components/LifeBalanceWheel';
 import RelationshipNetwork from './components/RelationshipNetwork';
+import DeepWorkTracker from './components/DeepWorkTracker';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -94,6 +95,7 @@ export default function App() {
   const [showPasswordVault, setShowPasswordVault] = useState(false);
   const [showLifeBalanceWheel, setShowLifeBalanceWheel] = useState(false);
   const [showRelationshipNetwork, setShowRelationshipNetwork] = useState(false);
+  const [showDeepWorkTracker, setShowDeepWorkTracker] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -219,6 +221,7 @@ export default function App() {
         onPasswordVaultClick={() => setShowPasswordVault(true)}
         onLifeBalanceWheelClick={() => setShowLifeBalanceWheel(true)}
         onRelationshipNetworkClick={() => setShowRelationshipNetwork(true)}
+        onDeepWorkTrackerClick={() => setShowDeepWorkTracker(true)}
       />
 
       {showSettings && (
@@ -499,6 +502,13 @@ export default function App() {
         <RelationshipNetwork
           isOpen={showRelationshipNetwork}
           onClose={() => setShowRelationshipNetwork(false)}
+        />
+      )}
+
+      {showDeepWorkTracker && (
+        <DeepWorkTracker
+          isOpen={showDeepWorkTracker}
+          onClose={() => setShowDeepWorkTracker(false)}
         />
       )}
 
