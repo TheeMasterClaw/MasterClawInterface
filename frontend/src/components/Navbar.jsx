@@ -45,7 +45,8 @@ export default function Navbar({
   onLifeBalanceWheelClick,
   onRelationshipNetworkClick,
   onDeepWorkTrackerClick,
-  onDailyWinsClick
+  onDailyWinsClick,
+  onTravelPlannerClick
 }) {
   return (
     <nav className="navbar">
@@ -185,6 +186,13 @@ export default function Navbar({
               title="Daily Wins"
             >
               🏆
+            </button>
+            <button
+              className="navbar-btn navbar-btn-travel"
+              onClick={onTravelPlannerClick}
+              title="Travel Planner"
+            >
+              🧳
             </button>
             <button
               className="navbar-btn navbar-btn-reading"
