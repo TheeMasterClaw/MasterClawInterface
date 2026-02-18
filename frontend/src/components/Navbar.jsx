@@ -59,7 +59,8 @@ export default function Navbar({
   onReflectionRouletteClick,
   onQuickCaptureClick,
   onCodePlaygroundClick,
-  onInspirationWallClick
+  onInspirationWallClick,
+  onLearningPathClick
 }) {
   return (
     <nav className="navbar">
@@ -409,6 +410,13 @@ export default function Navbar({
               title="Study Planner"
             >
               📚
+            </button>
+            <button
+              className="navbar-btn navbar-btn-learning-path"
+              onClick={onLearningPathClick}
+              title="Learning Path"
+            >
+              🎓
             </button>
             <button
               className="navbar-btn navbar-btn-voice"
