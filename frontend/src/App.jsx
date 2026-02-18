@@ -31,6 +31,7 @@ import SkillTracker from './components/SkillTracker';
 import WeeklyReview from './components/WeeklyReview';
 import DecisionJournal from './components/DecisionJournal';
 import IdeaIncubator from './components/IdeaIncubator';
+import MeetingCompanion from './components/MeetingCompanion';
 import DailyBriefing from './components/DailyBriefing';
 import WorkoutTracker from './components/WorkoutTracker';
 import SleepTracker from './components/SleepTracker';
@@ -80,6 +81,7 @@ export default function App() {
   const [showExpenseTracker, setShowExpenseTracker] = useState(false);
   const [showEnergyTracker, setShowEnergyTracker] = useState(false);
   const [showDailyBriefing, setShowDailyBriefing] = useState(false);
+  const [showMeetingCompanion, setShowMeetingCompanion] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -198,6 +200,7 @@ export default function App() {
         onExpenseTrackerClick={() => setShowExpenseTracker(true)}
         onEnergyTrackerClick={() => setShowEnergyTracker(true)}
         onDailyBriefingClick={() => setShowDailyBriefing(true)}
+        onMeetingCompanionClick={() => setShowMeetingCompanion(true)}
       />
 
       {showSettings && (
@@ -429,6 +432,13 @@ export default function App() {
         <DailyBriefing
           isOpen={showDailyBriefing}
           onClose={() => setShowDailyBriefing(false)}
+        />
+      )}
+
+      {showMeetingCompanion && (
+        <MeetingCompanion
+          isOpen={showMeetingCompanion}
+          onClose={() => setShowMeetingCompanion(false)}
         />
       )}
 

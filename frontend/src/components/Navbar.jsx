@@ -36,7 +36,8 @@ export default function Navbar({
   onSleepTrackerClick,
   onExpenseTrackerClick,
   onEnergyTrackerClick,
-  onDailyBriefingClick
+  onDailyBriefingClick,
+  onMeetingCompanionClick
 }) {
   return (
     <nav className="navbar">
@@ -71,6 +72,13 @@ export default function Navbar({
               title="Daily Briefing"
             >
               📅
+            </button>
+            <button
+              className="navbar-btn navbar-btn-meeting"
+              onClick={onMeetingCompanionClick}
+              title="Meeting Companion"
+            >
+              🤝
             </button>
             <button
               className="navbar-btn navbar-btn-system"

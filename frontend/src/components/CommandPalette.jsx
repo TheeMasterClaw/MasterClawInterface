@@ -36,6 +36,7 @@ const COMMANDS = [
   { id: 'idea-incubator', label: 'Idea Incubator', icon: '💡', shortcut: '/idea', action: 'panel', target: 'idea' },
   { id: 'challenge-tracker', label: 'Challenge Tracker', icon: '🎯', shortcut: '/challenge', action: 'panel', target: 'challenge' },
   { id: 'expense-tracker', label: 'Expense Tracker', icon: '💰', shortcut: '/expense', action: 'panel', target: 'expense' },
+  { id: 'meeting-companion', label: 'Meeting Companion', icon: '🤝', shortcut: '/meeting', action: 'panel', target: 'meeting' },
   { id: 'theme-dark', label: 'Switch to Dark Theme', icon: '🌙', shortcut: 'theme dark', action: 'theme', value: 'dark' },
   { id: 'theme-light', label: 'Switch to Light Theme', icon: '☀️', shortcut: 'theme light', action: 'theme', value: 'light' },
   { id: 'voice', label: 'Voice Input', icon: '🎤', shortcut: 'voice', action: 'voice' },
