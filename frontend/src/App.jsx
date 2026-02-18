@@ -55,6 +55,8 @@ import TimeCapsule from './components/TimeCapsule';
 import PriorityMatrix from './components/PriorityMatrix';
 import DigitalDetoxTracker from './components/DigitalDetoxTracker';
 import TaskBoard from './components/TaskBoard';
+import ReflectionRoulette from './components/ReflectionRoulette';
+import QuickCapture from './components/QuickCapture';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -118,6 +120,8 @@ export default function App() {
   const [showPriorityMatrix, setShowPriorityMatrix] = useState(false);
   const [showDigitalDetoxTracker, setShowDigitalDetoxTracker] = useState(false);
   const [showTaskBoard, setShowTaskBoard] = useState(false);
+  const [showReflectionRoulette, setShowReflectionRoulette] = useState(false);
+  const [showQuickCapture, setShowQuickCapture] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -255,6 +259,8 @@ export default function App() {
         onPriorityMatrixClick={() => setShowPriorityMatrix(true)}
         onDigitalDetoxTrackerClick={() => setShowDigitalDetoxTracker(true)}
         onTaskBoardClick={() => setShowTaskBoard(true)}
+        onReflectionRouletteClick={() => setShowReflectionRoulette(true)}
+        onQuickCaptureClick={() => setShowQuickCapture(true)}
       />
 
       {showSettings && (
@@ -619,6 +625,20 @@ export default function App() {
         <TaskBoard
           isOpen={showTaskBoard}
           onClose={() => setShowTaskBoard(false)}
+        />
+      )}
+
+      {showReflectionRoulette && (
+        <ReflectionRoulette
+          isOpen={showReflectionRoulette}
+          onClose={() => setShowReflectionRoulette(false)}
+        />
+      )}
+
+      {showQuickCapture && (
+        <QuickCapture
+          isOpen={showQuickCapture}
+          onClose={() => setShowQuickCapture(false)}
         />
       )}
 

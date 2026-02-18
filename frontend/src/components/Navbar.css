@@ -474,6 +474,32 @@
               0 0 30px rgba(236, 72, 153, 0.3);
 }
 
+/* Quick Capture button - distinctive style */
+.navbar-btn-quick-capture {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.15));
+  border-color: rgba(99, 102, 241, 0.4);
+  color: #818cf8;
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+.navbar-btn-quick-capture:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(139, 92, 246, 0.25));
+  border-color: rgba(99, 102, 241, 0.6);
+  color: #a5b4fc;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+  animation: none;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 1200px) {
   .navbar-right {

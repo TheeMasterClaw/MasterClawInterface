@@ -44,6 +44,7 @@ import PromptLibrary from '../components/PromptLibrary';
 import StudyPlanner from '../components/StudyPlanner';
 import TimeCapsule from '../components/TimeCapsule';
 import DigitalDetoxTracker from '../components/DigitalDetoxTracker';
+import ReflectionRoulette from '../components/ReflectionRoulette';
 import './Dashboard.css';
 
 // Browser detection
@@ -98,6 +99,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showStudyPlanner, setShowStudyPlanner] = useState(false);
   const [showTimeCapsule, setShowTimeCapsule] = useState(false);
   const [showDigitalDetoxTracker, setShowDigitalDetoxTracker] = useState(false);
+  const [showReflectionRoulette, setShowReflectionRoulette] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -350,6 +352,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowStudyPlanner(false);
         setShowTimeCapsule(false);
         setShowDigitalDetoxTracker(false);
+        setShowReflectionRoulette(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -748,6 +751,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         type: 'command',
         title: 'Command executed',
         description: 'Opened Digital Detox Tracker'
+      });
+      return;
+    }
+
+    if (userText === '/reflect' || userText === '/roulette' || userText === '/reflection') {
+      setShowReflectionRoulette(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Reflection Roulette'
       });
       return;
     }
@@ -1365,6 +1380,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showReflectionRoulette && (
+        <ReflectionRoulette
+          isOpen={showReflectionRoulette}
+          onClose={() => setShowReflectionRoulette(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1494,6 +1516,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowStudyPlanner(true)} title="Study Planner">📖</button>
             <button className="icon-btn" onClick={() => setShowTimeCapsule(true)} title="Time Capsule">⏳</button>
             <button className="icon-btn" onClick={() => setShowDigitalDetoxTracker(true)} title="Digital Detox Tracker">🧘</button>
+            <button className="icon-btn" onClick={() => setShowReflectionRoulette(true)} title="Reflection Roulette">🎲</button>
           </div>
         </div>
 

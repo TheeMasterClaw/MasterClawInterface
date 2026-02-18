@@ -55,7 +55,9 @@ export default function Navbar({
   onTimeCapsuleClick,
   onPriorityMatrixClick,
   onDigitalDetoxTrackerClick,
-  onTaskBoardClick
+  onTaskBoardClick,
+  onReflectionRouletteClick,
+  onQuickCaptureClick
 }) {
   return (
     <nav className="navbar">
@@ -84,6 +86,13 @@ export default function Navbar({
         {/* Right section - Tool buttons */}
         {phase !== 'dashboard' && (
           <div className="navbar-right">
+            <button
+              className="navbar-btn navbar-btn-quick-capture"
+              onClick={onQuickCaptureClick}
+              title="Quick Capture"
+            >
+              ⚡
+            </button>
             <button
               className="navbar-btn navbar-btn-briefing"
               onClick={onDailyBriefingClick}
@@ -209,6 +218,13 @@ export default function Navbar({
               title="Task Board"
             >
               📋
+            </button>
+            <button
+              className="navbar-btn navbar-btn-roulette"
+              onClick={onReflectionRouletteClick}
+              title="Reflection Roulette"
+            >
+              🎲
             </button>
             <button
               className="navbar-btn navbar-btn-detox"
