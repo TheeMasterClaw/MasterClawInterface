@@ -41,7 +41,8 @@ export default function Navbar({
   onProjectDashboardClick,
   onSubscriptionTrackerClick,
   onVisionBoardClick,
-  onPasswordVaultClick
+  onPasswordVaultClick,
+  onLifeBalanceWheelClick
 }) {
   return (
     <nav className="navbar">
@@ -125,6 +126,13 @@ export default function Navbar({
               title="Password Vault"
             >
               🔐
+            </button>
+            <button
+              className="navbar-btn navbar-btn-balance"
+              onClick={onLifeBalanceWheelClick}
+              title="Life Balance Wheel"
+            >
+              ⚖️
             </button>
             <button
               className="navbar-btn navbar-btn-snippets"

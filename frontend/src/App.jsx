@@ -41,6 +41,7 @@ import EnergyTracker from './components/EnergyTracker';
 import SubscriptionTracker from './components/SubscriptionTracker';
 import VisionBoard from './components/VisionBoard';
 import PasswordVault from './components/PasswordVault';
+import LifeBalanceWheel from './components/LifeBalanceWheel';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -90,6 +91,7 @@ export default function App() {
   const [showSubscriptionTracker, setShowSubscriptionTracker] = useState(false);
   const [showVisionBoard, setShowVisionBoard] = useState(false);
   const [showPasswordVault, setShowPasswordVault] = useState(false);
+  const [showLifeBalanceWheel, setShowLifeBalanceWheel] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -213,6 +215,7 @@ export default function App() {
         onSubscriptionTrackerClick={() => setShowSubscriptionTracker(true)}
         onVisionBoardClick={() => setShowVisionBoard(true)}
         onPasswordVaultClick={() => setShowPasswordVault(true)}
+        onLifeBalanceWheelClick={() => setShowLifeBalanceWheel(true)}
       />
 
       {showSettings && (
@@ -479,6 +482,13 @@ export default function App() {
         <PasswordVault
           isOpen={showPasswordVault}
           onClose={() => setShowPasswordVault(false)}
+        />
+      )}
+
+      {showLifeBalanceWheel && (
+        <LifeBalanceWheel
+          isOpen={showLifeBalanceWheel}
+          onClose={() => setShowLifeBalanceWheel(false)}
         />
       )}
 

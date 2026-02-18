@@ -37,6 +37,7 @@ import MeetingCompanion from '../components/MeetingCompanion';
 import ProjectDashboard from '../components/ProjectDashboard';
 import VisionBoard from '../components/VisionBoard';
 import PasswordVault from '../components/PasswordVault';
+import LifeBalanceWheel from '../components/LifeBalanceWheel';
 import './Dashboard.css';
 
 // Browser detection
@@ -84,6 +85,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showProjectDashboard, setShowProjectDashboard] = useState(false);
   const [showVisionBoard, setShowVisionBoard] = useState(false);
   const [showPasswordVault, setShowPasswordVault] = useState(false);
+  const [showLifeBalanceWheel, setShowLifeBalanceWheel] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -329,6 +331,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowProjectDashboard(false);
         setShowVisionBoard(false);
         setShowPasswordVault(false);
+        setShowLifeBalanceWheel(false);
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         const tagName = document.activeElement?.tagName;
@@ -658,6 +661,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/balance' || userText === '/wheel' || userText === '/life') {
+      setShowLifeBalanceWheel(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Life Balance Wheel'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -925,6 +940,10 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'passwords':
             setShowPasswordVault(true);
             break;
+          case 'balance':
+          case 'wheel':
+            setShowLifeBalanceWheel(true);
+            break;
         }
         break;
       case 'settings':
@@ -1191,6 +1210,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showLifeBalanceWheel && (
+        <LifeBalanceWheel
+          isOpen={showLifeBalanceWheel}
+          onClose={() => setShowLifeBalanceWheel(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1251,6 +1277,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/projects</strong> – Open Project Dashboard</li>
                   <li><strong>/vision</strong> – Open Vision Board</li>
                   <li><strong>/vault</strong> – Open Password Vault</li>
+                  <li><strong>/balance</strong> – Open Life Balance Wheel</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1308,6 +1335,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowProjectDashboard(true)} title="Project Dashboard">📊</button>
             <button className="icon-btn" onClick={() => setShowVisionBoard(true)} title="Vision Board">🖼️</button>
             <button className="icon-btn" onClick={() => setShowPasswordVault(true)} title="Password Vault">🔐</button>
+            <button className="icon-btn" onClick={() => setShowLifeBalanceWheel(true)} title="Life Balance Wheel">⚖️</button>
           </div>
         </div>
 
