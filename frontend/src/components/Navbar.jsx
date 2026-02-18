@@ -40,7 +40,8 @@ export default function Navbar({
   onMeetingCompanionClick,
   onProjectDashboardClick,
   onSubscriptionTrackerClick,
-  onVisionBoardClick
+  onVisionBoardClick,
+  onPasswordVaultClick
 }) {
   return (
     <nav className="navbar">
@@ -117,6 +118,13 @@ export default function Navbar({
               title="Vision Board"
             >
               🖼️
+            </button>
+            <button
+              className="navbar-btn navbar-btn-vault"
+              onClick={onPasswordVaultClick}
+              title="Password Vault"
+            >
+              🔐
             </button>
             <button
               className="navbar-btn navbar-btn-snippets"

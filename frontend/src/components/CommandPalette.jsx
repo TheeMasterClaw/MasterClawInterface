@@ -38,6 +38,7 @@ const COMMANDS = [
   { id: 'expense-tracker', label: 'Expense Tracker', icon: '💰', shortcut: '/expense', action: 'panel', target: 'expense' },
   { id: 'meeting-companion', label: 'Meeting Companion', icon: '🤝', shortcut: '/meeting', action: 'panel', target: 'meeting' },
   { id: 'vision-board', label: 'Vision Board', icon: '🖼️', shortcut: '/vision', action: 'panel', target: 'vision' },
+  { id: 'password-vault', label: 'Password Vault', icon: '🔐', shortcut: '/vault', action: 'panel', target: 'vault' },
   { id: 'theme-dark', label: 'Switch to Dark Theme', icon: '🌙', shortcut: 'theme dark', action: 'theme', value: 'dark' },
   { id: 'theme-light', label: 'Switch to Light Theme', icon: '☀️', shortcut: 'theme light', action: 'theme', value: 'light' },
   { id: 'voice', label: 'Voice Input', icon: '🎤', shortcut: 'voice', action: 'voice' },

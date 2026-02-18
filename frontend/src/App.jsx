@@ -40,6 +40,7 @@ import ExpenseTracker from './components/ExpenseTracker';
 import EnergyTracker from './components/EnergyTracker';
 import SubscriptionTracker from './components/SubscriptionTracker';
 import VisionBoard from './components/VisionBoard';
+import PasswordVault from './components/PasswordVault';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -88,6 +89,7 @@ export default function App() {
   const [showProjectDashboard, setShowProjectDashboard] = useState(false);
   const [showSubscriptionTracker, setShowSubscriptionTracker] = useState(false);
   const [showVisionBoard, setShowVisionBoard] = useState(false);
+  const [showPasswordVault, setShowPasswordVault] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -210,6 +212,7 @@ export default function App() {
         onProjectDashboardClick={() => setShowProjectDashboard(true)}
         onSubscriptionTrackerClick={() => setShowSubscriptionTracker(true)}
         onVisionBoardClick={() => setShowVisionBoard(true)}
+        onPasswordVaultClick={() => setShowPasswordVault(true)}
       />
 
       {showSettings && (
@@ -469,6 +472,13 @@ export default function App() {
         <VisionBoard
           isOpen={showVisionBoard}
           onClose={() => setShowVisionBoard(false)}
+        />
+      )}
+
+      {showPasswordVault && (
+        <PasswordVault
+          isOpen={showPasswordVault}
+          onClose={() => setShowPasswordVault(false)}
         />
       )}
 
