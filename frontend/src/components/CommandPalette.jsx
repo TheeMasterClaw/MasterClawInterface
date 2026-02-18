@@ -44,6 +44,7 @@ const COMMANDS = [
   { id: 'prompt-library', label: 'Prompt Library', icon: '📚', shortcut: '/prompts', action: 'panel', target: 'prompts' },
   { id: 'study-planner', label: 'Study Planner', icon: '📖', shortcut: '/study', action: 'panel', target: 'study' },
   { id: 'time-capsule', label: 'Time Capsule', icon: '⏳', shortcut: '/capsule', action: 'panel', target: 'capsule' },
+  { id: 'digital-detox', label: 'Digital Detox Tracker', icon: '🧘', shortcut: '/detox', action: 'panel', target: 'detox' },
   { id: 'theme-dark', label: 'Switch to Dark Theme', icon: '🌙', shortcut: 'theme dark', action: 'theme', value: 'dark' },
   { id: 'theme-light', label: 'Switch to Light Theme', icon: '☀️', shortcut: 'theme light', action: 'theme', value: 'light' },
   { id: 'voice', label: 'Voice Input', icon: '🎤', shortcut: 'voice', action: 'voice' },

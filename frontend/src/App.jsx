@@ -53,6 +53,7 @@ import StudyPlanner from './components/StudyPlanner';
 import VoiceMemos from './components/VoiceMemos';
 import TimeCapsule from './components/TimeCapsule';
 import PriorityMatrix from './components/PriorityMatrix';
+import DigitalDetoxTracker from './components/DigitalDetoxTracker';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -114,6 +115,7 @@ export default function App() {
   const [showVoiceMemos, setShowVoiceMemos] = useState(false);
   const [showTimeCapsule, setShowTimeCapsule] = useState(false);
   const [showPriorityMatrix, setShowPriorityMatrix] = useState(false);
+  const [showDigitalDetoxTracker, setShowDigitalDetoxTracker] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -249,6 +251,7 @@ export default function App() {
         onVoiceMemosClick={() => setShowVoiceMemos(true)}
         onTimeCapsuleClick={() => setShowTimeCapsule(true)}
         onPriorityMatrixClick={() => setShowPriorityMatrix(true)}
+        onDigitalDetoxTrackerClick={() => setShowDigitalDetoxTracker(true)}
       />
 
       {showSettings && (
@@ -599,6 +602,13 @@ export default function App() {
         <PriorityMatrix
           isOpen={showPriorityMatrix}
           onClose={() => setShowPriorityMatrix(false)}
+        />
+      )}
+
+      {showDigitalDetoxTracker && (
+        <DigitalDetoxTracker
+          isOpen={showDigitalDetoxTracker}
+          onClose={() => setShowDigitalDetoxTracker(false)}
         />
       )}
 
