@@ -32,6 +32,7 @@ import IdeaIncubator from '../components/IdeaIncubator';
 import WorkoutTracker from '../components/WorkoutTracker';
 import ChallengeTracker from '../components/ChallengeTracker';
 import ExpenseTracker from '../components/ExpenseTracker';
+import EnergyTracker from '../components/EnergyTracker';
 import './Dashboard.css';
 
 // Browser detection
@@ -74,6 +75,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showWorkoutTracker, setShowWorkoutTracker] = useState(false);
   const [showChallengeTracker, setShowChallengeTracker] = useState(false);
   const [showExpenseTracker, setShowExpenseTracker] = useState(false);
+  const [showEnergyTracker, setShowEnergyTracker] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -314,6 +316,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowIdeaIncubator(false);
         setShowChallengeTracker(false);
         setShowExpenseTracker(false);
+        setShowEnergyTracker(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -842,6 +845,9 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'expenses':
           case 'finance':
             setShowExpenseTracker(true);
+            break;
+          case 'energy':
+            setShowEnergyTracker(true);
             break;
         }
         break;

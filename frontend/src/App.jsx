@@ -31,9 +31,11 @@ import SkillTracker from './components/SkillTracker';
 import WeeklyReview from './components/WeeklyReview';
 import DecisionJournal from './components/DecisionJournal';
 import IdeaIncubator from './components/IdeaIncubator';
+import DailyBriefing from './components/DailyBriefing';
 import WorkoutTracker from './components/WorkoutTracker';
 import SleepTracker from './components/SleepTracker';
 import ExpenseTracker from './components/ExpenseTracker';
+import EnergyTracker from './components/EnergyTracker';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -76,6 +78,8 @@ export default function App() {
   const [showWorkoutTracker, setShowWorkoutTracker] = useState(false);
   const [showSleepTracker, setShowSleepTracker] = useState(false);
   const [showExpenseTracker, setShowExpenseTracker] = useState(false);
+  const [showEnergyTracker, setShowEnergyTracker] = useState(false);
+  const [showDailyBriefing, setShowDailyBriefing] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -192,6 +196,8 @@ export default function App() {
         onWorkoutTrackerClick={() => setShowWorkoutTracker(true)}
         onSleepTrackerClick={() => setShowSleepTracker(true)}
         onExpenseTrackerClick={() => setShowExpenseTracker(true)}
+        onEnergyTrackerClick={() => setShowEnergyTracker(true)}
+        onDailyBriefingClick={() => setShowDailyBriefing(true)}
       />
 
       {showSettings && (
@@ -409,6 +415,20 @@ export default function App() {
         <ExpenseTracker
           isOpen={showExpenseTracker}
           onClose={() => setShowExpenseTracker(false)}
+        />
+      )}
+
+      {showEnergyTracker && (
+        <EnergyTracker
+          isOpen={showEnergyTracker}
+          onClose={() => setShowEnergyTracker(false)}
+        />
+      )}
+
+      {showDailyBriefing && (
+        <DailyBriefing
+          isOpen={showDailyBriefing}
+          onClose={() => setShowDailyBriefing(false)}
         />
       )}
 

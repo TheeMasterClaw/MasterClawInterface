@@ -15,6 +15,68 @@ import {
 
 export const timeRouter = express.Router();
 
+// Inspirational quotes
+const QUOTES = [
+  { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+  { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+  { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+  { text: "The future depends on what you do today.", author: "Mahatma Gandhi" },
+  { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
+  { text: "Your time is limited, don't waste it living someone else's life.", author: "Steve Jobs" },
+  { text: "The best way to predict the future is to create it.", author: "Peter Drucker" },
+  { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+  { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+  { text: "Everything you've ever wanted is on the other side of fear.", author: "George Addair" },
+  { text: "Hardships often prepare ordinary people for an extraordinary destiny.", author: "C.S. Lewis" },
+  { text: "The only limit to our realization of tomorrow will be our doubts of today.", author: "Franklin D. Roosevelt" },
+  { text: "Do what you can, with what you have, where you are.", author: "Theodore Roosevelt" },
+  { text: "Everything is figureoutable.", author: "Marie Forleo" },
+  { text: "Small progress is still progress.", author: "Unknown" },
+  { text: "Focus on being productive instead of busy.", author: "Tim Ferriss" },
+  { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+  { text: "Don't let yesterday take up too much of today.", author: "Will Rogers" },
+  { text: "You miss 100% of the shots you don't take.", author: "Wayne Gretzky" },
+  { text: "Whether you think you can or you think you can't, you're right.", author: "Henry Ford" }
+];
+
+// Get daily quote
+// Returns a quote based on the day of the month (consistent throughout the day)
+timeRouter.get('/quote', asyncHandler(async (req, res) => {
+  const today = new Date();
+  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+  const quoteIndex = dayOfYear % QUOTES.length;
+  
+  res.json({
+    ...QUOTES[quoteIndex],
+    date: today.toISOString().split('T')[0],
+    index: quoteIndex
+  });
+}));
+
+// Get weather (mock - returns simulated weather data)
+timeRouter.get('/weather', asyncHandler(async (req, res) => {
+  // Generate somewhat realistic mock weather based on date
+  const today = new Date();
+  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+  
+  // Simulate seasonal temperature variation
+  const baseTemp = 15 + 10 * Math.sin((dayOfYear - 100) * 2 * Math.PI / 365);
+  const dailyVariation = Math.sin(today.getHours() * Math.PI / 12) * 5;
+  const temperature = Math.round((baseTemp + dailyVariation) * 10) / 10;
+  
+  const conditions = ['Sunny', 'Partly Cloudy', 'Cloudy', 'Overcast', 'Light Rain', 'Clear'];
+  const conditionIndex = (dayOfYear + today.getDate()) % conditions.length;
+  
+  res.json({
+    temperature,
+    condition: conditions[conditionIndex],
+    humidity: 40 + (dayOfYear % 40),
+    windSpeed: 5 + (today.getDate() % 15),
+    location: 'Local',
+    updatedAt: new Date().toISOString()
+  });
+}));
+
 // Query parameter validation schemas
 const timeQuerySchema = {
   project: { type: 'string', maxLength: 100 },

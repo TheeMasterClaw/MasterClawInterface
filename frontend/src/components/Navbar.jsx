@@ -34,7 +34,9 @@ export default function Navbar({
   onIdeaIncubatorClick,
   onWorkoutTrackerClick,
   onSleepTrackerClick,
-  onExpenseTrackerClick
+  onExpenseTrackerClick,
+  onEnergyTrackerClick,
+  onDailyBriefingClick
 }) {
   return (
     <nav className="navbar">
@@ -63,6 +65,13 @@ export default function Navbar({
         {/* Right section - Tool buttons */}
         {phase !== 'dashboard' && (
           <div className="navbar-right">
+            <button
+              className="navbar-btn navbar-btn-briefing"
+              onClick={onDailyBriefingClick}
+              title="Daily Briefing"
+            >
+              📅
+            </button>
             <button
               className="navbar-btn navbar-btn-system"
               onClick={onSystemMonitorClick}
@@ -258,6 +267,13 @@ export default function Navbar({
               title="Expense Tracker"
             >
               💰
+            </button>
+            <button
+              className="navbar-btn navbar-btn-energy"
+              onClick={onEnergyTrackerClick}
+              title="Energy Tracker"
+            >
+              ⚡
             </button>
             <button
               className="navbar-btn navbar-btn-settings"
