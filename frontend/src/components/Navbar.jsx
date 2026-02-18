@@ -58,7 +58,8 @@ export default function Navbar({
   onTaskBoardClick,
   onReflectionRouletteClick,
   onQuickCaptureClick,
-  onCodePlaygroundClick
+  onCodePlaygroundClick,
+  onInspirationWallClick
 }) {
   return (
     <nav className="navbar">
@@ -443,6 +444,13 @@ export default function Navbar({
               title="Energy Tracker"
             >
               ⚡
+            </button>
+            <button
+              className="navbar-btn navbar-btn-inspiration"
+              onClick={onInspirationWallClick}
+              title="Inspiration Wall"
+            >
+              ✨
             </button>
             <button
               className="navbar-btn navbar-btn-code-playground"

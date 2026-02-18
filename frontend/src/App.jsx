@@ -58,6 +58,7 @@ import TaskBoard from './components/TaskBoard';
 import ReflectionRoulette from './components/ReflectionRoulette';
 import QuickCapture from './components/QuickCapture';
 import CodePlayground from './components/CodePlayground';
+import InspirationWall from './components/InspirationWall';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -124,6 +125,7 @@ export default function App() {
   const [showReflectionRoulette, setShowReflectionRoulette] = useState(false);
   const [showQuickCapture, setShowQuickCapture] = useState(false);
   const [showCodePlayground, setShowCodePlayground] = useState(false);
+  const [showInspirationWall, setShowInspirationWall] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -264,6 +266,7 @@ export default function App() {
         onReflectionRouletteClick={() => setShowReflectionRoulette(true)}
         onQuickCaptureClick={() => setShowQuickCapture(true)}
         onCodePlaygroundClick={() => setShowCodePlayground(true)}
+        onInspirationWallClick={() => setShowInspirationWall(true)}
       />
 
       {showSettings && (
@@ -649,6 +652,13 @@ export default function App() {
         <CodePlayground
           isOpen={showCodePlayground}
           onClose={() => setShowCodePlayground(false)}
+        />
+      )}
+
+      {showInspirationWall && (
+        <InspirationWall
+          isOpen={showInspirationWall}
+          onClose={() => setShowInspirationWall(false)}
         />
       )}
 
