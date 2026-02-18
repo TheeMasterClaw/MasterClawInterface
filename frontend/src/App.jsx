@@ -48,6 +48,7 @@ import DailyWins from './components/DailyWins';
 import TravelPlanner from './components/TravelPlanner';
 import PromptLibrary from './components/PromptLibrary';
 import ContentTracker from './components/ContentTracker';
+import MealTracker from './components/MealTracker';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -104,6 +105,7 @@ export default function App() {
   const [showTravelPlanner, setShowTravelPlanner] = useState(false);
   const [showPromptLibrary, setShowPromptLibrary] = useState(false);
   const [showContentTracker, setShowContentTracker] = useState(false);
+  const [showMealTracker, setShowMealTracker] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -234,6 +236,7 @@ export default function App() {
         onTravelPlannerClick={() => setShowTravelPlanner(true)}
         onPromptLibraryClick={() => setShowPromptLibrary(true)}
         onContentTrackerClick={() => setShowContentTracker(true)}
+        onMealTrackerClick={() => setShowMealTracker(true)}
       />
 
       {showSettings && (
@@ -549,6 +552,13 @@ export default function App() {
         <ContentTracker
           isOpen={showContentTracker}
           onClose={() => setShowContentTracker(false)}
+        />
+      )}
+
+      {showMealTracker && (
+        <MealTracker
+          isOpen={showMealTracker}
+          onClose={() => setShowMealTracker(false)}
         />
       )}
 
