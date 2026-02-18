@@ -52,6 +52,7 @@ import MealTracker from './components/MealTracker';
 import StudyPlanner from './components/StudyPlanner';
 import VoiceMemos from './components/VoiceMemos';
 import TimeCapsule from './components/TimeCapsule';
+import PriorityMatrix from './components/PriorityMatrix';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -112,6 +113,7 @@ export default function App() {
   const [showStudyPlanner, setShowStudyPlanner] = useState(false);
   const [showVoiceMemos, setShowVoiceMemos] = useState(false);
   const [showTimeCapsule, setShowTimeCapsule] = useState(false);
+  const [showPriorityMatrix, setShowPriorityMatrix] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -246,6 +248,7 @@ export default function App() {
         onStudyPlannerClick={() => setShowStudyPlanner(true)}
         onVoiceMemosClick={() => setShowVoiceMemos(true)}
         onTimeCapsuleClick={() => setShowTimeCapsule(true)}
+        onPriorityMatrixClick={() => setShowPriorityMatrix(true)}
       />
 
       {showSettings && (
@@ -589,6 +592,13 @@ export default function App() {
         <TimeCapsule
           isOpen={showTimeCapsule}
           onClose={() => setShowTimeCapsule(false)}
+        />
+      )}
+
+      {showPriorityMatrix && (
+        <PriorityMatrix
+          isOpen={showPriorityMatrix}
+          onClose={() => setShowPriorityMatrix(false)}
         />
       )}
 

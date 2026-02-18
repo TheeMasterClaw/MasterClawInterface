@@ -52,7 +52,8 @@ export default function Navbar({
   onMealTrackerClick,
   onStudyPlannerClick,
   onVoiceMemosClick,
-  onTimeCapsuleClick
+  onTimeCapsuleClick,
+  onPriorityMatrixClick
 }) {
   return (
     <nav className="navbar">
@@ -192,6 +193,13 @@ export default function Navbar({
               title="Daily Wins"
             >
               🏆
+            </button>
+            <button
+              className="navbar-btn navbar-btn-priority-matrix"
+              onClick={onPriorityMatrixClick}
+              title="Priority Matrix"
+            >
+              📊
             </button>
             <button
               className="navbar-btn navbar-btn-travel"
