@@ -47,6 +47,7 @@ import DeepWorkTracker from './components/DeepWorkTracker';
 import DailyWins from './components/DailyWins';
 import TravelPlanner from './components/TravelPlanner';
 import PromptLibrary from './components/PromptLibrary';
+import ContentTracker from './components/ContentTracker';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -102,6 +103,7 @@ export default function App() {
   const [showDailyWins, setShowDailyWins] = useState(false);
   const [showTravelPlanner, setShowTravelPlanner] = useState(false);
   const [showPromptLibrary, setShowPromptLibrary] = useState(false);
+  const [showContentTracker, setShowContentTracker] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -231,6 +233,7 @@ export default function App() {
         onDailyWinsClick={() => setShowDailyWins(true)}
         onTravelPlannerClick={() => setShowTravelPlanner(true)}
         onPromptLibraryClick={() => setShowPromptLibrary(true)}
+        onContentTrackerClick={() => setShowContentTracker(true)}
       />
 
       {showSettings && (
@@ -539,6 +542,13 @@ export default function App() {
         <PromptLibrary
           isOpen={showPromptLibrary}
           onClose={() => setShowPromptLibrary(false)}
+        />
+      )}
+
+      {showContentTracker && (
+        <ContentTracker
+          isOpen={showContentTracker}
+          onClose={() => setShowContentTracker(false)}
         />
       )}
 

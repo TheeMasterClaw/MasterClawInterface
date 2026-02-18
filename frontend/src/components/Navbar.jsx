@@ -47,7 +47,8 @@ export default function Navbar({
   onDeepWorkTrackerClick,
   onDailyWinsClick,
   onTravelPlannerClick,
-  onPromptLibraryClick
+  onPromptLibraryClick,
+  onContentTrackerClick
 }) {
   return (
     <nav className="navbar">
@@ -201,6 +202,13 @@ export default function Navbar({
               title="Prompt Library"
             >
               📚
+            </button>
+            <button
+              className="navbar-btn navbar-btn-content"
+              onClick={onContentTrackerClick}
+              title="Content Tracker"
+            >
+              🎬
             </button>
             <button
               className="navbar-btn navbar-btn-reading"
