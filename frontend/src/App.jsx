@@ -51,6 +51,7 @@ import ContentTracker from './components/ContentTracker';
 import MealTracker from './components/MealTracker';
 import StudyPlanner from './components/StudyPlanner';
 import VoiceMemos from './components/VoiceMemos';
+import TimeCapsule from './components/TimeCapsule';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -110,6 +111,7 @@ export default function App() {
   const [showMealTracker, setShowMealTracker] = useState(false);
   const [showStudyPlanner, setShowStudyPlanner] = useState(false);
   const [showVoiceMemos, setShowVoiceMemos] = useState(false);
+  const [showTimeCapsule, setShowTimeCapsule] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -243,6 +245,7 @@ export default function App() {
         onMealTrackerClick={() => setShowMealTracker(true)}
         onStudyPlannerClick={() => setShowStudyPlanner(true)}
         onVoiceMemosClick={() => setShowVoiceMemos(true)}
+        onTimeCapsuleClick={() => setShowTimeCapsule(true)}
       />
 
       {showSettings && (
@@ -579,6 +582,13 @@ export default function App() {
         <VoiceMemos
           isOpen={showVoiceMemos}
           onClose={() => setShowVoiceMemos(false)}
+        />
+      )}
+
+      {showTimeCapsule && (
+        <TimeCapsule
+          isOpen={showTimeCapsule}
+          onClose={() => setShowTimeCapsule(false)}
         />
       )}
 

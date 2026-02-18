@@ -51,7 +51,8 @@ export default function Navbar({
   onContentTrackerClick,
   onMealTrackerClick,
   onStudyPlannerClick,
-  onVoiceMemosClick
+  onVoiceMemosClick,
+  onTimeCapsuleClick
 }) {
   return (
     <nav className="navbar">
@@ -226,6 +227,13 @@ export default function Navbar({
               title="Journal"
             >
               📔
+            </button>
+            <button
+              className="navbar-btn navbar-btn-timecapsule"
+              onClick={onTimeCapsuleClick}
+              title="Time Capsule"
+            >
+              ⏳
             </button>
             <button
               className="navbar-btn navbar-btn-notes"

@@ -42,6 +42,7 @@ import RelationshipNetwork from '../components/RelationshipNetwork';
 import DeepWorkTracker from '../components/DeepWorkTracker';
 import PromptLibrary from '../components/PromptLibrary';
 import StudyPlanner from '../components/StudyPlanner';
+import TimeCapsule from '../components/TimeCapsule';
 import './Dashboard.css';
 
 // Browser detection
@@ -94,6 +95,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showDeepWorkTracker, setShowDeepWorkTracker] = useState(false);
   const [showPromptLibrary, setShowPromptLibrary] = useState(false);
   const [showStudyPlanner, setShowStudyPlanner] = useState(false);
+  const [showTimeCapsule, setShowTimeCapsule] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -344,6 +346,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowDeepWorkTracker(false);
         setShowPromptLibrary(false);
         setShowStudyPlanner(false);
+        setShowTimeCapsule(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -722,6 +725,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/capsule' || userText === '/timecapsule' || userText === '/letter') {
+      setShowTimeCapsule(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Time Capsule'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1005,6 +1020,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'learn':
           case 'courses':
             setShowStudyPlanner(true);
+            break;
+          case 'capsule':
+          case 'timecapsule':
+          case 'letter':
+            setShowTimeCapsule(true);
             break;
         }
         break;
@@ -1311,6 +1331,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showTimeCapsule && (
+        <TimeCapsule
+          isOpen={showTimeCapsule}
+          onClose={() => setShowTimeCapsule(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1375,6 +1402,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/deepwork</strong> – Open Deep Work Tracker</li>
                   <li><strong>/prompts</strong> – Open Prompt Library</li>
                   <li><strong>/study</strong> – Open Study Planner</li>
+                  <li><strong>/capsule</strong> – Open Time Capsule</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1436,6 +1464,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowDeepWorkTracker(true)} title="Deep Work Tracker">🎯</button>
             <button className="icon-btn" onClick={() => setShowPromptLibrary(true)} title="Prompt Library">📚</button>
             <button className="icon-btn" onClick={() => setShowStudyPlanner(true)} title="Study Planner">📖</button>
+            <button className="icon-btn" onClick={() => setShowTimeCapsule(true)} title="Time Capsule">⏳</button>
           </div>
         </div>
 
