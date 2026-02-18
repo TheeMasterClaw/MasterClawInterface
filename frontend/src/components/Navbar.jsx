@@ -54,7 +54,8 @@ export default function Navbar({
   onVoiceMemosClick,
   onTimeCapsuleClick,
   onPriorityMatrixClick,
-  onDigitalDetoxTrackerClick
+  onDigitalDetoxTrackerClick,
+  onTaskBoardClick
 }) {
   return (
     <nav className="navbar">
@@ -201,6 +202,13 @@ export default function Navbar({
               title="Priority Matrix"
             >
               📊
+            </button>
+            <button
+              className="navbar-btn navbar-btn-taskboard"
+              onClick={onTaskBoardClick}
+              title="Task Board"
+            >
+              📋
             </button>
             <button
               className="navbar-btn navbar-btn-detox"

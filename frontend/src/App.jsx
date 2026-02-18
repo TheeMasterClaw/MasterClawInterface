@@ -54,6 +54,7 @@ import VoiceMemos from './components/VoiceMemos';
 import TimeCapsule from './components/TimeCapsule';
 import PriorityMatrix from './components/PriorityMatrix';
 import DigitalDetoxTracker from './components/DigitalDetoxTracker';
+import TaskBoard from './components/TaskBoard';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -116,6 +117,7 @@ export default function App() {
   const [showTimeCapsule, setShowTimeCapsule] = useState(false);
   const [showPriorityMatrix, setShowPriorityMatrix] = useState(false);
   const [showDigitalDetoxTracker, setShowDigitalDetoxTracker] = useState(false);
+  const [showTaskBoard, setShowTaskBoard] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -252,6 +254,7 @@ export default function App() {
         onTimeCapsuleClick={() => setShowTimeCapsule(true)}
         onPriorityMatrixClick={() => setShowPriorityMatrix(true)}
         onDigitalDetoxTrackerClick={() => setShowDigitalDetoxTracker(true)}
+        onTaskBoardClick={() => setShowTaskBoard(true)}
       />
 
       {showSettings && (
@@ -609,6 +612,13 @@ export default function App() {
         <DigitalDetoxTracker
           isOpen={showDigitalDetoxTracker}
           onClose={() => setShowDigitalDetoxTracker(false)}
+        />
+      )}
+
+      {showTaskBoard && (
+        <TaskBoard
+          isOpen={showTaskBoard}
+          onClose={() => setShowTaskBoard(false)}
         />
       )}
 
