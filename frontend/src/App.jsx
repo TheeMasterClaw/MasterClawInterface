@@ -60,6 +60,7 @@ import QuickCapture from './components/QuickCapture';
 import CodePlayground from './components/CodePlayground';
 import InspirationWall from './components/InspirationWall';
 import LearningPath from './components/LearningPath';
+import ReminderManager from './components/ReminderManager';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -128,6 +129,7 @@ export default function App() {
   const [showCodePlayground, setShowCodePlayground] = useState(false);
   const [showInspirationWall, setShowInspirationWall] = useState(false);
   const [showLearningPath, setShowLearningPath] = useState(false);
+  const [showReminderManager, setShowReminderManager] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -270,6 +272,7 @@ export default function App() {
         onCodePlaygroundClick={() => setShowCodePlayground(true)}
         onInspirationWallClick={() => setShowInspirationWall(true)}
         onLearningPathClick={() => setShowLearningPath(true)}
+        onReminderClick={() => setShowReminderManager(true)}
       />
 
       {showSettings && (
@@ -669,6 +672,13 @@ export default function App() {
         <LearningPath
           isOpen={showLearningPath}
           onClose={() => setShowLearningPath(false)}
+        />
+      )}
+
+      {showReminderManager && (
+        <ReminderManager
+          isOpen={showReminderManager}
+          onClose={() => setShowReminderManager(false)}
         />
       )}
 

@@ -16,6 +16,7 @@ A privacy-first companion interface. You open it. You see my face (MC). I say we
 - 🎭 **Abstract Avatar** — MC is represented as a living, breathing geometric network
 - 🗣️ **Multi-Mode Interaction** — Text, Voice, Hybrid, or Context-Aware modes
 - 📅 **Google Calendar Integration** — Sync your events, understand your rhythm
+- ⏰ **Smart Reminder Manager** — Set one-time and recurring reminders with notifications
 - ✅ **Task Management** — Organize everything that matters
 - 🧠 **Memory & Context** — I remember decisions, patterns, preferences
 - 🔒 **Privacy First** — Self-hosted, SQLite, no cloud bloat

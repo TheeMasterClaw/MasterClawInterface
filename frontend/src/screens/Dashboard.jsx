@@ -46,6 +46,7 @@ import TimeCapsule from '../components/TimeCapsule';
 import DigitalDetoxTracker from '../components/DigitalDetoxTracker';
 import ReflectionRoulette from '../components/ReflectionRoulette';
 import CodePlayground from '../components/CodePlayground';
+import ReminderManager from '../components/ReminderManager';
 import './Dashboard.css';
 
 // Browser detection
@@ -102,6 +103,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showDigitalDetoxTracker, setShowDigitalDetoxTracker] = useState(false);
   const [showReflectionRoulette, setShowReflectionRoulette] = useState(false);
   const [showCodePlayground, setShowCodePlayground] = useState(false);
+  const [showReminderManager, setShowReminderManager] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -355,6 +357,8 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowTimeCapsule(false);
         setShowDigitalDetoxTracker(false);
         setShowReflectionRoulette(false);
+        setShowCodePlayground(false);
+        setShowReminderManager(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -769,6 +773,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/reminder' || userText === '/reminders' || userText === '/alarm') {
+      setShowReminderManager(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Smart Reminder Manager'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1062,6 +1078,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'digitaldetox':
           case 'screentime':
             setShowDigitalDetoxTracker(true);
+            break;
+          case 'reminder':
+          case 'reminders':
+          case 'alarm':
+            setShowReminderManager(true);
             break;
         }
         break;
@@ -1396,6 +1417,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showReminderManager && (
+        <ReminderManager
+          isOpen={showReminderManager}
+          onClose={() => setShowReminderManager(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1462,6 +1490,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/study</strong> – Open Study Planner</li>
                   <li><strong>/capsule</strong> – Open Time Capsule</li>
                   <li><strong>/detox</strong> – Open Digital Detox Tracker</li>
+                  <li><strong>/reminder</strong> – Open Smart Reminder Manager</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1527,6 +1556,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowDigitalDetoxTracker(true)} title="Digital Detox Tracker">🧘</button>
             <button className="icon-btn" onClick={() => setShowReflectionRoulette(true)} title="Reflection Roulette">🎲</button>
             <button className="icon-btn" onClick={() => setShowCodePlayground(true)} title="Code Playground">💻</button>
+            <button className="icon-btn" onClick={() => setShowReminderManager(true)} title="Smart Reminders">⏰</button>
           </div>
         </div>
 

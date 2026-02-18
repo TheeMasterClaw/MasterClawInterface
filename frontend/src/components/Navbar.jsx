@@ -60,7 +60,8 @@ export default function Navbar({
   onQuickCaptureClick,
   onCodePlaygroundClick,
   onInspirationWallClick,
-  onLearningPathClick
+  onLearningPathClick,
+  onReminderClick
 }) {
   return (
     <nav className="navbar">
@@ -466,6 +467,13 @@ export default function Navbar({
               title="Code Playground"
             >
               💻
+            </button>
+            <button
+              className="navbar-btn navbar-btn-reminder"
+              onClick={onReminderClick}
+              title="Smart Reminders"
+            >
+              ⏰
             </button>
             <button
               className="navbar-btn navbar-btn-settings"
