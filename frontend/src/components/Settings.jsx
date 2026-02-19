@@ -1,20 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useUIStore } from '../lib/store';
 // import './Settings.css';
 
 // Default values from build-time env vars
-const DEFAULT_GATEWAY_URL = typeof process.env !== 'undefined' && process.env.NEXT_PUBLIC_GATEWAY_URL 
-  ? process.env.NEXT_PUBLIC_GATEWAY_URL 
+const DEFAULT_GATEWAY_URL = typeof process.env !== 'undefined' && process.env.NEXT_PUBLIC_GATEWAY_URL
+  ? process.env.NEXT_PUBLIC_GATEWAY_URL
   : '';
-const DEFAULT_GATEWAY_TOKEN = typeof process.env !== 'undefined' && process.env.NEXT_PUBLIC_GATEWAY_TOKEN 
-  ? process.env.NEXT_PUBLIC_GATEWAY_TOKEN 
+const DEFAULT_GATEWAY_TOKEN = typeof process.env !== 'undefined' && process.env.NEXT_PUBLIC_GATEWAY_TOKEN
+  ? process.env.NEXT_PUBLIC_GATEWAY_TOKEN
   : '';
 
 // Check if we're in browser
 const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
 
 export default function Settings({ onClose, onSave, connectionStatus = 'unknown' }) {
+  const { toggleOverlay, closeOverlay } = useUIStore();
   const [settings, setSettings] = useState({
     ttsProvider: 'openai',
     ttsVoice: 'alloy',
@@ -29,7 +31,7 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
   // Load settings from localStorage on mount (browser only)
   useEffect(() => {
     if (!isBrowser) return;
-    
+
     try {
       const stored = localStorage.getItem('mc-settings');
       if (stored) {
@@ -48,7 +50,7 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
 
   const handleSave = () => {
     if (!isBrowser) return;
-    
+
     try {
       localStorage.setItem('mc-settings', JSON.stringify(settings));
       setSaved(true);
@@ -61,9 +63,9 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
 
   const handleReset = () => {
     if (!isBrowser) return;
-    
+
     const confirmed = typeof window.confirm === 'function' && window.confirm('Reset all settings to defaults?');
-    
+
     if (confirmed) {
       localStorage.removeItem('mc-settings');
       setSettings({
@@ -134,9 +136,9 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
           <section className="settings-section">
             <h3>🔌 Connection Status</h3>
             <div className="connection-info">
-              <div 
-                className="status-badge" 
-                style={{ 
+              <div
+                className="status-badge"
+                style={{
                   backgroundColor: statusColors[connectionStatus] ? `${statusColors[connectionStatus]}20` : '#94a3b820',
                   borderColor: statusColors[connectionStatus] ? `${statusColors[connectionStatus]}50` : '#94a3b850',
                   color: statusColors[connectionStatus] || '#94a3b8'
@@ -150,7 +152,7 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
                 {connectionStatus === 'unconfigured' && '⚙️ Not Configured'}
                 {(connectionStatus === 'unknown' || !statusColors[connectionStatus]) && '⚪ Unknown'}
               </div>
-              
+
               <div className="current-endpoint">
                 <small>Active Gateway:</small>
                 <code>{effectiveGatewayUrl || 'Not set'}</code>
@@ -161,10 +163,10 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
           {/* Gateway Settings */}
           <section className="settings-section">
             <h3>🔧 Gateway Configuration</h3>
-            
+
             <div className="settings-field">
               <label>Gateway URL</label>
-              <input 
+              <input
                 type="text"
                 value={settings.gatewayUrl}
                 onChange={(e) => handleChange('gatewayUrl', e.target.value)}
@@ -177,7 +179,7 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
 
             <div className="settings-field">
               <label>Gateway Token</label>
-              <input 
+              <input
                 type="password"
                 value={settings.gatewayToken}
                 onChange={(e) => handleChange('gatewayToken', e.target.value)}
@@ -200,10 +202,10 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
           {/* TTS Settings */}
           <section className="settings-section">
             <h3>🗣️ Voice (TTS)</h3>
-            
+
             <div className="settings-field">
               <label>Provider</label>
-              <select 
+              <select
                 value={settings.ttsProvider}
                 onChange={(e) => handleChange('ttsProvider', e.target.value)}
               >
@@ -214,7 +216,7 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
 
             <div className="settings-field">
               <label>Voice</label>
-              <select 
+              <select
                 value={settings.ttsVoice}
                 onChange={(e) => handleChange('ttsVoice', e.target.value)}
               >
@@ -228,10 +230,10 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
           {/* Appearance */}
           <section className="settings-section">
             <h3>🎨 Appearance</h3>
-            
+
             <div className="settings-field">
               <label>Theme</label>
-              <select 
+              <select
                 value={settings.theme}
                 onChange={(e) => handleChange('theme', e.target.value)}
               >
@@ -243,13 +245,30 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
 
             <div className="settings-field">
               <label className="settings-checkbox">
-                <input 
+                <input
                   type="checkbox"
                   checked={settings.notifications}
                   onChange={(e) => handleChange('notifications', e.target.checked)}
                 />
                 Enable browser notifications
               </label>
+            </div>
+          </section>
+
+          {/* Admin Tools */}
+          <section className="settings-section">
+            <h3>🛠️ Admin Tools</h3>
+            <div className="settings-field">
+              <button
+                className="settings-action-btn"
+                onClick={() => {
+                  toggleOverlay('adminDebug');
+                  onClose();
+                }}
+              >
+                Open Admin Debugger
+              </button>
+              <small>Troubleshoot connection issues and configure bots.</small>
             </div>
           </section>
         </div>
@@ -263,7 +282,7 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
             Save Changes
           </button>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }

@@ -76,6 +76,7 @@ import ChallengeTracker from './ChallengeTracker';
 import BrainDump from './BrainDump';
 import SprintPlanner from './SprintPlanner';
 import ResourceLibrary from './ResourceLibrary';
+import AdminDebugPanel from './AdminDebugPanel';
 
 // Config
 // Config
@@ -163,6 +164,7 @@ export default function ClientLayout({ children }) {
     const showBrainDump = overlays.brainDump;
     const showSprintPlanner = overlays.sprint;
     const showResourceLibrary = overlays.resources;
+    const showAdminDebug = overlays.adminDebug;
 
     // Load theme on mount
     useEffect(() => {
@@ -374,6 +376,7 @@ export default function ClientLayout({ children }) {
             {showBrainDump && <BrainDump isOpen={showBrainDump} onClose={() => closeOverlay('brainDump')} />}
             {showSprintPlanner && <SprintPlanner isOpen={showSprintPlanner} onClose={() => closeOverlay('sprint')} />}
             {showResourceLibrary && <ResourceLibrary isOpen={showResourceLibrary} onClose={() => closeOverlay('resources')} />}
+            {showAdminDebug && <AdminDebugPanel isOpen={showAdminDebug} onClose={() => closeOverlay('adminDebug')} />}
 
             <GlobalShortcuts />
             {children}
