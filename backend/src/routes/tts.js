@@ -16,6 +16,24 @@ if (!fs.existsSync(audioDir)) {
 
 export const ttsRouter = express.Router();
 
+// GET /tts - Return info about the TTS endpoint
+ttsRouter.get('/', (req, res) => {
+  res.json({
+    ok: true,
+    message: 'TTS endpoint - use POST to synthesize speech',
+    method: 'POST',
+    endpoint: '/tts',
+    body: {
+      text: 'string (required)',
+      voice: 'string (optional, default: alloy)',
+      provider: 'string (optional, default: openai)'
+    },
+    validProviders: VALID_PROVIDERS,
+    validVoices: VALID_VOICES,
+    maxTextLength: MAX_TEXT_LENGTH
+  });
+});
+
 // Valid providers and voices
 const VALID_PROVIDERS = ['openai', 'elevenlabs'];
 const VALID_VOICES = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'];
