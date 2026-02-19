@@ -1,0 +1,494 @@
+.system-panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.system-panel {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid #334155;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.system-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #334155;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.system-panel-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.mock-badge {
+  background: #f59e0b;
+  color: #1e293b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.pause-btn,
+.settings-btn,
+.close-btn {
+  background: #334155;
+  border: none;
+  color: #f1f5f9;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pause-btn:hover,
+.settings-btn:hover {
+  background: #475569;
+}
+
+.pause-btn.paused {
+  background: #eab308;
+  color: #1e293b;
+}
+
+.close-btn {
+  background: #ef4444;
+  font-size: 1.25rem;
+  padding: 8px 14px;
+}
+
+.close-btn:hover {
+  background: #dc2626;
+}
+
+/* Loading State */
+.system-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid #334155;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Stats Grid */
+.system-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+@media (max-width: 640px) {
+  .system-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Stat Cards */
+.stat-card {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-icon {
+  font-size: 1.25rem;
+}
+
+.stat-title {
+  font-weight: 600;
+  color: #f1f5f9;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.stat-label {
+  color: #94a3b8;
+}
+
+.stat-value {
+  color: #f1f5f9;
+  font-weight: 500;
+}
+
+/* Circular Progress */
+.circular-progress {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circular-progress-bg {
+  fill: none;
+  stroke: #334155;
+}
+
+.circular-progress-fill {
+  fill: none;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.circular-progress-content {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.circular-progress-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.circular-progress-label {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+}
+
+.circular-progress-sublabel {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* Sparkline */
+.sparkline {
+  width: 100%;
+  height: 40px;
+  margin-top: 8px;
+}
+
+.sparkline-empty {
+  width: 100%;
+  background: rgba(51, 65, 85, 0.3);
+  border-radius: 4px;
+}
+
+/* Disk Bar */
+.disk-bar-container {
+  margin-top: 8px;
+}
+
+.disk-bar-bg {
+  height: 8px;
+  background: #334155;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.disk-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Network Card */
+.network-content {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.network-current {
+  display: flex;
+  gap: 16px;
+}
+
+.network-speed {
+  flex: 1;
+  background: rgba(51, 65, 85, 0.5);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.speed-icon {
+  font-size: 1.25rem;
+}
+
+.speed-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.speed-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.network-total {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #334155;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.total-row span:last-child {
+  color: #f1f5f9;
+  font-weight: 500;
+}
+
+/* System Footer */
+.system-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-top: 1px solid #334155;
+  background: rgba(15, 23, 42, 0.3);
+}
+
+.system-info {
+  display: flex;
+  gap: 16px;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.refresh-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Tips */
+.system-tips {
+  padding: 12px 20px;
+  background: rgba(59, 130, 246, 0.1);
+  border-top: 1px solid rgba(59, 130, 246, 0.2);
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.system-tips p {
+  margin: 0;
+}
+
+/* Settings */
+.system-settings {
+  padding: 20px;
+}
+
+.system-settings h4 {
+  margin: 0 0 20px 0;
+  color: #f1f5f9;
+  font-size: 1rem;
+}
+
+.setting-group {
+  margin-bottom: 24px;
+}
+
+.setting-group label {
+  display: block;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-bottom: 12px;
+}
+
+.interval-options,
+.data-source-toggle {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.interval-options button,
+.data-source-toggle button {
+  background: #334155;
+  border: 1px solid #475569;
+  color: #f1f5f9;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.interval-options button:hover,
+.data-source-toggle button:hover {
+  background: #475569;
+}
+
+.interval-options button.active,
+.data-source-toggle button.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.back-btn {
+  background: transparent;
+  border: 1px solid #475569;
+  color: #94a3b8;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.back-btn:hover {
+  background: rgba(71, 85, 105, 0.3);
+  color: #f1f5f9;
+}
+
+/* Scrollbar Styling */
+.system-stats-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.system-stats-grid::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.3);
+}
+
+.system-stats-grid::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+.system-stats-grid::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.stat-card.updating {
+  animation: pulse 0.3s ease;
+}
+
+/* Card specific colors */
+.cpu-card {
+  border-left: 3px solid #8b5cf6;
+}
+
+.memory-card {
+  border-left: 3px solid #3b82f6;
+}
+
+.disk-card {
+  border-left: 3px solid #10b981;
+}
+
+.network-card {
+  border-left: 3px solid #f59e0b;
+}

@@ -1,0 +1,284 @@
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.avatar--small {
+  width: 60px;
+  height: 60px;
+}
+
+.avatar--medium {
+  width: 200px;
+  height: 200px;
+}
+
+.avatar--large {
+  width: 300px;
+  height: 300px;
+}
+
+.avatar-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 30px rgba(56, 189, 248, 0.4)) 
+          drop-shadow(0 0 60px rgba(99, 102, 241, 0.2))
+          drop-shadow(0 0 90px rgba(99, 102, 241, 0.1));
+}
+
+/* Accessibility: Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .avatar-svg,
+  .avatar-shell,
+  .avatar-shell--inner,
+  .avatar-bloom,
+  .avatar-scanline,
+  .avatar-core,
+  .avatar-node,
+  .avatar-connection,
+  .avatar-boundary,
+  .avatar-data-arc,
+  .avatar-ripple,
+  .avatar-error-ring {
+    animation: none !important;
+  }
+  
+  /* Provide minimal visual feedback in reduced motion mode */
+  .avatar-core--listening,
+  .avatar-core--thinking,
+  .avatar-core--speaking {
+    opacity: 1;
+  }
+}
+
+.avatar-shell {
+  stroke: url(#avatarShell);
+  stroke-width: 2;
+  opacity: 0.6;
+  animation: shell-rotate 16s linear infinite;
+  filter: drop-shadow(0 0 4px rgba(103, 232, 249, 0.4));
+  will-change: transform;
+  transform-origin: 100px 100px;
+}
+
+.avatar-shell--inner {
+  stroke-width: 1.5;
+  opacity: 0.45;
+  stroke-dasharray: 4 8;
+  animation-direction: reverse;
+  animation-duration: 10s;
+  filter: drop-shadow(0 0 3px rgba(103, 232, 249, 0.3));
+  will-change: transform;
+  transform-origin: 100px 100px;
+}
+
+.avatar-bloom {
+  opacity: 0.6;
+  animation: shimmer 2.6s ease-in-out infinite;
+  will-change: opacity;
+}
+
+.avatar-scanline {
+  stroke: #67e8f9;
+  stroke-width: 1;
+  opacity: 0.18;
+  stroke-dasharray: 4 8;
+}
+
+.avatar-scanlines--thinking .avatar-scanline,
+.avatar-scanlines--speaking .avatar-scanline {
+  animation: scan 1.2s linear infinite;
+}
+
+.avatar-core {
+  filter: url(#glow) drop-shadow(0 0 12px rgba(99, 102, 241, 0.6)) drop-shadow(0 0 24px rgba(99, 102, 241, 0.3));
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+.avatar-core--idle {
+  animation: pulse-core 2.4s ease-in-out infinite;
+}
+
+.avatar-core--listening {
+  animation: pulse-core 1.4s ease-in-out infinite;
+}
+
+.avatar-core--thinking {
+  animation: pulse-core 0.9s ease-in-out infinite;
+}
+
+.avatar-core--speaking {
+  animation: pulse-core 0.55s ease-in-out infinite;
+}
+
+.avatar-core--error {
+  animation: pulse-core-error 1.2s ease-in-out infinite;
+  filter: url(#glow) drop-shadow(0 0 12px rgba(239, 68, 68, 0.6)) drop-shadow(0 0 24px rgba(239, 68, 68, 0.3));
+}
+
+.avatar-node {
+  fill: #38bdf8;
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6));
+  animation: pulse 3s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.avatar-node--secondary {
+  fill: #a78bfa;
+  opacity: 0.85;
+  animation-duration: 1.6s;
+  filter: drop-shadow(0 0 5px rgba(167, 139, 250, 0.5));
+}
+
+.avatar-nodes--thinking .avatar-node,
+.avatar-nodes--speaking .avatar-node {
+  animation-duration: 0.7s;
+}
+
+.avatar-connection {
+  stroke: #67e8f9;
+  stroke-width: 2;
+  opacity: 0.6;
+  animation: flow 1.8s ease-in-out infinite;
+  will-change: opacity;
+}
+
+.avatar-connection--secondary {
+  stroke: #c084fc;
+  stroke-width: 1.4;
+}
+
+.avatar-boundary {
+  stroke: #22d3ee;
+  stroke-width: 1.5;
+  opacity: 0.6;
+  animation: breathe 3.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.4));
+  will-change: transform, opacity;
+}
+
+.avatar-boundary--thinking,
+.avatar-boundary--speaking {
+  stroke: #a78bfa;
+  opacity: 0.95;
+}
+
+.avatar-boundary--error {
+  stroke: #ef4444;
+  opacity: 0.85;
+  animation: breathe-error 2s ease-in-out infinite;
+}
+
+.avatar-data-arc {
+  fill: none;
+  stroke: #67e8f9;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 2 14;
+  opacity: 0.45;
+  animation: data-flow 2.2s linear infinite;
+  will-change: stroke-dashoffset, opacity;
+}
+
+.avatar-data-arc--delayed {
+  animation-delay: 0.9s;
+}
+
+.avatar-ripple {
+  stroke: #22d3ee;
+  stroke-width: 2;
+  opacity: 0;
+  animation: ripple 2s ease-out infinite;
+  will-change: transform, opacity;
+}
+
+.avatar-ripple--delayed {
+  animation-delay: 0.55s;
+}
+
+/* Error state styles */
+.avatar-error-ring {
+  stroke: #ef4444;
+  stroke-width: 2;
+  opacity: 0.7;
+  animation: pulse-error-ring 1.5s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.avatar-error-icon {
+  stroke: #ef4444;
+  stroke-width: 6;
+  stroke-linecap: round;
+  fill: none;
+  opacity: 0.9;
+  animation: blink-error 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { r: 12; opacity: 0.9; }
+  50% { r: 14; opacity: 0.55; }
+}
+
+@keyframes pulse-core {
+  0%, 100% { r: 40; opacity: 0.95; }
+  50% { r: 44; opacity: 1; }
+}
+
+@keyframes pulse-core-error {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes flow {
+  0%, 100% { stroke-dasharray: 0, 100; opacity: 0.35; }
+  50% { stroke-dasharray: 36, 70; opacity: 0.95; }
+}
+
+@keyframes breathe {
+  0%, 100% { r: 80; opacity: 0.4; }
+  50% { r: 83; opacity: 0.75; }
+}
+
+@keyframes breathe-error {
+  0%, 100% { r: 80; opacity: 0.5; }
+  50% { r: 85; opacity: 0.9; }
+}
+
+@keyframes pulse-error-ring {
+  0%, 100% { r: 60; opacity: 0.7; }
+  50% { r: 65; opacity: 0.3; }
+}
+
+@keyframes blink-error {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes ripple {
+  0% { r: 45; opacity: 0.8; }
+  100% { r: 75; opacity: 0; }
+}
+
+@keyframes shell-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.75; }
+}
+
+@keyframes scan {
+  0% { transform: translateY(-2px); opacity: 0.1; }
+  50% { transform: translateY(2px); opacity: 0.4; }
+  100% { transform: translateY(-2px); opacity: 0.1; }
+}
+
+@keyframes data-flow {
+  from { stroke-dashoffset: 0; opacity: 0.35; }
+  to { stroke-dashoffset: -48; opacity: 0.75; }
+}
