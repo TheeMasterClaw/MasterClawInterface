@@ -57,6 +57,7 @@ import SprintPlanner from '../components/SprintPlanner';
 import ResourceLibrary from '../components/ResourceLibrary';
 import ContactManager from '../components/ContactManager';
 import TodayView from '../components/TodayView';
+import LearningTracker from '../components/LearningTracker';
 import './Dashboard.css';
 
 // Browser detection
@@ -121,6 +122,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showResourceLibrary, setShowResourceLibrary] = useState(false);
   const [showContactManager, setShowContactManager] = useState(false);
   const [showTodayView, setShowTodayView] = useState(false);
+  const [showLearningTracker, setShowLearningTracker] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -383,6 +385,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowResourceLibrary(false);
         setShowContactManager(false);
         setShowTodayView(false);
+        setShowLearningTracker(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -867,6 +870,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         type: 'command',
         title: 'Command executed',
         description: 'Opened Today View'
+      });
+      return;
+    }
+
+    if (userText === '/learn' || userText === '/learning' || userText === '/study') {
+      setShowLearningTracker(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Learning Tracker'
       });
       return;
     }
@@ -1590,6 +1605,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         <TodayView
           isOpen={showTodayView}
           onClose={() => setShowTodayView(false)}
+        />
+      )}
+
+      {showLearningTracker && (
+        <LearningTracker
+          isOpen={showLearningTracker}
+          onClose={() => setShowLearningTracker(false)}
         />
       )}
 
