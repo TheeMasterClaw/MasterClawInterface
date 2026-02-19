@@ -1219,6 +1219,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'day':
             setShowTodayView(true);
             break;
+          case 'learn':
+          case 'learning':
+          case 'study':
+            setShowLearningTracker(true);
+            break;
         }
         break;
       case 'settings':
@@ -1688,6 +1693,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/resources</strong> – Open Resource Library</li>
                   <li><strong>/contacts</strong> – Open Contact Manager</li>
                   <li><strong>/today</strong> – Open Today View</li>
+                  <li><strong>/learn</strong> – Open Learning Tracker</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1758,6 +1764,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowResourceLibrary(true)} title="Resource Library">📚</button>
             <button className="icon-btn" onClick={() => setShowContactManager(true)} title="Contact Manager">👥</button>
             <button className="icon-btn" onClick={() => setShowTodayView(true)} title="Today View">📅</button>
+            <button className="icon-btn" onClick={() => setShowLearningTracker(true)} title="Learning Tracker">🎓</button>
           </div>
         </div>
 

@@ -18,6 +18,7 @@ import projectsRouter from './routes/projects.js';
 import resourcesRouter from './routes/resources.js';
 import contactsRouter from './routes/contacts.js';
 import todayRouter from './routes/today.js';
+import learningRouter from './routes/learning.js';
 import { errorHandler, sanitizeBody, authenticateApiToken } from './middleware/security.js';
 import { requestTimeout, timeoutFor } from './middleware/timeout.js';
 import { auditLogMiddleware, getRecentAuditLogs, getAuditStats, logSecurityEvent, logCspViolation, SecurityEventType, Severity } from './middleware/auditLog.js';
@@ -217,6 +218,7 @@ app.use('/projects', projectsRouter);
 app.use('/resources', resourcesRouter);
 app.use('/contacts', contactsRouter);
 app.use('/today', todayRouter);
+app.use('/learning', learningRouter);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -359,7 +361,7 @@ app.get('/', (req, res) => {
   res.json({
     message: 'MC Backend API',
     status: 'running',
-    endpoints: ['/tasks', '/calendar', '/time', '/tts', '/health', '/chat', '/skills', '/snippets', '/projects', '/resources', '/contacts', '/today'],
+    endpoints: ['/tasks', '/calendar', '/time', '/tts', '/health', '/chat', '/skills', '/snippets', '/projects', '/resources', '/contacts', '/today', '/learning'],
     realtime: 'socket.io enabled',
     security: {
       rateLimiting: true,
