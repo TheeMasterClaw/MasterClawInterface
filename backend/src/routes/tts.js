@@ -34,6 +34,24 @@ ttsRouter.get('/', (req, res) => {
   });
 });
 
+// GET /tts/health - Check TTS provider configuration
+ttsRouter.get('/health', (req, res) => {
+  const openaiKey = !!process.env.OPENAI_API_KEY;
+  const elevenlabsKey = !!process.env.ELEVENLABS_API_KEY;
+  const configuredProvider = openaiKey ? 'openai' : elevenlabsKey ? 'elevenlabs' : null;
+  
+  res.json({
+    ok: openaiKey || elevenlabsKey,
+    configured: !!configuredProvider,
+    provider: configuredProvider,
+    providers: {
+      openai: openaiKey,
+      elevenlabs: elevenlabsKey
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Valid providers and voices
 const VALID_PROVIDERS = ['openai', 'elevenlabs'];
 const VALID_VOICES = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'];

@@ -374,6 +374,22 @@ app.get('/', (req, res) => {
   });
 });
 
+// Socket.IO test endpoint
+app.get('/socket-test', (req, res) => {
+  res.json({
+    ok: true,
+    message: 'Socket.IO server is running',
+    socketio: {
+      path: '/socket.io',
+      transports: ['websocket', 'polling'],
+      cors: {
+        origins: ALLOWED_ORIGINS
+      }
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // 404 handler - return JSON for API requests, prevents HTML 404 pages
 app.use((req, res) => {
   res.status(404).json({

@@ -57,8 +57,21 @@ export function createSocketServer(httpServer) {
     }
   });
 
+  // Log connection errors for debugging
+  io.engine.on('connection_error', (err) => {
+    console.log('[Socket.IO] Connection error:', {
+      code: err.code,
+      message: err.message,
+      context: err.context
+    });
+  });
+
   io.on('connection', (socket) => {
-    console.log(`🔌 Socket connected: ${socket.id}`);
+    console.log(`🔌 Socket connected: ${socket.id}`, {
+      origin: socket.handshake.headers.origin,
+      transport: socket.conn.transport.name,
+      address: socket.handshake.address
+    });
 
     socket.emit('gateway:status', { status: 'connected' });
 
