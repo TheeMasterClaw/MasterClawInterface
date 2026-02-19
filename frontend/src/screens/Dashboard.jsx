@@ -58,6 +58,7 @@ import ResourceLibrary from '../components/ResourceLibrary';
 import ContactManager from '../components/ContactManager';
 import TodayView from '../components/TodayView';
 import LearningTracker from '../components/LearningTracker';
+import TravelPlanner from '../components/TravelPlanner';
 import './Dashboard.css';
 
 // Browser detection
@@ -123,6 +124,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showContactManager, setShowContactManager] = useState(false);
   const [showTodayView, setShowTodayView] = useState(false);
   const [showLearningTracker, setShowLearningTracker] = useState(false);
+  const [showTravelPlanner, setShowTravelPlanner] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -386,6 +388,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowContactManager(false);
         setShowTodayView(false);
         setShowLearningTracker(false);
+        setShowTravelPlanner(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -886,6 +889,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/travel' || userText === '/trip' || userText === '/vacation') {
+      setShowTravelPlanner(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Travel Planner'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1223,6 +1238,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'learning':
           case 'study':
             setShowLearningTracker(true);
+            break;
+          case 'travel':
+          case 'trip':
+          case 'vacation':
+            setShowTravelPlanner(true);
             break;
         }
         break;
@@ -1620,6 +1640,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showTravelPlanner && (
+        <TravelPlanner
+          isOpen={showTravelPlanner}
+          onClose={() => setShowTravelPlanner(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1694,6 +1721,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/contacts</strong> – Open Contact Manager</li>
                   <li><strong>/today</strong> – Open Today View</li>
                   <li><strong>/learn</strong> – Open Learning Tracker</li>
+                  <li><strong>/travel</strong> – Open Travel Planner</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1765,6 +1793,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowContactManager(true)} title="Contact Manager">👥</button>
             <button className="icon-btn" onClick={() => setShowTodayView(true)} title="Today View">📅</button>
             <button className="icon-btn" onClick={() => setShowLearningTracker(true)} title="Learning Tracker">🎓</button>
+            <button className="icon-btn" onClick={() => setShowTravelPlanner(true)} title="Travel Planner">✈️</button>
           </div>
         </div>
 
