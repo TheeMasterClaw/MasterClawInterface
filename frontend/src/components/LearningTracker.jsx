@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './LearningTracker.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { getApiUrl } from '../lib/apiUrl';
+
+const API_URL = getApiUrl();
 
 const LEARNING_TYPES = [
   { id: 'course', name: 'Course', icon: '🎓', color: '#667eea' },
@@ -33,7 +35,7 @@ export default function LearningTracker({ isOpen, onClose }) {
   const [filter, setFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
-  
+
   const [formData, setFormData] = useState({
     title: '',
     type: 'course',
@@ -59,7 +61,7 @@ export default function LearningTracker({ isOpen, onClose }) {
         fetch(`${API_URL}/learning`),
         fetch(`${API_URL}/learning/stats`)
       ]);
-      
+
       setItems((await itemsRes.json()).items || []);
       setStats(await statsRes.json());
     } catch (err) {
@@ -71,14 +73,14 @@ export default function LearningTracker({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const response = await fetch(`${API_URL}/learning`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      
+
       if (response.ok) {
         setFormData({
           title: '',
@@ -114,7 +116,7 @@ export default function LearningTracker({ isOpen, onClose }) {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this learning item?')) return;
-    
+
     try {
       await fetch(`${API_URL}/learning/${id}`, { method: 'DELETE' });
       fetchData();
@@ -126,8 +128,8 @@ export default function LearningTracker({ isOpen, onClose }) {
   const getTypeInfo = (typeId) => LEARNING_TYPES.find(t => t.id === typeId) || LEARNING_TYPES[6];
   const getPriorityColor = (priority) => PRIORITIES.find(p => p.id === priority)?.color || '#8892b0';
 
-  const filteredItems = filter === 'all' 
-    ? items 
+  const filteredItems = filter === 'all'
+    ? items
     : items.filter(i => i.status === filter);
 
   const inProgressItem = items.find(i => i.status === 'in-progress');
@@ -148,7 +150,7 @@ export default function LearningTracker({ isOpen, onClose }) {
             )}
           </div>
           <div className="header-actions">
-            <button 
+            <button
               className="btn-primary small"
               onClick={() => setShowForm(true)}
             >
@@ -195,15 +197,15 @@ export default function LearningTracker({ isOpen, onClose }) {
                 <span className="current-type">{getTypeInfo(inProgressItem.type).icon} {inProgressItem.type}</span>
                 <h4>{inProgressItem.title}</h4>
                 {inProgressItem.provider && <span className="current-provider">{inProgressItem.provider}</span>}
-              </div>              
+              </div>
               <div className="current-progress">
                 <div className="progress-ring">
                   <svg viewBox="0 0 60 60">
                     <circle className="ring-bg" cx="30" cy="30" r="26" />
-                    <circle 
+                    <circle
                       className="ring-progress"
-                      cx="30" 
-                      cy="30" 
+                      cx="30"
+                      cy="30"
                       r="26"
                       style={{
                         strokeDasharray: `${2 * Math.PI * 26}`,
@@ -213,7 +215,7 @@ export default function LearningTracker({ isOpen, onClose }) {
                   </svg>
                   <span className="progress-text">{inProgressItem.progress}%</span>
                 </div>
-                <button 
+                <button
                   className="btn-update"
                   onClick={() => setEditingItem(inProgressItem)}
                 >
@@ -252,7 +254,7 @@ export default function LearningTracker({ isOpen, onClose }) {
               {showForm && (
                 <div className="learning-form">
                   <h3>{editingItem ? 'Edit Learning Item' : 'Add New Learning Item'}</h3>
-                  
+
                   <form onSubmit={handleSubmit}>
                     <input
                       type="text"
@@ -261,7 +263,7 @@ export default function LearningTracker({ isOpen, onClose }) {
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                       required
                     />
-                    
+
                     <div className="form-row">
                       <select
                         value={formData.type}
@@ -271,7 +273,7 @@ export default function LearningTracker({ isOpen, onClose }) {
                           <option key={t.id} value={t.id}>{t.icon} {t.name}</option>
                         ))}
                       </select>
-                      
+
                       <select
                         value={formData.priority}
                         onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
@@ -281,28 +283,28 @@ export default function LearningTracker({ isOpen, onClose }) {
                         ))}
                       </select>
                     </div>
-                    
+
                     <input
                       type="text"
                       placeholder="Topic (e.g., JavaScript, Design, Business)"
                       value={formData.topic}
                       onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
                     />
-                    
+
                     <input
                       type="text"
                       placeholder="Provider (e.g., Coursera, Udemy, Book Author)"
                       value={formData.provider}
                       onChange={(e) => setFormData({ ...formData, provider: e.target.value })}
                     />
-                    
+
                     <input
                       type="url"
                       placeholder="URL (optional)"
                       value={formData.url}
                       onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                     />
-                    
+
                     <div className="form-row">
                       <input
                         type="number"
@@ -310,7 +312,7 @@ export default function LearningTracker({ isOpen, onClose }) {
                         value={formData.estimatedHours}
                         onChange={(e) => setFormData({ ...formData, estimatedHours: e.target.value })}
                       />
-                      
+
                       <input
                         type="date"
                         placeholder="Deadline (optional)"
@@ -318,17 +320,17 @@ export default function LearningTracker({ isOpen, onClose }) {
                         onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
                       />
                     </div>
-                    
+
                     <textarea
                       placeholder="Description / Notes"
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       rows={3}
                     />
-                    
+
                     <div className="form-actions">
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         className="btn-secondary"
                         onClick={() => { setShowForm(false); setEditingItem(null); }}
                       >
@@ -364,32 +366,32 @@ export default function LearningTracker({ isOpen, onClose }) {
               ) : (
                 <div className="learning-list">
                   {filteredItems.map(item => (
-                    <div 
-                      key={item.id} 
+                    <div
+                      key={item.id}
                       className={`learning-card ${item.status}`}
                       style={{ '--priority-color': getPriorityColor(item.priority) }}
                     >
                       <div className="card-priority" />
-                      
+
                       <div className="card-content">
                         <div className="card-header">
                           <div className="card-type">
                             <span className="type-icon">{getTypeInfo(item.type).icon}</span>
                             <span className="type-name">{item.type}</span>
                           </div>
-                          
+
                           <div className="card-actions">
                             {item.status !== 'completed' && (
                               <>
                                 {item.status !== 'in-progress' && (
-                                  <button 
+                                  <button
                                     onClick={() => handleUpdate(item.id, { status: 'in-progress' })}
                                     title="Start learning"
                                   >
                                     ▶️
                                   </button>
                                 )}
-                                <button 
+                                <button
                                   onClick={() => setEditingItem(item)}
                                   title="Update progress"
                                 >
@@ -397,7 +399,7 @@ export default function LearningTracker({ isOpen, onClose }) {
                                 </button>
                               </>
                             )}
-                            <button 
+                            <button
                               onClick={() => handleDelete(item.id)}
                               title="Delete"
                             >
@@ -427,21 +429,21 @@ export default function LearningTracker({ isOpen, onClose }) {
                           <div className="stat">
                             <span className="stat-label">Progress</span>
                             <div className="mini-progress">
-                              <div 
+                              <div
                                 className="mini-fill"
                                 style={{ width: `${item.progress}%` }}
                               />
                             </div>
                             <span className="stat-value">{item.progress}%</span>
                           </div>
-                          
+
                           <div className="stat">
                             <span className="stat-label">Hours</span>
                             <span className="stat-value">
                               {item.hoursSpent}/{item.estimatedHours || '?'}
                             </span>
                           </div>
-                          
+
                           {item.deadline && (
                             <div className="stat">
                               <span className="stat-label">Deadline</span>
@@ -478,11 +480,11 @@ function UpdateProgressModal({ item, onClose, onUpdate }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     const updates = { progress, notes };
     if (hours) updates.addHours = parseFloat(hours);
     if (progress === 100) updates.status = 'completed';
-    
+
     onUpdate(item.id, updates);
     onClose();
   };
@@ -491,9 +493,9 @@ function UpdateProgressModal({ item, onClose, onUpdate }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <h3>Update Progress</h3>
-        
+
         <p className="modal-item-title">{item.title}</p>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Progress ({progress}%)</label>
@@ -512,7 +514,7 @@ function UpdateProgressModal({ item, onClose, onUpdate }) {
               <span>100%</span>
             </div>
           </div>
-          
+
           <div className="form-group">
             <label>Add Hours Spent</label>
             <input
@@ -523,7 +525,7 @@ function UpdateProgressModal({ item, onClose, onUpdate }) {
               onChange={(e) => setHours(e.target.value)}
             />
           </div>
-          
+
           <div className="form-group">
             <label>Notes</label>
             <textarea
@@ -533,13 +535,13 @@ function UpdateProgressModal({ item, onClose, onUpdate }) {
               rows={4}
             />
           </div>
-          
+
           {progress === 100 && (
             <div className="completion-notice">
               🎉 This will mark the item as completed!
             </div>
           )}
-          
+
           <div className="form-actions">
             <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
             <button type="submit" className="btn-primary">Update</button>

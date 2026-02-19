@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './ReadingTracker.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { getApiUrl } from '../lib/apiUrl';
+
+const API_URL = getApiUrl();
 
 const READING_TYPES = [
   { id: 'book', name: 'Book', icon: '📚' },
@@ -28,7 +30,7 @@ export default function ReadingTracker({ isOpen, onClose }) {
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [updatePage, setUpdatePage] = useState('');
-  
+
   const [formData, setFormData] = useState({
     title: '',
     author: '',
@@ -51,7 +53,7 @@ export default function ReadingTracker({ isOpen, onClose }) {
         fetch(`${API_URL}/reading`),
         fetch(`${API_URL}/reading/stats`)
       ]);
-      
+
       setItems((await itemsRes.json()).items || []);
       setStats(await statsRes.json());
     } catch (err) {
@@ -63,14 +65,14 @@ export default function ReadingTracker({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       await fetch(`${API_URL}/reading`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      
+
       setFormData({
         title: '',
         author: '',
@@ -102,7 +104,7 @@ export default function ReadingTracker({ isOpen, onClose }) {
   const handleUpdatePage = async (id) => {
     const page = parseInt(updatePage);
     if (!page || page < 0) return;
-    
+
     await handleUpdate(id, { currentPage: page });
     setEditingItem(null);
     setUpdatePage('');
@@ -110,7 +112,7 @@ export default function ReadingTracker({ isOpen, onClose }) {
 
   const handleDelete = async (id) => {
     if (!confirm('Remove this item?')) return;
-    
+
     try {
       await fetch(`${API_URL}/reading/${id}`, { method: 'DELETE' });
       fetchData();
@@ -148,7 +150,7 @@ export default function ReadingTracker({ isOpen, onClose }) {
             )}
           </div>
           <div className="header-actions">
-            <button 
+            <button
               className="btn-primary small"
               onClick={() => setShowForm(true)}
             >
@@ -163,7 +165,7 @@ export default function ReadingTracker({ isOpen, onClose }) {
           <div className="current-reading-card">
             <div className="current-header">
               <span className="current-label">📖 Currently Reading</span>
-              <button 
+              <button
                 className="btn-update-page"
                 onClick={() => {
                   setEditingItem(stats.currentBook);
@@ -172,18 +174,18 @@ export default function ReadingTracker({ isOpen, onClose }) {
               >
                 Update Page
               </button>
-            </div>            
-            <h3>{stats.currentBook.title}</h3>            
+            </div>
+            <h3>{stats.currentBook.title}</h3>
             {stats.currentBook.author && (
               <div className="current-author">by {stats.currentBook.author}</div>
             )}
-            
+
             <div className="reading-progress">
               <div className="progress-bar">
-                <div 
+                <div
                   className="progress-fill"
-                  style={{ 
-                    width: `${getProgressPercent(stats.currentBook.currentPage, stats.currentBook.totalPages)}%` 
+                  style={{
+                    width: `${getProgressPercent(stats.currentBook.currentPage, stats.currentBook.totalPages)}%`
                   }}
                 />
               </div>
@@ -191,7 +193,7 @@ export default function ReadingTracker({ isOpen, onClose }) {
                 <span>Page {stats.currentBook.currentPage} of {stats.currentBook.totalPages}</span>
                 <span>{getProgressPercent(stats.currentBook.currentPage, stats.currentBook.totalPages)}%</span>
               </div>
-            </div>          
+            </div>
           </div>
         )}
 
@@ -201,7 +203,7 @@ export default function ReadingTracker({ isOpen, onClose }) {
             <div className="modal-content" onClick={e => e.stopPropagation()}>
               <h3>Update Progress</h3>
               <p>{editingItem.title}</p>
-              
+
               <input
                 type="number"
                 placeholder="Current page"
@@ -210,11 +212,11 @@ export default function ReadingTracker({ isOpen, onClose }) {
                 min="0"
                 max={editingItem.totalPages}
               />
-              
+
               <div className="modal-actions">
                 <button className="btn-secondary" onClick={() => setEditingItem(null)}>Cancel</button>
-                <button 
-                  className="btn-primary" 
+                <button
+                  className="btn-primary"
                   onClick={() => handleUpdatePage(editingItem.id)}
                 >
                   Update
@@ -274,7 +276,7 @@ export default function ReadingTracker({ isOpen, onClose }) {
               {showForm && (
                 <div className="add-form">
                   <h3>Add to Reading List</h3>
-                  
+
                   <form onSubmit={handleSubmit}>
                     <input
                       type="text"
@@ -283,14 +285,14 @@ export default function ReadingTracker({ isOpen, onClose }) {
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                       required
                     />
-                    
+
                     <input
                       type="text"
                       placeholder="Author"
                       value={formData.author}
                       onChange={(e) => setFormData({ ...formData, author: e.target.value })}
                     />
-                    
+
                     <div className="form-row">
                       <select
                         value={formData.type}
@@ -300,7 +302,7 @@ export default function ReadingTracker({ isOpen, onClose }) {
                           <option key={t.id} value={t.id}>{t.icon} {t.name}</option>
                         ))}
                       </select>
-                      
+
                       <select
                         value={formData.genre}
                         onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
@@ -311,21 +313,21 @@ export default function ReadingTracker({ isOpen, onClose }) {
                         ))}
                       </select>
                     </div>
-                    
+
                     <input
                       type="number"
                       placeholder="Total pages"
                       value={formData.totalPages}
                       onChange={(e) => setFormData({ ...formData, totalPages: e.target.value })}
                     />
-                    
+
                     <textarea
                       placeholder="Notes"
                       value={formData.notes}
                       onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                       rows={2}
                     />
-                    
+
                     <div className="form-actions">
                       <button type="button" className="btn-secondary" onClick={() => setShowForm(false)}>
                         Cancel
@@ -349,33 +351,33 @@ export default function ReadingTracker({ isOpen, onClose }) {
               ) : (
                 <div className="reading-list">
                   {getFilteredItems().map(item => (
-                    <div 
-                      key={item.id} 
+                    <div
+                      key={item.id}
                       className={`reading-card ${item.status}`}
                       style={{ '--status-color': getStatusInfo(item.status).color }}
                     >
                       <div className="card-status-bar" />
-                      
+
                       <div className="card-content">
                         <div className="card-header">
                           <div className="card-type">
                             <span className="type-icon">{getTypeInfo(item.type).icon}</span>
                             <span>{getTypeInfo(item.type).name}</span>
                           </div>
-                          
+
                           <div className="card-actions">
                             {item.status === 'want-to-read' && (
-                              <button 
+                              <button
                                 onClick={() => handleUpdate(item.id, { status: 'reading' })}
                                 title="Start reading"
                               >
                                 📖
                               </button>
                             )}
-                            
+
                             {item.status === 'reading' && (
                               <>
-                                <button 
+                                <button
                                   onClick={() => {
                                     setEditingItem(item);
                                     setUpdatePage(String(item.currentPage));
@@ -384,7 +386,7 @@ export default function ReadingTracker({ isOpen, onClose }) {
                                 >
                                   📄
                                 </button>
-                                <button 
+                                <button
                                   onClick={() => handleUpdate(item.id, { status: 'finished' })}
                                   title="Mark finished"
                                 >
@@ -392,13 +394,13 @@ export default function ReadingTracker({ isOpen, onClose }) {
                                 </button>
                               </>
                             )}
-                            
+
                             <button onClick={() => handleDelete(item.id)} title="Remove">🗑️</button>
                           </div>
                         </div>
 
                         <h4 className="card-title">{item.title}</h4>
-                        
+
                         {item.author && (
                           <div className="card-author">by {item.author}</div>
                         )}
@@ -410,10 +412,10 @@ export default function ReadingTracker({ isOpen, onClose }) {
                         {item.totalPages > 0 && (
                           <div className="page-progress">
                             <div className="mini-progress-bar">
-                              <div 
+                              <div
                                 className="mini-progress-fill"
-                                style={{ 
-                                  width: `${getProgressPercent(item.currentPage, item.totalPages)}%` 
+                                style={{
+                                  width: `${getProgressPercent(item.currentPage, item.totalPages)}%`
                                 }}
                               />
                             </div>
@@ -431,7 +433,7 @@ export default function ReadingTracker({ isOpen, onClose }) {
                         <div className="card-footer">
                           <span className={`status-badge ${item.status}`}>
                             {getStatusInfo(item.status).icon} {getStatusInfo(item.status).name}
-                          </span>                        
+                          </span>
                         </div>
                       </div>
                     </div>

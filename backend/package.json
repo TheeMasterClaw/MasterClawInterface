@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/index.js",
-    "build": "tsc",
+    "build": "echo 'No build step for JS backend'",
     "start": "node src/index.js",
     "test": "vitest run",
     "test:watch": "vitest"

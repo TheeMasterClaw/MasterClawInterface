@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './MealPlanner.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { getApiUrl } from '../lib/apiUrl';
+
+const API_URL = getApiUrl();
 
 const MEAL_TYPES = [
   { id: 'breakfast', name: 'Breakfast', icon: '🍳', color: '#feca57' },
@@ -17,7 +19,7 @@ export default function MealPlanner({ isOpen, onClose }) {
   const [dailySummary, setDailySummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     mealType: 'breakfast',
@@ -41,7 +43,7 @@ export default function MealPlanner({ isOpen, onClose }) {
         fetch(`${API_URL}/meals/stats`),
         fetch(`${API_URL}/meals/daily/${selectedDate}`)
       ]);
-      
+
       setStats(await statsRes.json());
       setDailySummary(await dailyRes.json());
       setMeals((await dailyRes.clone?.json?.())?.meals || []);
@@ -54,7 +56,7 @@ export default function MealPlanner({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       await fetch(`${API_URL}/meals`, {
         method: 'POST',
@@ -64,7 +66,7 @@ export default function MealPlanner({ isOpen, onClose }) {
           date: selectedDate
         })
       });
-      
+
       setFormData({
         name: '',
         mealType: 'breakfast',
@@ -83,7 +85,7 @@ export default function MealPlanner({ isOpen, onClose }) {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this meal?')) return;
-    
+
     try {
       await fetch(`${API_URL}/meals/${id}`, { method: 'DELETE' });
       fetchData();
@@ -109,14 +111,14 @@ export default function MealPlanner({ isOpen, onClose }) {
     const today = new Date();
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    
+
     if (date.toDateString() === today.toDateString()) return 'Today';
     if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
-    
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
+
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
     });
   };
 
@@ -136,7 +138,7 @@ export default function MealPlanner({ isOpen, onClose }) {
             )}
           </div>
           <div className="header-actions">
-            <button 
+            <button
               className="btn-primary small"
               onClick={() => setShowForm(true)}
             >
@@ -151,8 +153,8 @@ export default function MealPlanner({ isOpen, onClose }) {
           <button onClick={() => navigateDate(-1)}>←</button>
           <div className="current-date">
             <span className="date-label">{formatDate(selectedDate)}</span>
-            <input 
-              type="date" 
+            <input
+              type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
             />
@@ -169,24 +171,24 @@ export default function MealPlanner({ isOpen, onClose }) {
                 <span className="summary-value">{dailySummary.totalCalories}</span>
               </div>
               <div className="summary-bar">
-                <div 
+                <div
                   className="summary-fill"
                   style={{ width: `${getProgressPercent(dailySummary.totalCalories)}%` }}
                 />
               </div>
             </div>
-            
+
             <div className="summary-grid">
               <div className="summary-item">
                 <span className="item-label">Protein</span>
                 <span className="item-value">{dailySummary.totalProtein}g</span>
               </div>
-              
+
               <div className="summary-item">
                 <span className="item-label">Carbs</span>
                 <span className="item-value">{dailySummary.totalCarbs}g</span>
               </div>
-              
+
               <div className="summary-item">
                 <span className="item-label">Fat</span>
                 <span className="item-value">{dailySummary.totalFat}g</span>
@@ -205,7 +207,7 @@ export default function MealPlanner({ isOpen, onClose }) {
               {showForm && (
                 <div className="meal-form">
                   <h3>Log Meal</h3>
-                  
+
                   <form onSubmit={handleSubmit}>
                     <input
                       type="text"
@@ -214,7 +216,7 @@ export default function MealPlanner({ isOpen, onClose }) {
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
                     />
-                    
+
                     <div className="meal-type-selector">
                       {MEAL_TYPES.map(type => (
                         <button
@@ -229,7 +231,7 @@ export default function MealPlanner({ isOpen, onClose }) {
                         </button>
                       ))}
                     </div>
-                    
+
                     <div className="form-row">
                       <input
                         type="number"
@@ -237,7 +239,7 @@ export default function MealPlanner({ isOpen, onClose }) {
                         value={formData.calories}
                         onChange={(e) => setFormData({ ...formData, calories: e.target.value })}
                       />
-                      
+
                       <input
                         type="number"
                         placeholder="Protein (g)"
@@ -245,7 +247,7 @@ export default function MealPlanner({ isOpen, onClose }) {
                         onChange={(e) => setFormData({ ...formData, protein: e.target.value })}
                       />
                     </div>
-                    
+
                     <div className="form-row">
                       <input
                         type="number"
@@ -253,7 +255,7 @@ export default function MealPlanner({ isOpen, onClose }) {
                         value={formData.carbs}
                         onChange={(e) => setFormData({ ...formData, carbs: e.target.value })}
                       />
-                      
+
                       <input
                         type="number"
                         placeholder="Fat (g)"
@@ -261,14 +263,14 @@ export default function MealPlanner({ isOpen, onClose }) {
                         onChange={(e) => setFormData({ ...formData, fat: e.target.value })}
                       />
                     </div>
-                    
+
                     <textarea
                       placeholder="Notes (optional)"
                       value={formData.notes}
                       onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                       rows={2}
                     />
-                    
+
                     <div className="form-actions">
                       <button type="button" className="btn-secondary" onClick={() => setShowForm(false)}>
                         Cancel
@@ -294,20 +296,20 @@ export default function MealPlanner({ isOpen, onClose }) {
                   {MEAL_TYPES.map(mealType => {
                     const typeMeals = dailySummary?.meals?.filter(m => m.mealType === mealType.id) || [];
                     if (typeMeals.length === 0) return null;
-                    
+
                     return (
                       <div key={mealType.id} className="meal-section">
                         <div className="section-header" style={{ color: mealType.color }}>
                           <span className="section-icon">{mealType.icon}</span>
                           <span className="section-name">{mealType.name}</span>
                         </div>
-                        
+
                         {typeMeals.map(meal => (
                           <div key={meal.id} className="meal-card">
                             <div className="meal-info">
                               <h4>{meal.name}</h4>
                               {meal.notes && <p className="meal-notes">{meal.notes}</p>}
-                              
+
                               <div className="meal-macros">
                                 <span>🔥 {meal.calories} cal</span>
                                 {meal.protein > 0 && <span>🥩 {meal.protein}g protein</span>}
@@ -315,8 +317,8 @@ export default function MealPlanner({ isOpen, onClose }) {
                                 {meal.fat > 0 && <span>🥑 {meal.fat}g fat</span>}
                               </div>
                             </div>
-                            
-                            <button 
+
+                            <button
                               className="delete-btn"
                               onClick={() => handleDelete(meal.id)}
                             >

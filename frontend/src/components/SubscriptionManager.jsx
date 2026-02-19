@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './SubscriptionManager.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { getApiUrl } from '../lib/apiUrl';
+
+const API_URL = getApiUrl();
 
 const CATEGORIES = [
   { id: 'streaming', name: 'Streaming', icon: '🎬', color: '#e74c3c' },
@@ -32,7 +34,7 @@ export default function SubscriptionManager({ isOpen, onClose }) {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('active');
   const [showForm, setShowForm] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     category: 'streaming',
@@ -55,7 +57,7 @@ export default function SubscriptionManager({ isOpen, onClose }) {
         fetch(`${API_URL}/subscriptions`),
         fetch(`${API_URL}/subscriptions/stats`)
       ]);
-      
+
       setSubscriptions((await subsRes.json()).subscriptions || []);
       setStats(await statsRes.json());
     } catch (err) {
@@ -67,14 +69,14 @@ export default function SubscriptionManager({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       await fetch(`${API_URL}/subscriptions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      
+
       setFormData({
         name: '',
         category: 'streaming',
@@ -105,7 +107,7 @@ export default function SubscriptionManager({ isOpen, onClose }) {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this subscription?')) return;
-    
+
     try {
       await fetch(`${API_URL}/subscriptions/${id}`, { method: 'DELETE' });
       fetchData();
@@ -150,7 +152,7 @@ export default function SubscriptionManager({ isOpen, onClose }) {
             )}
           </div>
           <div className="header-actions">
-            <button 
+            <button
               className="btn-primary small"
               onClick={() => setShowForm(true)}
             >
@@ -167,12 +169,12 @@ export default function SubscriptionManager({ isOpen, onClose }) {
               <span className="cost-label">Monthly</span>
               <span className="cost-value">{formatCurrency(stats.monthlyCost)}</span>
             </div>
-            
+
             <div className="cost-card yearly">
               <span className="cost-label">Yearly</span>
               <span className="cost-value">{formatCurrency(stats.yearlyCost)}</span>
             </div>
-            
+
             {stats.upcomingRenewals > 0 && (
               <div className="renewal-alert">
                 ⚠️ {stats.upcomingRenewals} renewal{stats.upcomingRenewals !== 1 ? 's' : ''} this week
@@ -209,7 +211,7 @@ export default function SubscriptionManager({ isOpen, onClose }) {
               {showForm && (
                 <div className="sub-form">
                   <h3>Add Subscription</h3>
-                  
+
                   <form onSubmit={handleSubmit}>
                     <input
                       type="text"
@@ -218,7 +220,7 @@ export default function SubscriptionManager({ isOpen, onClose }) {
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
                     />
-                    
+
                     <div className="form-row">
                       <select
                         value={formData.category}
@@ -228,7 +230,7 @@ export default function SubscriptionManager({ isOpen, onClose }) {
                           <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
                         ))}
                       </select>
-                      
+
                       <select
                         value={formData.billingCycle}
                         onChange={(e) => setFormData({ ...formData, billingCycle: e.target.value })}
@@ -238,7 +240,7 @@ export default function SubscriptionManager({ isOpen, onClose }) {
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="form-row">
                       <input
                         type="number"
@@ -248,7 +250,7 @@ export default function SubscriptionManager({ isOpen, onClose }) {
                         onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
                         required
                       />
-                      
+
                       <input
                         type="date"
                         placeholder="Renewal date"
@@ -256,14 +258,14 @@ export default function SubscriptionManager({ isOpen, onClose }) {
                         onChange={(e) => setFormData({ ...formData, renewalDate: e.target.value })}
                       />
                     </div>
-                    
+
                     <textarea
                       placeholder="Description (optional)"
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       rows={2}
                     />
-                    
+
                     <div className="form-actions">
                       <button type="button" className="btn-secondary" onClick={() => setShowForm(false)}>
                         Cancel
@@ -290,49 +292,49 @@ export default function SubscriptionManager({ isOpen, onClose }) {
                     const category = getCategoryInfo(sub.category);
                     const daysUntil = getDaysUntil(sub.renewalDate);
                     const isUpcoming = daysUntil >= 0 && daysUntil <= 7;
-                    
+
                     return (
-                      <div 
-                        key={sub.id} 
+                      <div
+                        key={sub.id}
                         className={`subscription-card ${sub.status} ${isUpcoming ? 'upcoming' : ''}`}
                       >
-                        <div 
+                        <div
                           className="category-icon"
                           style={{ background: category.color }}
                         >
                           {category.icon}
                         </div>
-                        
+
                         <div className="sub-info">
                           <h4>{sub.name}</h4>
-                          
+
                           <div className="sub-meta">
                             <span className="category-tag">{category.name}</span>
                             <span className="billing-tag">
                               {formatCurrency(sub.cost)}/{sub.billingCycle}
                             </span>
                           </div>
-                          
+
                           {sub.description && (
                             <p className="sub-description">{sub.description}</p>
                           )}
-                          
+
                           <div className={`renewal-date ${isUpcoming ? 'soon' : ''}`}>
                             🗓️ Renews {daysUntil === 0 ? 'today' : daysUntil === 1 ? 'tomorrow' : `in ${daysUntil} days`}
                             <span className="date">({new Date(sub.renewalDate).toLocaleDateString()})</span>
                           </div>
                         </div>
-                        
+
                         <div className="sub-actions">
                           {sub.status === 'active' && (
                             <>
-                              <button 
+                              <button
                                 onClick={() => handleUpdate(sub.id, { status: 'paused' })}
                                 title="Pause"
                               >
                                 ⏸️
                               </button>
-                              <button 
+                              <button
                                 onClick={() => handleUpdate(sub.id, { status: 'cancelled' })}
                                 title="Cancel"
                               >
@@ -340,16 +342,16 @@ export default function SubscriptionManager({ isOpen, onClose }) {
                               </button>
                             </>
                           )}
-                          
+
                           {sub.status === 'paused' && (
-                            <button 
+                            <button
                               onClick={() => handleUpdate(sub.id, { status: 'active' })}
                               title="Resume"
                             >
                               ▶️
                             </button>
                           )}
-                          
+
                           <button onClick={() => handleDelete(sub.id)} title="Delete">🗑️</button>
                         </div>
                       </div>
