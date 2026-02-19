@@ -50,26 +50,26 @@ function resolveAudioPath(filename) {
   if (filename.includes('/') || filename.includes('\\')) {
     return null;
   }
-  
+
   // Reject hidden files and parent directory references
   if (filename.startsWith('.') || filename.includes('..')) {
     return null;
   }
-  
+
   // Only allow alphanumeric, hyphens, and single dots (for extensions)
   if (!/^[a-zA-Z0-9-]+\.[a-zA-Z0-9]+$/.test(filename)) {
     return null;
   }
-  
+
   // Resolve and verify the path is within audioDir
   const requestedPath = path.join(audioDir, filename);
   const resolvedPath = path.resolve(requestedPath);
   const resolvedAudioDir = path.resolve(audioDir);
-  
+
   if (!resolvedPath.startsWith(resolvedAudioDir + path.sep) && resolvedPath !== resolvedAudioDir) {
     return null;
   }
-  
+
   return resolvedPath;
 }
 
@@ -80,7 +80,7 @@ ttsRouter.post('/', timeoutFor('tts'), authenticateApiToken, asyncHandler(async 
 
   // Validate required fields
   if (!text) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Text is required',
       code: 'MISSING_TEXT'
     });
@@ -88,7 +88,7 @@ ttsRouter.post('/', timeoutFor('tts'), authenticateApiToken, asyncHandler(async 
 
   // Validate text is a string
   if (typeof text !== 'string') {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Text must be a string',
       code: 'INVALID_TEXT_TYPE'
     });
@@ -96,14 +96,14 @@ ttsRouter.post('/', timeoutFor('tts'), authenticateApiToken, asyncHandler(async 
 
   // Validate text length
   if (text.length === 0) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Text cannot be empty',
       code: 'EMPTY_TEXT'
     });
   }
 
   if (text.length > MAX_TEXT_LENGTH) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: `Text too long (max ${MAX_TEXT_LENGTH} characters)`,
       code: 'TEXT_TOO_LONG',
       maxLength: MAX_TEXT_LENGTH,
@@ -113,7 +113,7 @@ ttsRouter.post('/', timeoutFor('tts'), authenticateApiToken, asyncHandler(async 
 
   // Validate provider
   if (!VALID_PROVIDERS.includes(provider)) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: `Invalid provider. Must be one of: ${VALID_PROVIDERS.join(', ')}`,
       code: 'INVALID_PROVIDER',
       validProviders: VALID_PROVIDERS
@@ -122,7 +122,7 @@ ttsRouter.post('/', timeoutFor('tts'), authenticateApiToken, asyncHandler(async 
 
   // Validate voice format (alphanumeric only)
   if (typeof voice !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(voice)) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Invalid voice format',
       code: 'INVALID_VOICE_FORMAT'
     });
@@ -145,9 +145,9 @@ ttsRouter.post('/', timeoutFor('tts'), authenticateApiToken, asyncHandler(async 
     cached = true;
   }
 
-  res.json({ 
+  res.json({
     success: true,
-    audioUrl, 
+    audioUrl,
     text: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
     voice,
     provider,
@@ -158,64 +158,61 @@ ttsRouter.post('/', timeoutFor('tts'), authenticateApiToken, asyncHandler(async 
 // Serve audio files with path traversal protection
 ttsRouter.get('/audio/:filename', asyncHandler(async (req, res) => {
   const { filename } = req.params;
-  
+
   // Resolve path securely
   const filePath = resolveAudioPath(filename);
-  
+
   if (!filePath) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Invalid filename',
       code: 'INVALID_FILENAME'
     });
   }
-  
+
   // Check file exists
   if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ 
+    return res.status(404).json({
       error: 'Audio file not found',
       code: 'FILE_NOT_FOUND'
     });
   }
-  
+
   // Verify it's a file (not a directory)
   const stats = fs.statSync(filePath);
   if (!stats.isFile()) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Invalid file',
       code: 'NOT_A_FILE'
     });
   }
-  
+
   // Set security headers
   res.setHeader('Content-Type', 'audio/mpeg');
   res.setHeader('Cache-Control', 'public, max-age=86400');
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  
+
   // Stream the file
   const stream = fs.createReadStream(filePath);
-  
+
   stream.on('error', (err) => {
     console.error(`[TTS] Error streaming file ${filename}:`, err.message);
     if (!res.headersSent) {
-      res.status(500).json({ 
+      res.status(500).json({
         error: 'Error reading audio file',
         code: 'STREAM_ERROR'
       });
     }
   });
-  
+
   stream.pipe(res);
 }));
 
 async function synthesizeWithOpenAI(text, voice) {
   const apiKey = process.env.OPENAI_API_KEY;
-  
+
   if (!apiKey) {
-    console.warn('[TTS] OPENAI_API_KEY not configured');
-    const error = new Error('OpenAI API key not configured. Set OPENAI_API_KEY environment variable.');
-    error.code = 'TTS_API_KEY_MISSING';
-    error.status = 503;
-    throw error;
+    console.warn('[TTS] OPENAI_API_KEY not configured. Skipping synthesis.');
+    return null; // Return null to indicate no audio generated
   }
 
   // Validate voice against whitelist
@@ -258,7 +255,7 @@ async function synthesizeWithOpenAI(text, voice) {
     const buffer = Buffer.from(await response.arrayBuffer());
     fs.writeFileSync(tempPath, buffer);
     fs.renameSync(tempPath, cachePath);
-    
+
     console.log(`[TTS] Saved to: ${cachePath}`);
     return cachePath;
   } catch (error) {
@@ -269,7 +266,7 @@ async function synthesizeWithOpenAI(text, voice) {
 
 async function synthesizeWithElevenLabs(text, voice) {
   const apiKey = process.env.ELEVENLABS_API_KEY;
-  
+
   if (!apiKey) {
     console.warn('[TTS] ELEVENLABS_API_KEY not configured');
     const error = new Error('ElevenLabs API key not configured. Set ELEVENLABS_API_KEY environment variable.');
@@ -279,8 +276,8 @@ async function synthesizeWithElevenLabs(text, voice) {
   }
 
   // Validate voice ID format (alphanumeric with hyphens)
-  const voiceId = voice && /^[a-zA-Z0-9-]+$/.test(voice) 
-    ? voice 
+  const voiceId = voice && /^[a-zA-Z0-9-]+$/.test(voice)
+    ? voice
     : '21m00Tcm4TlvDq8ikWAM'; // Default: Rachel
 
   // Create cache key using SHA-256
@@ -323,7 +320,7 @@ async function synthesizeWithElevenLabs(text, voice) {
     const buffer = Buffer.from(await response.arrayBuffer());
     fs.writeFileSync(tempPath, buffer);
     fs.renameSync(tempPath, cachePath);
-    
+
     console.log(`[TTS] Saved to: ${cachePath}`);
     return cachePath;
   } catch (error) {

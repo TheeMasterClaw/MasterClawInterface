@@ -110,7 +110,8 @@ function isOriginAllowed(origin) {
   if (ALLOWED_ORIGINS.includes(origin)) return true;
 
   // Allow Vercel preview deployments (they have random hashes)
-  if (origin?.match(/^https:\/\/master-claw-interface-[a-z0-9-]+-yeeeee\.vercel\.app$/)) return true;
+  // Updated regex to be more flexible for all Vercel preview URLs matching the pattern
+  if (origin?.match(/^https:\/\/master-claw-interface-.*-yeeeee\.vercel\.app$/)) return true;
 
   return false;
 }
