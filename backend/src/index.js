@@ -351,6 +351,17 @@ app.get('/', (req, res) => {
   });
 });
 
+// 404 handler - return JSON for API requests, prevents HTML 404 pages
+app.use((req, res) => {
+  res.status(404).json({
+    ok: false,
+    error: 'Not Found',
+    path: req.path,
+    method: req.method,
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Global error handler - must be last
 app.use(errorHandler);
 

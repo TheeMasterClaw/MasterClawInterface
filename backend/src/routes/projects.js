@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import { v4 as uuidv4 } from 'uuid';
+
 const router = express.Router();
-const { v4: uuidv4 } = require('uuid');
 
 // In-memory storage for projects (in production, use a database)
 let projects = [];
@@ -100,4 +101,4 @@ router.get('/stats/overview', (req, res) => {
   res.json(stats);
 });
 
-module.exports = router;
+export default router;
