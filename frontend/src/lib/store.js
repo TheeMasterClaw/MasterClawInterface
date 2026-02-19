@@ -81,6 +81,7 @@ export const useUIStore = create((set) => ({
         resources: false,
         commandPalette: false,
         help: false,
+        adminDebug: false,
     },
 
     // Actions to toggle overlays
