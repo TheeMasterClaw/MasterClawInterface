@@ -1,9 +1,20 @@
 // API Configuration - lazy evaluation to avoid SSR issues
 const getApiBase = () => {
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GATEWAY_URL) {
-    return import.meta.env.VITE_GATEWAY_URL;
+  let url = 'http://localhost:3001';
+  
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    // Prefer VITE_API_URL for HTTP requests, fall back to VITE_GATEWAY_URL
+    url = import.meta.env.VITE_API_URL || import.meta.env.VITE_GATEWAY_URL || url;
   }
-  return 'http://localhost:3001';
+  
+  // Convert WebSocket URLs to HTTP for fetch requests
+  if (url.startsWith('wss://')) {
+    url = url.replace('wss://', 'https://');
+  } else if (url.startsWith('ws://')) {
+    url = url.replace('ws://', 'http://');
+  }
+  
+  return url;
 };
 
 const API_BASE = getApiBase();

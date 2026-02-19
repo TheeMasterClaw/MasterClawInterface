@@ -193,7 +193,11 @@ export default function App() {
       const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
       const provider = settings.ttsProvider || 'openai';
       const voice = settings.ttsVoice || 'alloy';
-      const API_URL = import.meta.env.VITE_GATEWAY_URL || import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      
+      // Get API URL and ensure it's HTTP (not WebSocket)
+      let API_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_GATEWAY_URL || 'http://localhost:3001';
+      if (API_URL.startsWith('wss://')) API_URL = API_URL.replace('wss://', 'https://');
+      if (API_URL.startsWith('ws://')) API_URL = API_URL.replace('ws://', 'http://');
 
       const response = await fetch(`${API_URL}/tts`, {
         method: 'POST',
