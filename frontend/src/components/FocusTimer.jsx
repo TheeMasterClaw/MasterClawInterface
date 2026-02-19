@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { logFocusSession } from './ProductivityAnalytics';
 // import './FocusTimer.css';

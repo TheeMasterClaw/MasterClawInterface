@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import './TodayView.css';
 import { getApiUrl } from '../lib/apiUrl.js';

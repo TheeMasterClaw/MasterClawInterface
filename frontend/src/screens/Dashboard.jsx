@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import API from '../config.js';
 import { getApiUrl } from '../lib/apiUrl.js';

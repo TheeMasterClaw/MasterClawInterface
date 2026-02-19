@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * PasswordVault Component
  * A secure, locally-encrypted vault for passwords and sensitive notes.

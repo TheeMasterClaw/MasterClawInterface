@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
 // import './DailyBriefing.css';
 import { getApiUrl } from '../lib/apiUrl.js';
