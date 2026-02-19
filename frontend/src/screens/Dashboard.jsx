@@ -396,30 +396,8 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   }, [showSettings]);
 
   const playTTS = async (text) => {
-    if (!isBrowser || text.length > 500) return;
-
-    try {
-      const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
-      const provider = settings.ttsProvider || 'openai';
-      const voice = settings.ttsVoice || 'alloy';
-
-      const response = await fetch(API.tts.synthesize, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, provider, voice })
-      });
-
-      const data = await response.json();
-      if (data.audioUrl) {
-        const audioUrl = `${API.BASE_URL.replace(/\/$/, '')}${data.audioUrl}`;
-        if (audioRef.current) {
-          audioRef.current.src = audioUrl;
-          audioRef.current.play();
-        }
-      }
-    } catch (err) {
-      console.log('TTS unavailable:', err.message);
-    }
+    // TTS DISABLED - Chat only mode
+    return;
   };
 
   const handleSendText = useCallback(async () => {

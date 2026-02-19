@@ -202,30 +202,8 @@ export default function ClientLayout({ children }) {
     }, [hasGreeted, phase]);
 
     const playWelcome = async () => {
-        if (!isBrowser) return;
-
-        try {
-            const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
-            const provider = settings.ttsProvider || 'openai';
-            const voice = settings.ttsVoice || 'alloy';
-
-            const response = await fetch(API.tts.synthesize, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    text: 'Welcome, Rex. Let\'s take over the world together.',
-                    provider,
-                    voice
-                })
-            });
-            const data = await response.json();
-            if (data.audioUrl) {
-                const audio = new Audio(`${API.BASE_URL.replace(/\/$/, '')}${data.audioUrl}`);
-                audio.play();
-            }
-        } catch (err) {
-            console.log('TTS unavailable, proceeding with silent greeting');
-        }
+        // TTS DISABLED - Chat only mode
+        return;
     };
 
     const handleBack = () => {
