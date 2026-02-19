@@ -220,8 +220,8 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
     const initGateway = async () => {
       try {
         const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
-        const gatewayUrl = settings.gatewayUrl || import.meta.env.VITE_GATEWAY_URL || import.meta.env.VITE_API_URL || 'http://localhost:3001';
-        const gatewayToken = settings.gatewayToken || import.meta.env.VITE_GATEWAY_TOKEN || '';
+        const gatewayUrl = settings.gatewayUrl || process.env.NEXT_PUBLIC_GATEWAY_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const gatewayToken = settings.gatewayToken || process.env.NEXT_PUBLIC_GATEWAY_TOKEN || '';
 
         const client = new GatewayClient(gatewayUrl, gatewayToken, {
           maxReconnectAttempts: 10,
