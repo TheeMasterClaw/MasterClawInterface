@@ -102,15 +102,16 @@ const ALLOWED_ORIGINS = [
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:4173',
+  'https://master-claw-interface-git-main-yeeeee.vercel.app',
 ];
 
 // Helper to check if origin is allowed (including Vercel preview deployments)
 function isOriginAllowed(origin) {
   if (ALLOWED_ORIGINS.includes(origin)) return true;
-  
+
   // Allow Vercel preview deployments (they have random hashes)
-  if (origin?.match(/^https:\/\/master-claw-interface-[a-z0-9]+-yeeeee\.vercel\.app$/)) return true;
-  
+  if (origin?.match(/^https:\/\/master-claw-interface-[a-z0-9-]+-yeeeee\.vercel\.app$/)) return true;
+
   return false;
 }
 
@@ -126,14 +127,14 @@ if (process.env.FRONTEND_URL) {
 
 // CORS middleware with explicit origin validation
 const corsOptions = {
-  origin: function(origin, callback) {
+  origin: function (origin, callback) {
     // Allow requests with no origin (non-browser clients, curl, etc.)
     if (!origin) return callback(null, true);
-    
+
     if (isOriginAllowed(origin)) {
       return callback(null, true);
     }
-    
+
     console.warn(`CORS blocked for origin: ${origin}`);
     return callback(new Error(`CORS blocked: ${origin} not in allowed list`));
   },
@@ -226,14 +227,14 @@ app.get('/security/audit', (req, res) => {
 // Security audit log endpoints
 app.get('/security/audit/logs', (req, res) => {
   const { lines = 100, eventType, severity, since } = req.query;
-  
+
   const options = {
     lines: parseInt(lines, 10) || 100,
     eventType,
     severity,
     since
   };
-  
+
   const logs = getRecentAuditLogs(options);
   res.json({
     count: logs.length,
@@ -261,17 +262,17 @@ app.get('/security/audit/stats', (req, res) => {
 app.post('/security/csp-report', cspReportLimiter, express.json({ limit: '50kb' }), (req, res) => {
   // Browsers send CSP reports with a 'csp-report' field
   const report = req.body?.['csp-report'] || req.body;
-  
+
   if (!report || typeof report !== 'object') {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Invalid CSP report format',
       code: 'INVALID_CSP_REPORT'
     });
   }
-  
+
   // Log the CSP violation
   const eventId = logCspViolation(report, req);
-  
+
   // Return 204 No Content - browsers don't expect a response body
   res.status(204).send();
 });
@@ -283,23 +284,23 @@ app.post('/security/csp-report', cspReportLimiter, express.json({ limit: '50kb' 
  */
 app.get('/security/csp-violations', (req, res) => {
   const { lines = 100, severity, since, blockedUri } = req.query;
-  
+
   const options = {
     lines: parseInt(lines, 10) || 100,
     eventType: SecurityEventType.CSP_VIOLATION,
     severity,
     since
   };
-  
+
   let violations = getRecentAuditLogs(options);
-  
+
   // Additional filter for blocked URI pattern
   if (blockedUri) {
-    violations = violations.filter(v => 
+    violations = violations.filter(v =>
       v.details?.blocked_uri?.includes(blockedUri)
     );
   }
-  
+
   // Calculate summary statistics
   const summary = {
     total: violations.length,
@@ -307,17 +308,17 @@ app.get('/security/csp-violations', (req, res) => {
     by_directive: {},
     common_blocked_uris: {}
   };
-  
+
   for (const v of violations) {
     const sev = v.severity;
     const directive = v.details?.violated_directive || 'unknown';
     const blockedUri = v.details?.blocked_uri || 'unknown';
-    
+
     summary.by_severity[sev] = (summary.by_severity[sev] || 0) + 1;
     summary.by_directive[directive] = (summary.by_directive[directive] || 0) + 1;
     summary.common_blocked_uris[blockedUri] = (summary.common_blocked_uris[blockedUri] || 0) + 1;
   }
-  
+
   res.json({
     count: violations.length,
     summary,
