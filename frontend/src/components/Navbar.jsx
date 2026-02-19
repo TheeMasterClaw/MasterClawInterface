@@ -70,7 +70,8 @@ export default function Navbar({
   onBrainDumpClick,
   onSprintPlannerClick,
   onResourceLibraryClick,
-  onContactManagerClick
+  onContactManagerClick,
+  onTodayViewClick
 }) {
   return (
     <nav className="navbar">
@@ -546,6 +547,13 @@ export default function Navbar({
               title="Contact Manager"
             >
               👥
+            </button>
+            <button
+              className="navbar-btn navbar-btn-today"
+              onClick={onTodayViewClick}
+              title="Today View"
+            >
+              📅
             </button>
             <button
               className="navbar-btn navbar-btn-settings"

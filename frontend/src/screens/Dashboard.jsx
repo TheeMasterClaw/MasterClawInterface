@@ -53,6 +53,7 @@ import AchievementVault from '../components/AchievementVault';
 import SprintPlanner from '../components/SprintPlanner';
 import ResourceLibrary from '../components/ResourceLibrary';
 import ContactManager from '../components/ContactManager';
+import TodayView from '../components/TodayView';
 import './Dashboard.css';
 
 // Browser detection
@@ -116,6 +117,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showSprintPlanner, setShowSprintPlanner] = useState(false);
   const [showResourceLibrary, setShowResourceLibrary] = useState(false);
   const [showContactManager, setShowContactManager] = useState(false);
+  const [showTodayView, setShowTodayView] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -377,6 +379,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowSprintPlanner(false);
         setShowResourceLibrary(false);
         setShowContactManager(false);
+        setShowTodayView(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -875,6 +878,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/today' || userText === '/daily' || userText === '/day') {
+      setShowTodayView(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Today View'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1202,6 +1217,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'people':
           case 'network':
             setShowContactManager(true);
+            break;
+          case 'today':
+          case 'daily':
+          case 'day':
+            setShowTodayView(true);
             break;
         }
         break;
@@ -1585,6 +1605,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showTodayView && (
+        <TodayView
+          isOpen={showTodayView}
+          onClose={() => setShowTodayView(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1657,6 +1684,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/sprint</strong> – Open Sprint Planner</li>
                   <li><strong>/resources</strong> – Open Resource Library</li>
                   <li><strong>/contacts</strong> – Open Contact Manager</li>
+                  <li><strong>/today</strong> – Open Today View</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1726,6 +1754,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowSprintPlanner(true)} title="Sprint Planner">🏃</button>
             <button className="icon-btn" onClick={() => setShowResourceLibrary(true)} title="Resource Library">📚</button>
             <button className="icon-btn" onClick={() => setShowContactManager(true)} title="Contact Manager">👥</button>
+            <button className="icon-btn" onClick={() => setShowTodayView(true)} title="Today View">📅</button>
           </div>
         </div>
 

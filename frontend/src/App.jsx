@@ -70,6 +70,7 @@ import BrainDump from './components/BrainDump';
 import SprintPlanner from './components/SprintPlanner';
 import ResourceLibrary from './components/ResourceLibrary';
 import ContactManager from './components/ContactManager';
+import TodayView from './components/TodayView';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -148,6 +149,7 @@ export default function App() {
   const [showSprintPlanner, setShowSprintPlanner] = useState(false);
   const [showResourceLibrary, setShowResourceLibrary] = useState(false);
   const [showContactManager, setShowContactManager] = useState(false);
+  const [showTodayView, setShowTodayView] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -304,6 +306,7 @@ export default function App() {
         onSprintPlannerClick={() => setShowSprintPlanner(true)}
         onResourceLibraryClick={() => setShowResourceLibrary(true)}
         onContactManagerClick={() => setShowContactManager(true)}
+        onTodayViewClick={() => setShowTodayView(true)}
       />
 
       {showSettings && (
@@ -773,6 +776,13 @@ export default function App() {
         <ContactManager
           isOpen={showContactManager}
           onClose={() => setShowContactManager(false)}
+        />
+      )}
+
+      {showTodayView && (
+        <TodayView
+          isOpen={showTodayView}
+          onClose={() => setShowTodayView(false)}
         />
       )}
 
