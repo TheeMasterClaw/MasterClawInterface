@@ -222,7 +222,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       try {
         const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
         const gatewayUrl = settings.gatewayUrl || getApiUrl();
-        const gatewayToken = settings.gatewayToken || import.meta.env.VITE_GATEWAY_TOKEN || '';
+        const gatewayToken = settings.gatewayToken || process.env.NEXT_PUBLIC_GATEWAY_TOKEN || '';
 
         const client = new GatewayClient(gatewayUrl, gatewayToken, {
           maxReconnectAttempts: 10,
@@ -1017,10 +1017,10 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setIsVideoActive(true);
       } catch (err) {
         console.error('Failed to access camera:', err);
-        const errorMessage = err.name === 'NotAllowedError' 
+        const errorMessage = err.name === 'NotAllowedError'
           ? 'Camera access denied. Please grant camera permissions in your browser settings.'
           : 'Camera not available or already in use.';
-        
+
         // Show error in chat instead of alert
         messageCountRef.current++;
         const errorMsg = {
@@ -1809,28 +1809,28 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
               )}
 
               <div className="mode-switcher">
-                <button 
+                <button
                   className={`mode-switch-btn ${currentMode === 'text' ? 'active' : ''}`}
                   onClick={() => setCurrentMode('text')}
                   title="Text Mode"
                 >
                   💬
                 </button>
-                <button 
+                <button
                   className={`mode-switch-btn ${currentMode === 'voice' ? 'active' : ''}`}
                   onClick={() => setCurrentMode('voice')}
                   title="Voice Mode"
                 >
                   🎤
                 </button>
-                <button 
+                <button
                   className={`mode-switch-btn ${currentMode === 'hybrid' ? 'active' : ''}`}
                   onClick={() => setCurrentMode('hybrid')}
                   title="Hybrid Mode"
                 >
                   🔀
                 </button>
-                <button 
+                <button
                   className={`mode-switch-btn ${currentMode === 'context' ? 'active' : ''}`}
                   onClick={() => setCurrentMode('context')}
                   title="Context Mode"

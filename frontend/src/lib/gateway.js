@@ -28,17 +28,17 @@ export class GatewayClient {
   }
 
   getBridgeUrl() {
-    let url = import.meta.env.VITE_GATEWAY_URL || 
-              import.meta.env.VITE_API_URL || 
-              'http://localhost:3001';
-    
+    let url = process.env.NEXT_PUBLIC_GATEWAY_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      'http://localhost:3001';
+
     // Convert http/https to ws/wss for Socket.IO
     if (url.startsWith('https://')) {
       url = url.replace('https://', 'wss://');
     } else if (url.startsWith('http://')) {
       url = url.replace('http://', 'ws://');
     }
-    
+
     return url;
   }
 
