@@ -85,14 +85,52 @@ const cspReportLimiter = rateLimit({
 
 app.use(limiter);
 
-const allowedOrigins = process.env.FRONTEND_URL
-  ? process.env.FRONTEND_URL.split(',').map((origin) => origin.trim())
-  : '*';
+// =============================================================================
+// CORS Configuration
+// =============================================================================
+const ALLOWED_ORIGINS = [
+  'https://master-claw-interface.vercel.app',
+  'https://master-claw-interface-git-main-rex-deus-projects.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:4173',
+];
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
+// Add FRONTEND_URL env var origins if provided
+if (process.env.FRONTEND_URL) {
+  const envOrigins = process.env.FRONTEND_URL.split(',').map(o => o.trim());
+  envOrigins.forEach(origin => {
+    if (!ALLOWED_ORIGINS.includes(origin)) {
+      ALLOWED_ORIGINS.push(origin);
+    }
+  });
+}
+
+// CORS middleware with explicit origin validation
+const corsOptions = {
+  origin: function(origin, callback) {
+    // Allow requests with no origin (non-browser clients, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (ALLOWED_ORIGINS.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    console.warn(`CORS blocked for origin: ${origin}`);
+    return callback(new Error(`CORS blocked: ${origin} not in allowed list`));
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
+  maxAge: 86400, // 24 hours preflight cache
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
+
+// Explicitly handle OPTIONS preflight for all routes
+app.options('*', cors(corsOptions));
 
 // Security: Body size limits to prevent DoS via large payloads
 // 100KB for general API requests, 1MB for TTS (text can be large)
@@ -324,4 +362,5 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   console.log('🔌 Socket.IO server enabled');
   console.log('🔒 Privacy-first. Self-hosted. Yours alone.');
   console.log(`📍 URL: http://localhost:${PORT}`);
+  console.log(`🌐 CORS allowed origins: ${ALLOWED_ORIGINS.join(', ')}`);
 });

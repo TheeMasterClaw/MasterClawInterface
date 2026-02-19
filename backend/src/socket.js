@@ -7,13 +7,42 @@ import {
   invokeSkill,
 } from './services/skillRegistry.js';
 
+// Shared allowed origins - must match backend CORS config
+const ALLOWED_ORIGINS = [
+  'https://master-claw-interface.vercel.app',
+  'https://master-claw-interface-git-main-rex-deus-projects.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:4173',
+];
+
+// Add FRONTEND_URL env var origins if provided
+if (process.env.FRONTEND_URL) {
+  const envOrigins = process.env.FRONTEND_URL.split(',').map(o => o.trim());
+  envOrigins.forEach(origin => {
+    if (!ALLOWED_ORIGINS.includes(origin)) {
+      ALLOWED_ORIGINS.push(origin);
+    }
+  });
+}
+
 export function createSocketServer(httpServer) {
   const io = new Server(httpServer, {
     path: '/socket.io',
     cors: {
-      origin: process.env.FRONTEND_URL?.split(',').map((origin) => origin.trim()) || '*',
+      origin: ALLOWED_ORIGINS,
       credentials: true,
       methods: ['GET', 'POST']
+    },
+    // Enable both websocket and polling transports for compatibility
+    transports: ['websocket', 'polling'],
+    // Ping configuration for connection stability
+    pingTimeout: 60000,
+    pingInterval: 25000,
+    // Connection state recovery
+    connectionStateRecovery: {
+      maxDisconnectionDuration: 2 * 60 * 1000, // 2 minutes
+      skipMiddlewares: true,
     }
   });
 

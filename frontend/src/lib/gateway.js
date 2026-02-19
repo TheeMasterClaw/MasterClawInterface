@@ -70,11 +70,13 @@ export class GatewayClient {
 
       this.connectionState = 'connecting';
       this.socket = io(this.url, {
-        transports: ['websocket'],
+        transports: ['websocket', 'polling'],
         path: '/socket.io',
         reconnection: true,
         reconnectionAttempts: this.maxReconnectAttempts,
         reconnectionDelay: this.reconnectDelay,
+        // Enable credentials for CORS
+        withCredentials: true,
         auth: {
           token: this.token,
           sessionId: this.sessionId
