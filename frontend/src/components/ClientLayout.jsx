@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useUIStore } from '../lib/store';
+import API from '../config';
 
 // Components
 import Navbar from './Navbar';
@@ -77,7 +78,7 @@ import SprintPlanner from './SprintPlanner';
 import ResourceLibrary from './ResourceLibrary';
 
 // Config
-const API_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// Config
 const isBrowser = typeof window !== 'undefined';
 
 export default function ClientLayout({ children }) {
@@ -208,7 +209,7 @@ export default function ClientLayout({ children }) {
             const provider = settings.ttsProvider || 'openai';
             const voice = settings.ttsVoice || 'alloy';
 
-            const response = await fetch(`${API_URL}/tts`, {
+            const response = await fetch(API.tts.synthesize, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -219,7 +220,7 @@ export default function ClientLayout({ children }) {
             });
             const data = await response.json();
             if (data.audioUrl) {
-                const audio = new Audio(`${API_URL.replace(/\/$/, '')}${data.audioUrl}`);
+                const audio = new Audio(`${API.BASE_URL.replace(/\/$/, '')}${data.audioUrl}`);
                 audio.play();
             }
         } catch (err) {
