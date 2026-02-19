@@ -68,6 +68,7 @@ import AchievementVault from './components/AchievementVault';
 import ChallengeTracker from './components/ChallengeTracker';
 import BrainDump from './components/BrainDump';
 import SprintPlanner from './components/SprintPlanner';
+import ResourceLibrary from './components/ResourceLibrary';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -144,6 +145,7 @@ export default function App() {
   const [showChallengeTracker, setShowChallengeTracker] = useState(false);
   const [showBrainDump, setShowBrainDump] = useState(false);
   const [showSprintPlanner, setShowSprintPlanner] = useState(false);
+  const [showResourceLibrary, setShowResourceLibrary] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -294,6 +296,7 @@ export default function App() {
         onChallengeTrackerClick={() => setShowChallengeTracker(true)}
         onBrainDumpClick={() => setShowBrainDump(true)}
         onSprintPlannerClick={() => setShowSprintPlanner(true)}
+        onResourceLibraryClick={() => setShowResourceLibrary(true)}
       />
 
       {showSettings && (
@@ -749,6 +752,13 @@ export default function App() {
         <SprintPlanner
           isOpen={showSprintPlanner}
           onClose={() => setShowSprintPlanner(false)}
+        />
+      )}
+
+      {showResourceLibrary && (
+        <ResourceLibrary
+          isOpen={showResourceLibrary}
+          onClose={() => setShowResourceLibrary(false)}
         />
       )}
 

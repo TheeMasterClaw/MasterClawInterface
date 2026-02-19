@@ -15,6 +15,7 @@ import { snippetsRouter } from './routes/snippets.js';
 import { skillsTrackerRouter } from './routes/skillsTracker.js';
 import systemRouter from './routes/system.js';
 import projectsRouter from './routes/projects.js';
+import resourcesRouter from './routes/resources.js';
 import { errorHandler, sanitizeBody, authenticateApiToken } from './middleware/security.js';
 import { requestTimeout, timeoutFor } from './middleware/timeout.js';
 import { auditLogMiddleware, getRecentAuditLogs, getAuditStats, logSecurityEvent, logCspViolation, SecurityEventType, Severity } from './middleware/auditLog.js';
@@ -185,6 +186,7 @@ app.use('/snippets', snippetsRouter);
 app.use('/system', systemRouter);
 app.use('/skills-tracker', skillsTrackerRouter);
 app.use('/projects', projectsRouter);
+app.use('/resources', resourcesRouter);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -327,7 +329,7 @@ app.get('/', (req, res) => {
   res.json({
     message: 'MC Backend API',
     status: 'running',
-    endpoints: ['/tasks', '/calendar', '/time', '/tts', '/health', '/chat', '/skills', '/snippets', '/projects'],
+    endpoints: ['/tasks', '/calendar', '/time', '/tts', '/health', '/chat', '/skills', '/snippets', '/projects', '/resources'],
     realtime: 'socket.io enabled',
     security: {
       rateLimiting: true,

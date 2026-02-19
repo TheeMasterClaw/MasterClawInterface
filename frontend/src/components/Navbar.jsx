@@ -68,7 +68,8 @@ export default function Navbar({
   onAchievementVaultClick,
   onChallengeTrackerClick,
   onBrainDumpClick,
-  onSprintPlannerClick
+  onSprintPlannerClick,
+  onResourceLibraryClick
 }) {
   return (
     <nav className="navbar">
@@ -530,6 +531,13 @@ export default function Navbar({
               title="Sprint Planner"
             >
               🏃
+            </button>
+            <button
+              className="navbar-btn navbar-btn-resources"
+              onClick={onResourceLibraryClick}
+              title="Resource Library"
+            >
+              📚
             </button>
             <button
               className="navbar-btn navbar-btn-settings"

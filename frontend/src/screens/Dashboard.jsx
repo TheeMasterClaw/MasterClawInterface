@@ -51,6 +51,7 @@ import ConversationHistory from '../components/ConversationHistory';
 import ReflectionStudio from '../components/ReflectionStudio';
 import AchievementVault from '../components/AchievementVault';
 import SprintPlanner from '../components/SprintPlanner';
+import ResourceLibrary from '../components/ResourceLibrary';
 import './Dashboard.css';
 
 // Browser detection
@@ -112,6 +113,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showReflectionStudio, setShowReflectionStudio] = useState(false);
   const [showAchievementVault, setShowAchievementVault] = useState(false);
   const [showSprintPlanner, setShowSprintPlanner] = useState(false);
+  const [showResourceLibrary, setShowResourceLibrary] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -371,6 +373,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowReflectionStudio(false);
         setShowAchievementVault(false);
         setShowSprintPlanner(false);
+        setShowResourceLibrary(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -845,6 +848,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/resources' || userText === '/library' || userText === '/bookmarks') {
+      setShowResourceLibrary(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Resource Library'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1162,6 +1177,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'sprints':
           case 'agile':
             setShowSprintPlanner(true);
+            break;
+          case 'resources':
+          case 'library':
+          case 'bookmarks':
+            setShowResourceLibrary(true);
             break;
         }
         break;
@@ -1531,6 +1551,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showResourceLibrary && (
+        <ResourceLibrary
+          isOpen={showResourceLibrary}
+          onClose={() => setShowResourceLibrary(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1601,6 +1628,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/history</strong> – Open Conversation History</li>
                   <li><strong>/achievements</strong> – Open Achievement Vault</li>
                   <li><strong>/sprint</strong> – Open Sprint Planner</li>
+                  <li><strong>/resources</strong> – Open Resource Library</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1668,6 +1696,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowCodePlayground(true)} title="Code Playground">💻</button>
             <button className="icon-btn" onClick={() => setShowReminderManager(true)} title="Smart Reminders">⏰</button>
             <button className="icon-btn" onClick={() => setShowSprintPlanner(true)} title="Sprint Planner">🏃</button>
+            <button className="icon-btn" onClick={() => setShowResourceLibrary(true)} title="Resource Library">📚</button>
           </div>
         </div>
 
