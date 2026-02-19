@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './TravelPlanner.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { getApiUrl } from '../lib/apiUrl';
+
+const API_URL = getApiUrl();
 
 const TRIP_PURPOSES = [
   { id: 'leisure', name: 'Leisure', icon: '🏖️' },
@@ -51,7 +53,7 @@ export default function TravelPlanner({ isOpen, onClose }) {
         fetch(`${API_URL}/travel`),
         fetch(`${API_URL}/travel/stats`)
       ]);
-      
+
       setTrips((await tripsRes.json()).trips || []);
       setStats(await statsRes.json());
     } catch (err) {
@@ -63,7 +65,7 @@ export default function TravelPlanner({ isOpen, onClose }) {
 
   const getFilteredTrips = () => {
     const now = new Date();
-    
+
     switch (activeTab) {
       case 'upcoming':
         return trips.filter(t => new Date(t.startDate) >= now);
@@ -110,14 +112,14 @@ export default function TravelPlanner({ isOpen, onClose }) {
           </div>
           <div className="header-actions">
             {!selectedTrip ? (
-              <button 
+              <button
                 className="btn-primary small"
                 onClick={() => setShowTripForm(true)}
               >
                 ➕ New Trip
               </button>
             ) : (
-              <button 
+              <button
                 className="btn-secondary small"
                 onClick={() => setSelectedTrip(null)}
               >
@@ -155,8 +157,8 @@ export default function TravelPlanner({ isOpen, onClose }) {
           {loading ? (
             <div className="loading-state">⏳ Loading...</div>
           ) : selectedTrip ? (
-            <TripDetail 
-              trip={selectedTrip} 
+            <TripDetail
+              trip={selectedTrip}
               onUpdate={fetchData}
               onBack={() => setSelectedTrip(null)}
             />
@@ -164,7 +166,7 @@ export default function TravelPlanner({ isOpen, onClose }) {
             <>
               {/* New Trip Form */}
               {showTripForm && (
-                <NewTripForm 
+                <NewTripForm
                   onClose={() => setShowTripForm(false)}
                   onCreated={fetchData}
                 />
@@ -179,18 +181,18 @@ export default function TravelPlanner({ isOpen, onClose }) {
                       {getDaysUntil(stats.nextTrip.startDate)} days away
                     </span>
                   </div>
-                  
+
                   <h3>{stats.nextTrip.title}</h3>
-                  
+
                   <div className="next-trip-destination">
                     📍 {stats.nextTrip.destination?.city}, {stats.nextTrip.destination?.country}
                   </div>
-                  
+
                   <div className="next-trip-dates">
                     {formatDate(stats.nextTrip.startDate)} - {formatDate(stats.nextTrip.endDate)}
                   </div>
-                  
-                  <button 
+
+                  <button
                     className="btn-view-trip"
                     onClick={() => setSelectedTrip(stats.nextTrip)}
                   >
@@ -229,8 +231,8 @@ export default function TravelPlanner({ isOpen, onClose }) {
                   </div>
                 ) : (
                   getFilteredTrips().map(trip => (
-                    <div 
-                      key={trip.id} 
+                    <div
+                      key={trip.id}
                       className="trip-card"
                       onClick={() => setSelectedTrip(trip)}
                     >
@@ -239,24 +241,24 @@ export default function TravelPlanner({ isOpen, onClose }) {
                           {TRIP_PURPOSES.find(p => p.id === trip.purpose)?.icon || '📍'}
                         </span>
                       </div>
-                      
+
                       <div className="trip-info">
                         <h4>{trip.title}</h4>
-                        
+
                         <div className="trip-destination">
                           📍 {trip.destination?.city || 'Unknown'}, {trip.destination?.country || 'Unknown'}
                         </div>
-                        
+
                         <div className="trip-dates">
                           📅 {formatDate(trip.startDate)} - {formatDate(trip.endDate)}
                         </div>
-                        
+
                         <div className="trip-meta">
                           <span>👥 {trip.travelers} traveler{trip.travelers !== 1 ? 's' : ''}</span>
                           <span>💰 ${trip.budget?.toLocaleString() || 0}</span>
                         </div>
                       </div>
-                      
+
                       <div className="trip-arrow">→</div>
                     </div>
                   ))
@@ -286,7 +288,7 @@ function NewTripForm({ onClose, onCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       await fetch(`${API_URL}/travel`, {
         method: 'POST',
@@ -302,7 +304,7 @@ function NewTripForm({ onClose, onCreated }) {
           notes: formData.notes
         })
       });
-      
+
       onCreated();
       onClose();
     } catch (err) {
@@ -313,7 +315,7 @@ function NewTripForm({ onClose, onCreated }) {
   return (
     <div className="trip-form-container">
       <h3>Plan New Trip</h3>
-      
+
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -322,7 +324,7 @@ function NewTripForm({ onClose, onCreated }) {
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
         />
-        
+
         <div className="form-row">
           <input
             type="text"
@@ -331,7 +333,7 @@ function NewTripForm({ onClose, onCreated }) {
             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
             required
           />
-          
+
           <input
             type="text"
             placeholder="Country *"
@@ -340,7 +342,7 @@ function NewTripForm({ onClose, onCreated }) {
             required
           />
         </div>
-        
+
         <div className="form-row">
           <input
             type="date"
@@ -349,7 +351,7 @@ function NewTripForm({ onClose, onCreated }) {
             onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
             required
           />
-          
+
           <input
             type="date"
             placeholder="End date *"
@@ -358,7 +360,7 @@ function NewTripForm({ onClose, onCreated }) {
             required
           />
         </div>
-        
+
         <select
           value={formData.purpose}
           onChange={(e) => setFormData({ ...formData, purpose: e.target.value })}
@@ -367,7 +369,7 @@ function NewTripForm({ onClose, onCreated }) {
             <option key={p.id} value={p.id}>{p.icon} {p.name}</option>
           ))}
         </select>
-        
+
         <div className="form-row">
           <input
             type="number"
@@ -375,7 +377,7 @@ function NewTripForm({ onClose, onCreated }) {
             value={formData.budget}
             onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
           />
-          
+
           <input
             type="number"
             placeholder="Travelers"
@@ -384,14 +386,14 @@ function NewTripForm({ onClose, onCreated }) {
             onChange={(e) => setFormData({ ...formData, travelers: e.target.value })}
           />
         </div>
-        
+
         <textarea
           placeholder="Notes / Ideas"
           value={formData.notes}
           onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
           rows={3}
         />
-        
+
         <div className="form-actions">
           <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
           <button type="submit" className="btn-primary">Create Trip</button>
@@ -417,7 +419,7 @@ function TripDetail({ trip, onUpdate, onBack }) {
   const addPackingItem = async (e) => {
     e.preventDefault();
     if (!newItem.name.trim()) return;
-    
+
     try {
       await fetch(`${API_URL}/travel/${trip.id}/packing`, {
         method: 'POST',
@@ -444,7 +446,7 @@ function TripDetail({ trip, onUpdate, onBack }) {
     }
   };
 
-  const packingProgress = trip.packingList?.length 
+  const packingProgress = trip.packingList?.length
     ? Math.round((trip.packingList.filter(i => i.packed).length / trip.packingList.length) * 100)
     : 0;
 
@@ -460,7 +462,7 @@ function TripDetail({ trip, onUpdate, onBack }) {
             📅 {formatDate(trip.startDate)} - {formatDate(trip.endDate)}
           </div>
         </div>
-        
+
         <div className="detail-stats">
           <div className="detail-stat">
             <span className="stat-label">Travelers</span>
@@ -496,7 +498,7 @@ function TripDetail({ trip, onUpdate, onBack }) {
           <div className="packing-section">
             <div className="packing-progress">
               <div className="progress-bar">
-                <div 
+                <div
                   className="progress-fill"
                   style={{ width: `${packingProgress}%` }}
                 />
@@ -519,14 +521,14 @@ function TripDetail({ trip, onUpdate, onBack }) {
                   <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
                 ))}
               </select>
-              
+
               <button type="submit">Add</button>
             </form>
 
             <div className="packing-list">
               {trip.packingList?.map(item => (
-                <div 
-                  key={item.id} 
+                <div
+                  key={item.id}
                   className={`packing-item ${item.packed ? 'packed' : ''}`}
                   onClick={() => togglePacked(item.id, item.packed)}
                 >
@@ -537,7 +539,7 @@ function TripDetail({ trip, onUpdate, onBack }) {
                   </span>
                 </div>
               ))}
-            </div>          
+            </div>
           </div>
         )}
 

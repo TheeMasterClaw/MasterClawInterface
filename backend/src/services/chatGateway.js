@@ -14,12 +14,12 @@ let responseCallbacks = new Map();
 export function initGatewayConnection() {
   const gatewayUrl = process.env.OPENCLAW_GATEWAY_URL;
   const gatewayToken = process.env.OPENCLAW_GATEWAY_TOKEN;
-  
+
   if (!gatewayUrl || !gatewayToken) {
     console.log('[ChatGateway] Gateway not configured');
     return false;
   }
-  
+
   // Convert http to ws for Socket.IO
   let wsUrl = gatewayUrl;
   if (wsUrl.startsWith('https://')) {
@@ -27,9 +27,9 @@ export function initGatewayConnection() {
   } else if (wsUrl.startsWith('http://')) {
     wsUrl = wsUrl.replace('http://', 'ws://');
   }
-  
+
   console.log(`[ChatGateway] Connecting to ${wsUrl}...`);
-  
+
   gatewaySocket = io(wsUrl, {
     transports: ['websocket', 'polling'],
     auth: {
@@ -39,32 +39,32 @@ export function initGatewayConnection() {
     reconnectionAttempts: 5,
     reconnectionDelay: 2000
   });
-  
+
   gatewaySocket.on('connect', () => {
     console.log('[ChatGateway] Connected to OpenClaw gateway');
     gatewayConnected = true;
-    
+
     // Send any queued messages
     while (messageQueue.length > 0) {
       const msg = messageQueue.shift();
       sendToGateway(msg);
     }
   });
-  
+
   gatewaySocket.on('disconnect', () => {
     console.log('[ChatGateway] Disconnected from OpenClaw gateway');
     gatewayConnected = false;
   });
-  
+
   gatewaySocket.on('connect_error', (err) => {
     console.error('[ChatGateway] Connection error:', err.message);
     gatewayConnected = false;
   });
-  
+
   // Handle responses from OpenClaw
   gatewaySocket.on('message', (data) => {
     console.log('[ChatGateway] Received response:', data);
-    
+
     // Find and execute the callback for this message
     const callback = responseCallbacks.get(data.requestId || data.id);
     if (callback) {
@@ -72,7 +72,7 @@ export function initGatewayConnection() {
       responseCallbacks.delete(data.requestId || data.id);
     }
   });
-  
+
   return true;
 }
 
@@ -81,7 +81,7 @@ function sendToGateway(messageData) {
     messageQueue.push(messageData);
     return false;
   }
-  
+
   gatewaySocket.emit('message', messageData);
   return true;
 }
@@ -145,17 +145,17 @@ export async function processChatMessage({ message, saveHistory = true }) {
 
   // Generate request ID
   const requestId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  
+
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
       responseCallbacks.delete(requestId);
-      
+
       const response = {
         error: 'Gateway timeout',
         text: 'MC took too long to respond. Please try again.',
         debug: { gatewayUrl, requestId }
       };
-      
+
       if (saveHistory) {
         createChatMessage({
           type: 'mc',
@@ -164,19 +164,19 @@ export async function processChatMessage({ message, saveHistory = true }) {
           error: true
         });
       }
-      
+
       const err = new Error(response.text);
       err.statusCode = 504;
       err.payload = response;
       reject(err);
     }, 30000); // 30 second timeout
-    
+
     // Store callback for when response comes back
     responseCallbacks.set(requestId, (data) => {
       clearTimeout(timeout);
-      
+
       const responseText = data.message || data.response || data.text || 'Message delivered to MC';
-      
+
       if (saveHistory) {
         createChatMessage({
           type: 'mc',
@@ -185,14 +185,14 @@ export async function processChatMessage({ message, saveHistory = true }) {
           gatewayResponse: true
         });
       }
-      
+
       resolve({
         status: 'sent',
         text: responseText,
         message
       });
     });
-    
+
     // Send message to gateway
     const sent = sendToGateway({
       requestId,
@@ -200,17 +200,17 @@ export async function processChatMessage({ message, saveHistory = true }) {
       label: 'MasterClawInterface',
       timestamp: new Date().toISOString()
     });
-    
+
     if (!sent) {
       clearTimeout(timeout);
       responseCallbacks.delete(requestId);
-      
+
       const response = {
         error: 'Gateway not connected',
         text: 'MC is currently offline. Please try again later.',
         debug: { gatewayUrl, connected: gatewayConnected }
       };
-      
+
       if (saveHistory) {
         createChatMessage({
           type: 'mc',
@@ -219,7 +219,7 @@ export async function processChatMessage({ message, saveHistory = true }) {
           error: true
         });
       }
-      
+
       const err = new Error(response.text);
       err.statusCode = 503;
       err.payload = response;
@@ -533,4 +533,24 @@ function parseEventInput(input) {
     startTime: date.toISOString(),
     source: 'manual'
   };
+}
+
+export function getGatewayStatus() {
+  const gatewayUrl = process.env.OPENCLAW_GATEWAY_URL;
+  return {
+    connected: gatewayConnected,
+    url: gatewayUrl ? gatewayUrl.replace(/:\/\/[^@]+@/, '://***@') : null, // Mask credentials if any
+    queueLength: messageQueue.length,
+    socketId: gatewaySocket?.id,
+    transport: gatewaySocket?.io?.engine?.transport?.name
+  };
+}
+
+export function forceReconnect() {
+  if (gatewaySocket) {
+    gatewaySocket.disconnect();
+    gatewaySocket.connect();
+    return true;
+  }
+  return initGatewayConnection();
 }

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './Watchlist.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { getApiUrl } from '../lib/apiUrl';
+
+const API_URL = getApiUrl();
 
 const CONTENT_TYPES = [
   { id: 'movie', name: 'Movie', icon: '🎬' },
@@ -15,13 +17,13 @@ const STATUS_OPTIONS = [
 ];
 
 const GENRES = [
-  'Action', 'Adventure', 'Animation', 'Comedy', 'Crime', 'Documentary', 
-  'Drama', 'Fantasy', 'Horror', 'Mystery', 'Romance', 'Sci-Fi', 
+  'Action', 'Adventure', 'Animation', 'Comedy', 'Crime', 'Documentary',
+  'Drama', 'Fantasy', 'Horror', 'Mystery', 'Romance', 'Sci-Fi',
   'Thriller', 'War', 'Western'
 ];
 
 const PLATFORMS = [
-  'Netflix', 'Prime Video', 'Disney+', 'Hulu', 'HBO Max', 
+  'Netflix', 'Prime Video', 'Disney+', 'Hulu', 'HBO Max',
   'Apple TV+', 'Paramount+', 'Peacock', 'YouTube', 'Theater', 'Other'
 ];
 
@@ -32,7 +34,7 @@ export default function Watchlist({ isOpen, onClose }) {
   const [filter, setFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
-  
+
   const [formData, setFormData] = useState({
     title: '',
     type: 'movie',
@@ -54,7 +56,7 @@ export default function Watchlist({ isOpen, onClose }) {
         fetch(`${API_URL}/watchlist`),
         fetch(`${API_URL}/watchlist/stats`)
       ]);
-      
+
       setItems((await itemsRes.json()).items || []);
       setStats(await statsRes.json());
     } catch (err) {
@@ -66,14 +68,14 @@ export default function Watchlist({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       await fetch(`${API_URL}/watchlist`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      
+
       setFormData({ title: '', type: 'movie', genre: '', platform: '', notes: '' });
       setShowForm(false);
       fetchData();
@@ -97,7 +99,7 @@ export default function Watchlist({ isOpen, onClose }) {
 
   const handleDelete = async (id) => {
     if (!confirm('Remove from watchlist?')) return;
-    
+
     try {
       await fetch(`${API_URL}/watchlist/${id}`, { method: 'DELETE' });
       fetchData();
@@ -134,7 +136,7 @@ export default function Watchlist({ isOpen, onClose }) {
             )}
           </div>
           <div className="header-actions">
-            <button 
+            <button
               className="btn-primary small"
               onClick={() => setShowForm(true)}
             >
@@ -175,13 +177,13 @@ export default function Watchlist({ isOpen, onClose }) {
           <div className="currently-watching">
             <div className="current-header">
               <span className="current-label">▶️ Currently Watching</span>
-            </div>            
+            </div>
             <div className="current-items">
               {items.filter(i => i.status === 'watching').map(item => (
                 <div key={item.id} className="current-item">
                   <span className="current-type">{getTypeIcon(item.type)}</span>
                   <span className="current-title">{item.title}</span>
-                  <button 
+                  <button
                     className="btn-finish"
                     onClick={() => setEditingItem(item)}
                   >
@@ -221,7 +223,7 @@ export default function Watchlist({ isOpen, onClose }) {
               {showForm && (
                 <div className="add-form">
                   <h3>Add to Watchlist</h3>
-                  
+
                   <form onSubmit={handleSubmit}>
                     <input
                       type="text"
@@ -230,7 +232,7 @@ export default function Watchlist({ isOpen, onClose }) {
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                       required
                     />
-                    
+
                     <div className="form-row">
                       <select
                         value={formData.type}
@@ -240,7 +242,7 @@ export default function Watchlist({ isOpen, onClose }) {
                           <option key={t.id} value={t.id}>{t.icon} {t.name}</option>
                         ))}
                       </select>
-                      
+
                       <select
                         value={formData.genre}
                         onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
@@ -251,7 +253,7 @@ export default function Watchlist({ isOpen, onClose }) {
                         ))}
                       </select>
                     </div>
-                    
+
                     <select
                       value={formData.platform}
                       onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
@@ -261,14 +263,14 @@ export default function Watchlist({ isOpen, onClose }) {
                         <option key={p} value={p}>{p}</option>
                       ))}
                     </select>
-                    
+
                     <textarea
                       placeholder="Notes"
                       value={formData.notes}
                       onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                       rows={2}
                     />
-                    
+
                     <div className="form-actions">
                       <button type="button" className="btn-secondary" onClick={() => setShowForm(false)}>
                         Cancel
@@ -285,10 +287,10 @@ export default function Watchlist({ isOpen, onClose }) {
                   item={editingItem}
                   onClose={() => setEditingItem(null)}
                   onRate={(rating, review) => {
-                    handleUpdate(editingItem.id, { 
-                      status: 'watched', 
-                      rating, 
-                      review 
+                    handleUpdate(editingItem.id, {
+                      status: 'watched',
+                      rating,
+                      review
                     });
                     setEditingItem(null);
                   }}
@@ -308,24 +310,24 @@ export default function Watchlist({ isOpen, onClose }) {
               ) : (
                 <div className="watchlist-grid">
                   {getFilteredItems().map(item => (
-                    <div 
-                      key={item.id} 
+                    <div
+                      key={item.id}
                       className={`watch-card ${item.status}`}
                       style={{ '--status-color': getStatusInfo(item.status).color }}
                     >
                       <div className="card-status-bar" />
-                      
+
                       <div className="card-header">
                         <div className="card-type">
                           <span className="type-icon">{getTypeIcon(item.type)}</span>
                           <span>{item.type}</span>
                         </div>
-                        
+
                         <div className="card-actions">
                           {item.status !== 'watched' && (
                             <>
                               {item.status === 'to-watch' && (
-                                <button 
+                                <button
                                   onClick={() => handleUpdate(item.id, { status: 'watching' })}
                                   title="Start watching"
                                 >
@@ -333,7 +335,7 @@ export default function Watchlist({ isOpen, onClose }) {
                                 </button>
                               )}
                               {item.status === 'watching' && (
-                                <button 
+                                <button
                                   onClick={() => setEditingItem(item)}
                                   title="Mark as watched"
                                 >
@@ -399,9 +401,9 @@ function RatingModal({ item, onClose, onRate }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <h3>Rate & Review</h3>
-        
+
         <p className="modal-item-title">{item.title}</p>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="rating-selector">
             {[1, 2, 3, 4, 5].map(star => (
@@ -417,14 +419,14 @@ function RatingModal({ item, onClose, onRate }) {
               </button>
             ))}
           </div>
-          
+
           <textarea
             placeholder="Write a quick review... (optional)"
             value={review}
             onChange={(e) => setReview(e.target.value)}
             rows={4}
           />
-          
+
           <div className="form-actions">
             <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
             <button type="submit" className="btn-primary" disabled={rating === 0}>

@@ -1,5 +1,6 @@
 import express from 'express';
 import os from 'os';
+import { getGatewayStatus, forceReconnect } from '../services/chatGateway.js';
 
 const router = express.Router();
 
@@ -9,16 +10,16 @@ const router = express.Router();
 function getCPUInfo() {
   const cpus = os.cpus();
   const loadAvg = os.loadavg();
-  
+
   // Calculate average CPU frequency
   const avgFreq = cpus.reduce((sum, cpu) => sum + cpu.speed, 0) / cpus.length;
-  
+
   // Estimate CPU usage based on load average
   const usage = Math.min(Math.round((loadAvg[0] / cpus.length) * 100), 100);
-  
+
   // Estimate temperature (mock - would need platform-specific implementations)
   const temperature = 45 + Math.random() * 15;
-  
+
   return {
     usage: usage,
     cores: cpus.length,
@@ -34,7 +35,7 @@ function getMemoryInfo() {
   const total = os.totalmem();
   const free = os.freemem();
   const used = total - free;
-  
+
   return {
     total: Math.round(total / (1024 * 1024)),
     used: Math.round(used / (1024 * 1024)),
@@ -49,17 +50,17 @@ function getMemoryInfo() {
 async function getDiskInfo() {
   try {
     const { execSync } = await import('child_process');
-    
+
     let command;
     if (process.platform === 'darwin') {
       command = "df -k / | tail -1 | awk '{print $2, $3, $4}'";
     } else {
       command = "df -k / | tail -1 | awk '{print $2, $3, $4}'";
     }
-    
+
     const result = execSync(command, { encoding: 'utf8' }).trim();
     const [total, used, free] = result.split(/\s+/).map(n => parseInt(n, 10));
-    
+
     return {
       total: Math.round(total / 1024),
       used: Math.round(used / 1024),
@@ -81,7 +82,7 @@ async function getDiskInfo() {
  */
 function getNetworkInfo() {
   const interfaces = os.networkInterfaces();
-  
+
   let totalBytes = 0;
   Object.values(interfaces).forEach(iface => {
     iface?.forEach(addr => {
@@ -90,10 +91,10 @@ function getNetworkInfo() {
       }
     });
   });
-  
+
   const download = Math.floor(Math.random() * 5000000);
   const upload = Math.floor(Math.random() * 1000000);
-  
+
   return {
     download: download,
     upload: upload,
@@ -117,13 +118,13 @@ router.get('/stats', async (req, res) => {
       hostname: os.hostname(),
       timestamp: Date.now()
     };
-    
+
     res.json(stats);
   } catch (error) {
     console.error('Error getting system stats:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to get system statistics',
-      message: error.message 
+      message: error.message
     });
   }
 });
@@ -135,7 +136,7 @@ router.get('/summary', (req, res) => {
   try {
     const memInfo = getMemoryInfo();
     const cpuInfo = getCPUInfo();
-    
+
     const summary = {
       status: cpuInfo.usage > 80 || memInfo.percentage > 80 ? 'warning' : 'healthy',
       cpuUsage: cpuInfo.usage,
@@ -143,12 +144,12 @@ router.get('/summary', (req, res) => {
       uptime: os.uptime(),
       timestamp: Date.now()
     };
-    
+
     res.json(summary);
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to get system summary',
-      message: error.message 
+      message: error.message
     });
   }
 });
@@ -161,9 +162,9 @@ router.get('/health', (req, res) => {
     const memUsage = (os.totalmem() - os.freemem()) / os.totalmem();
     const loadAvg = os.loadavg()[0];
     const cpuCount = os.cpus().length;
-    
+
     const isHealthy = memUsage < 0.9 && loadAvg < cpuCount * 2;
-    
+
     res.json({
       status: isHealthy ? 'healthy' : 'degraded',
       memory: {
@@ -181,6 +182,29 @@ router.get('/health', (req, res) => {
       status: 'error',
       message: error.message
     });
+  }
+});
+/**
+ * GET /system/gateway - Get gateway connection status
+ */
+router.get('/gateway', (req, res) => {
+  try {
+    const status = getGatewayStatus();
+    res.json(status);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get gateway status', message: error.message });
+  }
+});
+
+/**
+ * POST /system/gateway/reconnect - Force gateway reconnection
+ */
+router.post('/gateway/reconnect', (req, res) => {
+  try {
+    const result = forceReconnect();
+    res.json({ success: result, message: 'Reconnection initiated' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to reconnect gateway', message: error.message });
   }
 });
 
