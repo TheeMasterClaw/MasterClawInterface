@@ -22,10 +22,19 @@ import { errorHandler, sanitizeBody, authenticateApiToken } from './middleware/s
 import { requestTimeout, timeoutFor } from './middleware/timeout.js';
 import { auditLogMiddleware, getRecentAuditLogs, getAuditStats, logSecurityEvent, logCspViolation, SecurityEventType, Severity } from './middleware/auditLog.js';
 import { createSocketServer } from './socket.js';
+import crypto from 'crypto';
 
 dotenv.config();
 
 const app = express();
+
+// Request ID middleware - adds req.reqId and x-request-id header
+app.use((req, res, next) => {
+  const reqId = req.headers['x-request-id'] || `req_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
+  req.reqId = reqId;
+  res.setHeader('x-request-id', reqId);
+  next();
+});
 
 // Trust proxy headers from Railway/load balancer (required for express-rate-limit)
 app.set('trust proxy', 1);
