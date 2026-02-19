@@ -69,7 +69,8 @@ export default function Navbar({
   onChallengeTrackerClick,
   onBrainDumpClick,
   onSprintPlannerClick,
-  onResourceLibraryClick
+  onResourceLibraryClick,
+  onContactManagerClick
 }) {
   return (
     <nav className="navbar">
@@ -538,6 +539,13 @@ export default function Navbar({
               title="Resource Library"
             >
               📚
+            </button>
+            <button
+              className="navbar-btn navbar-btn-contacts"
+              onClick={onContactManagerClick}
+              title="Contact Manager"
+            >
+              👥
             </button>
             <button
               className="navbar-btn navbar-btn-settings"

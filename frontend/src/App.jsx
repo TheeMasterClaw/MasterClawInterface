@@ -69,6 +69,7 @@ import ChallengeTracker from './components/ChallengeTracker';
 import BrainDump from './components/BrainDump';
 import SprintPlanner from './components/SprintPlanner';
 import ResourceLibrary from './components/ResourceLibrary';
+import ContactManager from './components/ContactManager';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -146,6 +147,7 @@ export default function App() {
   const [showBrainDump, setShowBrainDump] = useState(false);
   const [showSprintPlanner, setShowSprintPlanner] = useState(false);
   const [showResourceLibrary, setShowResourceLibrary] = useState(false);
+  const [showContactManager, setShowContactManager] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -297,6 +299,7 @@ export default function App() {
         onBrainDumpClick={() => setShowBrainDump(true)}
         onSprintPlannerClick={() => setShowSprintPlanner(true)}
         onResourceLibraryClick={() => setShowResourceLibrary(true)}
+        onContactManagerClick={() => setShowContactManager(true)}
       />
 
       {showSettings && (
@@ -759,6 +762,13 @@ export default function App() {
         <ResourceLibrary
           isOpen={showResourceLibrary}
           onClose={() => setShowResourceLibrary(false)}
+        />
+      )}
+
+      {showContactManager && (
+        <ContactManager
+          isOpen={showContactManager}
+          onClose={() => setShowContactManager(false)}
         />
       )}
 

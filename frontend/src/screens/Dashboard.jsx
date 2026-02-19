@@ -52,6 +52,7 @@ import ReflectionStudio from '../components/ReflectionStudio';
 import AchievementVault from '../components/AchievementVault';
 import SprintPlanner from '../components/SprintPlanner';
 import ResourceLibrary from '../components/ResourceLibrary';
+import ContactManager from '../components/ContactManager';
 import './Dashboard.css';
 
 // Browser detection
@@ -114,6 +115,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showAchievementVault, setShowAchievementVault] = useState(false);
   const [showSprintPlanner, setShowSprintPlanner] = useState(false);
   const [showResourceLibrary, setShowResourceLibrary] = useState(false);
+  const [showContactManager, setShowContactManager] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -374,6 +376,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowAchievementVault(false);
         setShowSprintPlanner(false);
         setShowResourceLibrary(false);
+        setShowContactManager(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -860,6 +863,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/contacts' || userText === '/people' || userText === '/network') {
+      setShowContactManager(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Contact Manager'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1182,6 +1197,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'library':
           case 'bookmarks':
             setShowResourceLibrary(true);
+            break;
+          case 'contacts':
+          case 'people':
+          case 'network':
+            setShowContactManager(true);
             break;
         }
         break;
@@ -1558,6 +1578,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showContactManager && (
+        <ContactManager
+          isOpen={showContactManager}
+          onClose={() => setShowContactManager(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1629,6 +1656,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/achievements</strong> – Open Achievement Vault</li>
                   <li><strong>/sprint</strong> – Open Sprint Planner</li>
                   <li><strong>/resources</strong> – Open Resource Library</li>
+                  <li><strong>/contacts</strong> – Open Contact Manager</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1697,6 +1725,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowReminderManager(true)} title="Smart Reminders">⏰</button>
             <button className="icon-btn" onClick={() => setShowSprintPlanner(true)} title="Sprint Planner">🏃</button>
             <button className="icon-btn" onClick={() => setShowResourceLibrary(true)} title="Resource Library">📚</button>
+            <button className="icon-btn" onClick={() => setShowContactManager(true)} title="Contact Manager">👥</button>
           </div>
         </div>
 
