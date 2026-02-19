@@ -194,7 +194,10 @@ async function synthesizeWithOpenAI(text, voice) {
   
   if (!apiKey) {
     console.warn('[TTS] OPENAI_API_KEY not configured');
-    throw new Error('OpenAI API key not configured');
+    const error = new Error('OpenAI API key not configured. Set OPENAI_API_KEY environment variable.');
+    error.code = 'TTS_API_KEY_MISSING';
+    error.status = 503;
+    throw error;
   }
 
   // Validate voice against whitelist
@@ -251,7 +254,10 @@ async function synthesizeWithElevenLabs(text, voice) {
   
   if (!apiKey) {
     console.warn('[TTS] ELEVENLABS_API_KEY not configured');
-    throw new Error('ElevenLabs API key not configured');
+    const error = new Error('ElevenLabs API key not configured. Set ELEVENLABS_API_KEY environment variable.');
+    error.code = 'TTS_API_KEY_MISSING';
+    error.status = 503;
+    throw error;
   }
 
   // Validate voice ID format (alphanumeric with hyphens)

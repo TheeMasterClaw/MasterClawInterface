@@ -294,8 +294,16 @@ export function errorHandler(err, req, res, next) {
 
   // Default server error
   const isDev = process.env.NODE_ENV === 'development';
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal server error',
+  const statusCode = err.status || err.statusCode || 500;
+  
+  // Don't leak internal errors in production
+  const isInternalError = statusCode >= 500;
+  const message = (isInternalError && !isDev) 
+    ? 'Internal server error' 
+    : (err.message || 'Internal server error');
+  
+  res.status(statusCode).json({
+    error: message,
     code: err.code || 'INTERNAL_ERROR',
     ...(isDev && { stack: err.stack })
   });
