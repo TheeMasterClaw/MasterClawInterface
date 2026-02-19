@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 // import './DailyBriefing.css';
+import { getApiUrl } from '../lib/apiUrl.js';
 
-const API_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = getApiUrl();
 
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];

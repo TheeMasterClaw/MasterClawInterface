@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-// import './ConversationHistory.css';
+import { getApiUrl } from '../lib/apiUrl.js';
 
-const API_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = getApiUrl();
 
 const FILTERS = {
   all: 'All Messages',

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import API from '../config.js';
+import { getApiUrl } from '../lib/apiUrl.js';
 import GatewayClient from '../lib/gateway.js';
 import Settings from '../components/Settings';
 import HealthMonitor from '../components/HealthMonitor';
@@ -220,8 +221,8 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
     const initGateway = async () => {
       try {
         const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
-        const gatewayUrl = settings.gatewayUrl || process.env.NEXT_PUBLIC_GATEWAY_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-        const gatewayToken = settings.gatewayToken || process.env.NEXT_PUBLIC_GATEWAY_TOKEN || '';
+        const gatewayUrl = settings.gatewayUrl || getApiUrl();
+        const gatewayToken = settings.gatewayToken || import.meta.env.VITE_GATEWAY_TOKEN || '';
 
         const client = new GatewayClient(gatewayUrl, gatewayToken, {
           maxReconnectAttempts: 10,

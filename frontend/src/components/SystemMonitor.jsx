@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 // import './SystemMonitor.css';
+import { getApiUrl } from '../lib/apiUrl.js';
 
 // Default refresh interval (ms)
 const DEFAULT_REFRESH_INTERVAL = 2000;
@@ -150,7 +151,7 @@ export default function SystemMonitor({ isOpen, onClose }) {
   const [useMockData, setUseMockData] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const intervalRef = useRef(null);
-  const API_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const API_URL = getApiUrl();
 
   // Fetch system data
   const fetchSystemData = useCallback(async () => {

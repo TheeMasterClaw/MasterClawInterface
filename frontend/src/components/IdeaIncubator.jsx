@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 // import './IdeaIncubator.css';
+import { getApiUrl } from '../lib/apiUrl.js';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = getApiUrl();
 
 // Idea status stages
 const IDEA_STATUSES = [
