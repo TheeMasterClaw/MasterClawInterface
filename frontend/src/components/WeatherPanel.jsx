@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './WeatherPanel.css';
+// import './WeatherPanel.css';
 
 const DEFAULT_LOCATION = { lat: 40.7128, lon: -74.006, name: 'New York' };
 

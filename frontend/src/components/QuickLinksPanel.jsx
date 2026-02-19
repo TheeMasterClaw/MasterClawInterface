@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './QuickLinksPanel.css';
+// import './QuickLinksPanel.css';
 
 const DEFAULT_CATEGORIES = [
   { id: 'all', name: 'All Links', icon: '🔗' },

@@ -1,5 +1,5 @@
 import React from 'react';
-import './Welcome.css';
+// import './Welcome.css';
 
 export default function Welcome({ onContinue, avatar }) {
   // Clone avatar with large size and idle state

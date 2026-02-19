@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './LearningPath.css';
+// import './LearningPath.css';
 
 const CATEGORY_ICONS = {
   programming: { emoji: '💻', label: 'Programming', color: '#60a5fa' },

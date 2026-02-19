@@ -13,6 +13,8 @@ export const useUIStore = create((set) => ({
     overlays: {
         settings: false,
         health: false,
+        calendar: false,
+        tasks: false,
         quickLinks: false,
         activityLog: false,
         focusTimer: false,
@@ -77,6 +79,8 @@ export const useUIStore = create((set) => ({
         brainDump: false,
         sprint: false,
         resources: false,
+        commandPalette: false,
+        help: false,
     },
 
     // Actions to toggle overlays

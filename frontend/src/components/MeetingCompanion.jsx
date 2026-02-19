@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './MeetingCompanion.css';
+// import './MeetingCompanion.css';
 
 const MEETING_TEMPLATES = [
   {

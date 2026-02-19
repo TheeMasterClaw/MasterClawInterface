@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './JournalPanel.css';
+// import './JournalPanel.css';
 
 const PROMPTS = [
   "What are you grateful for today?",

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './DecisionJournal.css';
+// import './DecisionJournal.css';
 
 const DECISION_CATEGORIES = [
   { id: 'career', label: 'Career', emoji: '💼', color: '#60a5fa' },

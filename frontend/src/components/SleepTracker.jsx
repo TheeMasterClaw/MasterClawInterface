@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './SleepTracker.css';
+// import './SleepTracker.css';
 
 const SLEEP_QUALITY = [
   { value: 1, label: 'Poor', emoji: '😴', color: '#ef4444' },

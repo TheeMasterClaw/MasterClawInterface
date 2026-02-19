@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './ActivityLogPanel.css';
+// import './ActivityLogPanel.css';
 
 // Activity types with icons and colors
 const ACTIVITY_TYPES = {

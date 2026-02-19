@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './QuickCapture.css';
+// import './QuickCapture.css';
 
 const CAPTURE_TYPES = [
   { id: 'thought', label: '💭 Thought', color: '#6366f1', icon: '💭' },

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import './VoiceMemos.css';
+// import './VoiceMemos.css';
 
 const MAX_RECORDING_DURATION = 300; // 5 minutes in seconds
 const MAX_MEMOS = 50; // Maximum stored memos

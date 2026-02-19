@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './BreathingExercise.css';
+// import './BreathingExercise.css';
 
 const TECHNIQUES = {
   box: {

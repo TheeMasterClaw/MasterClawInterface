@@ -1,5 +1,5 @@
 import React from 'react';
-import './ModeSelector.css';
+// import './ModeSelector.css';
 
 const modes = [
   {

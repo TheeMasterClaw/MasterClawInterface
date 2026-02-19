@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './AmbientMixer.css';
+// import './AmbientMixer.css';
 
 const SOUND_PRESETS = {
   rain: { name: 'Rain', emoji: '🌧️', freq: 0.5, type: 'rain' },

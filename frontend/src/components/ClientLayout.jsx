@@ -6,8 +6,11 @@ import { useUIStore } from '../lib/store';
 
 // Components
 import Navbar from './Navbar';
+import GlobalShortcuts from './GlobalShortcuts';
 import Settings from './Settings';
 import HealthMonitor from './HealthMonitor';
+import CalendarPanel from './CalendarPanel';
+import TaskPanel from './TaskPanel';
 import QuickLinksPanel from './QuickLinksPanel';
 import ActivityLogPanel from './ActivityLogPanel';
 import FocusTimer from './FocusTimer';
@@ -326,6 +329,8 @@ export default function ClientLayout({ children }) {
             )}
             {/* Assuming components are properly imported and used. Some might check isOpen prop internally */}
             {showHealthMonitor && <HealthMonitor isOpen={showHealthMonitor} onClose={() => closeOverlay('health')} />}
+            {overlays.calendar && <CalendarPanel isOpen={overlays.calendar} onClose={() => closeOverlay('calendar')} />}
+            {overlays.tasks && <TaskPanel isOpen={overlays.tasks} onClose={() => closeOverlay('tasks')} />}
             {showQuickLinksPanel && <QuickLinksPanel isOpen={showQuickLinksPanel} onClose={() => closeOverlay('quickLinks')} />}
             {showActivityLogPanel && <ActivityLogPanel isOpen={showActivityLogPanel} onClose={() => closeOverlay('activityLog')} />}
             {showFocusTimer && <FocusTimer isOpen={showFocusTimer} onClose={() => closeOverlay('focusTimer')} />}
@@ -391,6 +396,7 @@ export default function ClientLayout({ children }) {
             {showSprintPlanner && <SprintPlanner isOpen={showSprintPlanner} onClose={() => closeOverlay('sprint')} />}
             {showResourceLibrary && <ResourceLibrary isOpen={showResourceLibrary} onClose={() => closeOverlay('resources')} />}
 
+            <GlobalShortcuts />
             {children}
         </div>
     );

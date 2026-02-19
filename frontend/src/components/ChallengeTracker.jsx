@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './ChallengeTracker.css';
+// import './ChallengeTracker.css';
 
 const CHALLENGE_ICONS = [
   { id: 'fitness', emoji: '💪', label: 'Fitness' },

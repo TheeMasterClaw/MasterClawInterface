@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import './DigitalDetoxTracker.css';
+// import './DigitalDetoxTracker.css';
 
 const PRESETS = {
   mindful: { work: 45, break: 10, dailyLimit: 8 },

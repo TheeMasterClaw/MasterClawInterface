@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './GoalPlanner.css';
+// import './GoalPlanner.css';
 
 const CATEGORIES = {
   personal: { label: 'Personal', color: '#ec4899', icon: '🌟' },

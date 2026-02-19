@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './MealTracker.css';
+// import './MealTracker.css';
 
 const MEAL_TYPES = {
   breakfast: { label: 'Breakfast', icon: '🍳', color: '#f59e0b', timeRange: '06:00-10:00' },

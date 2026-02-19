@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './LifeBalanceWheel.css';
+// import './LifeBalanceWheel.css';
 
 const LIFE_AREAS = [
   { id: 'career', name: 'Career', icon: '💼', color: '#6366f1', description: 'Work, professional growth, purpose' },

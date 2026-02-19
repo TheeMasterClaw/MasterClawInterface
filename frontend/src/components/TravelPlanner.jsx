@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './TravelPlanner.css';
+// import './TravelPlanner.css';
 
 const TRIP_STATUSES = [
   { id: 'dreaming', label: 'Dreaming', icon: '💭', color: '#8b5cf6' },

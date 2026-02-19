@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './DailyQuote.css';
+// import './DailyQuote.css';
 
 // Curated collection of motivational quotes
 const QUOTES = [

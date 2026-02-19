@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './SprintPlanner.css';
+// import './SprintPlanner.css';
 
 const SPRINT_DURATIONS = [7, 14, 21, 28];
 

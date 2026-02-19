@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import './EnergyTracker.css';
+// import './EnergyTracker.css';
 
 const ENERGY_LEVELS = [
   { value: 1, label: 'Exhausted', emoji: '😫', color: '#ef4444', description: 'Running on empty' },

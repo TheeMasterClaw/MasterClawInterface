@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import './CommandPalette.css';
+// import './CommandPalette.css';
 
 const COMMANDS = [
   { id: 'task', label: 'Create Task', icon: '📋', shortcut: '/task', action: 'input', value: '/task ' },

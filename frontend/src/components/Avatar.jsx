@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './Avatar.css';
+// import './Avatar.css';
 
 /**
  * MC - MasterClaw

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './QuestLog.css';
+// import './QuestLog.css';
 
 const DIFFICULTY_LEVELS = {
   easy: { label: 'Easy', xp: 50, color: '#22d3ee', icon: '🌱' },

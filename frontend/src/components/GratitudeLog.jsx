@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './GratitudeLog.css';
+// import './GratitudeLog.css';
 
 const GRATITUDE_PROMPTS = [
   "What made you smile today?",

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './SnippetsPanel.css';
+// import './SnippetsPanel.css';
 
 export default function SnippetsPanel({ isOpen, onClose }) {
   const [snippets, setSnippets] = useState([]);
