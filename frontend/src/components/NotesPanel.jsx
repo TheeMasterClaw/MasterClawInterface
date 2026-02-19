@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './NotesPanel.css';
+// import './NotesPanel.css';
 
 const NOTE_COLORS = [
   { id: 'default', bg: '#1e293b', border: '#334155' },

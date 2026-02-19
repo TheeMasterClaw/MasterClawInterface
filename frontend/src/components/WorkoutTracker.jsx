@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './WorkoutTracker.css';
+// import './WorkoutTracker.css';
 
 const EXERCISE_DATABASE = {
   chest: [

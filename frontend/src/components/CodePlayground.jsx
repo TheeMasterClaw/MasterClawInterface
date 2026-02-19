@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './CodePlayground.css';
+// import './CodePlayground.css';
 
 const STORAGE_KEY = 'mc-code-playground';
 const SNIPPETS_KEY = 'mc-code-snippets';

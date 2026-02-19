@@ -28,7 +28,7 @@ export class GatewayClient {
   }
 
   getBridgeUrl() {
-    return import.meta.env.VITE_GATEWAY_URL || import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    return process.env.NEXT_PUBLIC_GATEWAY_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
   }
 
   normalizeHttpUrl(url) {
@@ -53,7 +53,7 @@ export class GatewayClient {
   }
 
   getToken() {
-    return import.meta.env.VITE_GATEWAY_TOKEN || '';
+    return process.env.NEXT_PUBLIC_GATEWAY_TOKEN || '';
   }
 
   connect() {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './RelationshipNetwork.css';
+// import './RelationshipNetwork.css';
 
 const RELATIONSHIP_TYPES = {
   family: { label: 'Family', icon: '👨‍👩‍👧‍👦', color: '#ef4444' },

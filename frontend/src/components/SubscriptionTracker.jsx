@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './SubscriptionTracker.css';
+// import './SubscriptionTracker.css';
 
 const BILLING_CYCLES = [
   { value: 'weekly', label: 'Weekly', multiplier: 52 },

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './TaskBoard.css';
+// import './TaskBoard.css';
 
 const DEFAULT_COLUMNS = [
   { id: 'todo', title: 'To Do', color: '#ef4444' },

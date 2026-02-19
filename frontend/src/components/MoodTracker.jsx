@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './MoodTracker.css';
+// import './MoodTracker.css';
 
 const MOODS = [
   { emoji: '😫', label: 'Awful', color: '#dc2626', value: 1 },

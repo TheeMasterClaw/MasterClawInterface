@@ -4,7 +4,7 @@
  * Follows the privacy-first philosophy of MasterClaw.
  */
 import React, { useState, useEffect, useMemo } from 'react';
-import './PasswordVault.css';
+// import './PasswordVault.css';
 
 const CATEGORIES = [
   { id: 'all', icon: '📁', label: 'All Items' },

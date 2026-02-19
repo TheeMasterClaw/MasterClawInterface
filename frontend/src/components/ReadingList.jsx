@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './ReadingList.css';
+// import './ReadingList.css';
 
 const READING_STATUS = {
   want: { label: 'Want to Read', color: '#8b5cf6', icon: '📚' },

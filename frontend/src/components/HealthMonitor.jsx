@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './HealthMonitor.css';
+// import './HealthMonitor.css';
 
 // Health monitoring component for Claude Bot integration
 export default function HealthMonitor({ isOpen, onClose }) {
@@ -52,7 +52,7 @@ export default function HealthMonitor({ isOpen, onClose }) {
 
   const connectHealthStream = () => {
     try {
-      const wsUrl = import.meta.env.VITE_HEALTH_WS_URL || 'ws://localhost:3002/health';
+      const wsUrl = process.env.NEXT_PUBLIC_HEALTH_WS_URL || 'ws://localhost:3002/health';
       wsRef.current = new WebSocket(wsUrl);
       
       wsRef.current.onmessage = (event) => {

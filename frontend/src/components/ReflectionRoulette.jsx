@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './ReflectionRoulette.css';
+// import './ReflectionRoulette.css';
 
 // Curated reflection prompts organized by category
 const REFLECTION_PROMPTS = [

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './ExpenseTracker.css';
+// import './ExpenseTracker.css';
 
 const EXPENSE_CATEGORIES = [
   { id: 'food', label: 'Food & Dining', icon: '🍔', color: '#f59e0b', budget: 500 },

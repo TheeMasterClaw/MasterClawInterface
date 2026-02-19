@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './HabitTracker.css';
+// import './HabitTracker.css';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 

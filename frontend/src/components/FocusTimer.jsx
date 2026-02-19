@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { logFocusSession } from './ProductivityAnalytics';
-import './FocusTimer.css';
+// import './FocusTimer.css';
 
 const PRESETS = {
   pomodoro: { work: 25, break: 5, longBreak: 15, sessions: 4 },

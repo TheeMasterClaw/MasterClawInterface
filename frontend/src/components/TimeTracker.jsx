@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import API from '../config.js';
-import './TimeTracker.css';
+// import './TimeTracker.css';
 
 const PERIODS = [
   { key: 'today', label: 'Today' },

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './MindfulMoments.css';
+// import './MindfulMoments.css';
 
 const MEDITATION_PRESETS = [
   { id: 'quick', name: 'Quick Reset', duration: 5, description: '5 minutes to center yourself' },

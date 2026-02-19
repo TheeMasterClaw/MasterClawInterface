@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './TimeCapsule.css';
+// import './TimeCapsule.css';
 
 const STORAGE_KEY = 'mc-time-capsule';
 const OPENED_KEY = 'mc-time-capsule-opened';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import './ReminderManager.css';
+// import './ReminderManager.css';
 
 const CATEGORIES = [
   { id: 'general', label: 'General', icon: '📌', color: '#6366f1' },

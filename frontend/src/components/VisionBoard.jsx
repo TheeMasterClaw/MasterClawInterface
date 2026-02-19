@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './VisionBoard.css';
+// import './VisionBoard.css';
 
 const BOARD_CATEGORIES = [
   { id: 'all', label: 'All Items', emoji: '🌟' },

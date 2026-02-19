@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import './Settings.css';
+// import './Settings.css';
 
 // Default values from build-time env vars
-const DEFAULT_GATEWAY_URL = typeof import.meta.env !== 'undefined' && import.meta.env.VITE_GATEWAY_URL 
-  ? import.meta.env.VITE_GATEWAY_URL 
+const DEFAULT_GATEWAY_URL = typeof process.env !== 'undefined' && process.env.NEXT_PUBLIC_GATEWAY_URL 
+  ? process.env.NEXT_PUBLIC_GATEWAY_URL 
   : '';
-const DEFAULT_GATEWAY_TOKEN = typeof import.meta.env !== 'undefined' && import.meta.env.VITE_GATEWAY_TOKEN 
-  ? import.meta.env.VITE_GATEWAY_TOKEN 
+const DEFAULT_GATEWAY_TOKEN = typeof process.env !== 'undefined' && process.env.NEXT_PUBLIC_GATEWAY_TOKEN 
+  ? process.env.NEXT_PUBLIC_GATEWAY_TOKEN 
   : '';
 
 // Check if we're in browser

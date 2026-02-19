@@ -2,9 +2,9 @@
 const getApiBase = () => {
   let url = 'http://localhost:3001';
   
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    // Prefer VITE_API_URL for HTTP requests, fall back to VITE_GATEWAY_URL
-    url = import.meta.env.VITE_API_URL || import.meta.env.VITE_GATEWAY_URL || url;
+  if (typeof import.meta !== 'undefined' && process.env) {
+    // Prefer NEXT_PUBLIC_API_URL for HTTP requests, fall back to NEXT_PUBLIC_GATEWAY_URL
+    url = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_GATEWAY_URL || url;
   }
   
   // Convert WebSocket URLs to HTTP for fetch requests

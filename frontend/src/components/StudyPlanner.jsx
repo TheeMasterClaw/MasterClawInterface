@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './StudyPlanner.css';
+// import './StudyPlanner.css';
 
 const STUDY_CATEGORIES = [
   { id: 'programming', label: 'Programming', icon: '💻', color: '#6366f1' },

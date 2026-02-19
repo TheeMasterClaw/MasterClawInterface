@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './SkillTracker.css';
+// import './SkillTracker.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 const PROFICIENCY_LEVELS = [
   { value: 'beginner', label: 'Beginner', color: '#22c55e' },

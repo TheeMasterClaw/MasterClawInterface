@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './ContentTracker.css';
+// import './ContentTracker.css';
 
 const CONTENT_TYPES = [
   { id: 'movie', label: 'Movies', icon: '🎬', color: '#ff6b6b' },

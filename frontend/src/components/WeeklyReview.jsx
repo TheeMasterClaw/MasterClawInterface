@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './WeeklyReview.css';
+// import './WeeklyReview.css';
 
 const REVIEW_CATEGORIES = [
   {

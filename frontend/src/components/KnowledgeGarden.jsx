@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './KnowledgeGarden.css';
+// import './KnowledgeGarden.css';
 
 const CATEGORIES = {
   book: { label: 'Book', icon: '📚', color: '#8b5cf6' },

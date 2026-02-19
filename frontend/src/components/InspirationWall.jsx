@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './InspirationWall.css';
+// import './InspirationWall.css';
 
 const CATEGORIES = [
   { id: 'all', label: 'All', icon: '🌟' },

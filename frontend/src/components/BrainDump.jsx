@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './BrainDump.css';
+// import './BrainDump.css';
 
 const CATEGORIES = {
   worry: { label: 'Worry', icon: '😰', color: '#f59e0b', description: 'Things causing anxiety' },

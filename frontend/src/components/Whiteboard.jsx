@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import './Whiteboard.css';
+// import './Whiteboard.css';
 
 const COLORS = [
   { name: 'black', value: '#1a1a1a' },

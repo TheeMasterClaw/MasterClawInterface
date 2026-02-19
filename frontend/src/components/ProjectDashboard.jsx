@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './ProjectDashboard.css';
+// import './ProjectDashboard.css';
 
 const CATEGORIES = {
   work: { label: 'Work', color: '#6366f1', icon: '💼' },

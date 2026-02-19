@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './ReflectionStudio.css';
+// import './ReflectionStudio.css';
 
 const REFLECTION_CATEGORIES = {
   morning: {

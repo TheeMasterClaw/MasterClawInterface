@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './DailyWins.css';
+// import './DailyWins.css';
 
 const WIN_CATEGORIES = [
   { id: 'personal', label: 'Personal Growth', icon: '🌱', color: '#22c55e' },
