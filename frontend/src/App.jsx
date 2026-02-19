@@ -65,6 +65,7 @@ import ConversationHistory from './components/ConversationHistory';
 import ReflectionStudio from './components/ReflectionStudio';
 import MindfulMoments from './components/MindfulMoments';
 import AchievementVault from './components/AchievementVault';
+import ChallengeTracker from './components/ChallengeTracker';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -138,6 +139,7 @@ export default function App() {
   const [showReflectionStudio, setShowReflectionStudio] = useState(false);
   const [showMindfulMoments, setShowMindfulMoments] = useState(false);
   const [showAchievementVault, setShowAchievementVault] = useState(false);
+  const [showChallengeTracker, setShowChallengeTracker] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -285,6 +287,7 @@ export default function App() {
         onReflectionStudioClick={() => setShowReflectionStudio(true)}
         onMindfulMomentsClick={() => setShowMindfulMoments(true)}
         onAchievementVaultClick={() => setShowAchievementVault(true)}
+        onChallengeTrackerClick={() => setShowChallengeTracker(true)}
       />
 
       {showSettings && (
@@ -719,6 +722,13 @@ export default function App() {
         <AchievementVault
           isOpen={showAchievementVault}
           onClose={() => setShowAchievementVault(false)}
+        />
+      )}
+
+      {showChallengeTracker && (
+        <ChallengeTracker
+          isOpen={showChallengeTracker}
+          onClose={() => setShowChallengeTracker(false)}
         />
       )}
 

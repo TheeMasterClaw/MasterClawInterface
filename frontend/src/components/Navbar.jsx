@@ -65,7 +65,8 @@ export default function Navbar({
   onConversationHistoryClick,
   onReflectionStudioClick,
   onMindfulMomentsClick,
-  onAchievementVaultClick
+  onAchievementVaultClick,
+  onChallengeTrackerClick
 }) {
   return (
     <nav className="navbar">
@@ -506,6 +507,13 @@ export default function Navbar({
               title="Achievement Vault"
             >
               🏆
+            </button>
+            <button
+              className="navbar-btn navbar-btn-challenge-tracker"
+              onClick={onChallengeTrackerClick}
+              title="Challenge Tracker"
+            >
+              🎯
             </button>
             <button
               className="navbar-btn navbar-btn-settings"
