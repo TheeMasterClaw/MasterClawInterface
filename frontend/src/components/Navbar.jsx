@@ -62,7 +62,9 @@ export default function Navbar({
   onInspirationWallClick,
   onLearningPathClick,
   onReminderClick,
-  onConversationHistoryClick
+  onConversationHistoryClick,
+  onReflectionStudioClick,
+  onMindfulMomentsClick
 }) {
   return (
     <nav className="navbar">
@@ -302,6 +304,13 @@ export default function Navbar({
               🫁
             </button>
             <button
+              className="navbar-btn navbar-btn-mindful"
+              onClick={onMindfulMomentsClick}
+              title="Mindful Moments"
+            >
+              🧘
+            </button>
+            <button
               className="navbar-btn navbar-btn-mood"
               onClick={onMoodClick}
               title="Mood Tracker"
@@ -482,6 +491,13 @@ export default function Navbar({
               title="Conversation History"
             >
               💬
+            </button>
+            <button
+              className="navbar-btn navbar-btn-reflection-studio"
+              onClick={onReflectionStudioClick}
+              title="Reflection Studio"
+            >
+              🧘
             </button>
             <button
               className="navbar-btn navbar-btn-settings"

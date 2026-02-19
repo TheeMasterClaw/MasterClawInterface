@@ -48,6 +48,7 @@ import ReflectionRoulette from '../components/ReflectionRoulette';
 import CodePlayground from '../components/CodePlayground';
 import ReminderManager from '../components/ReminderManager';
 import ConversationHistory from '../components/ConversationHistory';
+import ReflectionStudio from '../components/ReflectionStudio';
 import './Dashboard.css';
 
 // Browser detection
@@ -106,6 +107,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showCodePlayground, setShowCodePlayground] = useState(false);
   const [showReminderManager, setShowReminderManager] = useState(false);
   const [showConversationHistory, setShowConversationHistory] = useState(false);
+  const [showReflectionStudio, setShowReflectionStudio] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -800,6 +802,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/reflect' || userText === '/studio' || userText === '/mindfulness') {
+      setShowReflectionStudio(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Reflection Studio'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1103,6 +1117,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'chat':
           case 'conversations':
             setShowConversationHistory(true);
+            break;
+          case 'reflect':
+          case 'studio':
+          case 'mindfulness':
+            setShowReflectionStudio(true);
             break;
         }
         break;
@@ -1448,6 +1467,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         <ConversationHistory
           isOpen={showConversationHistory}
           onClose={() => setShowConversationHistory(false)}
+        />
+      )}
+
+      {showReflectionStudio && (
+        <ReflectionStudio
+          isOpen={showReflectionStudio}
+          onClose={() => setShowReflectionStudio(false)}
         />
       )}
 

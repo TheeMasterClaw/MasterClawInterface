@@ -62,6 +62,8 @@ import InspirationWall from './components/InspirationWall';
 import LearningPath from './components/LearningPath';
 import ReminderManager from './components/ReminderManager';
 import ConversationHistory from './components/ConversationHistory';
+import ReflectionStudio from './components/ReflectionStudio';
+import MindfulMoments from './components/MindfulMoments';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -132,6 +134,8 @@ export default function App() {
   const [showLearningPath, setShowLearningPath] = useState(false);
   const [showReminderManager, setShowReminderManager] = useState(false);
   const [showConversationHistory, setShowConversationHistory] = useState(false);
+  const [showReflectionStudio, setShowReflectionStudio] = useState(false);
+  const [showMindfulMoments, setShowMindfulMoments] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -276,6 +280,8 @@ export default function App() {
         onLearningPathClick={() => setShowLearningPath(true)}
         onReminderClick={() => setShowReminderManager(true)}
         onConversationHistoryClick={() => setShowConversationHistory(true)}
+        onReflectionStudioClick={() => setShowReflectionStudio(true)}
+        onMindfulMomentsClick={() => setShowMindfulMoments(true)}
       />
 
       {showSettings && (
@@ -689,6 +695,20 @@ export default function App() {
         <ConversationHistory
           isOpen={showConversationHistory}
           onClose={() => setShowConversationHistory(false)}
+        />
+      )}
+
+      {showReflectionStudio && (
+        <ReflectionStudio
+          isOpen={showReflectionStudio}
+          onClose={() => setShowReflectionStudio(false)}
+        />
+      )}
+
+      {showMindfulMoments && (
+        <MindfulMoments
+          isOpen={showMindfulMoments}
+          onClose={() => setShowMindfulMoments(false)}
         />
       )}
 
