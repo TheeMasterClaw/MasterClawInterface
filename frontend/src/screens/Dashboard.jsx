@@ -59,6 +59,7 @@ import ContactManager from '../components/ContactManager';
 import TodayView from '../components/TodayView';
 import LearningTracker from '../components/LearningTracker';
 import TravelPlanner from '../components/TravelPlanner';
+import Watchlist from '../components/Watchlist';
 import './Dashboard.css';
 
 // Browser detection
@@ -125,6 +126,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showTodayView, setShowTodayView] = useState(false);
   const [showLearningTracker, setShowLearningTracker] = useState(false);
   const [showTravelPlanner, setShowTravelPlanner] = useState(false);
+  const [showWatchlist, setShowWatchlist] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -389,6 +391,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowTodayView(false);
         setShowLearningTracker(false);
         setShowTravelPlanner(false);
+        setShowWatchlist(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -901,6 +904,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/watch' || userText === '/movie' || userText === '/tv') {
+      setShowWatchlist(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Watchlist'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1243,6 +1258,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'trip':
           case 'vacation':
             setShowTravelPlanner(true);
+            break;
+          case 'watch':
+          case 'movie':
+          case 'tv':
+            setShowWatchlist(true);
             break;
         }
         break;
@@ -1647,6 +1667,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showWatchlist && (
+        <Watchlist
+          isOpen={showWatchlist}
+          onClose={() => setShowWatchlist(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1722,6 +1749,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/today</strong> – Open Today View</li>
                   <li><strong>/learn</strong> – Open Learning Tracker</li>
                   <li><strong>/travel</strong> – Open Travel Planner</li>
+                  <li><strong>/watch</strong> – Open Watchlist</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1794,6 +1822,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowTodayView(true)} title="Today View">📅</button>
             <button className="icon-btn" onClick={() => setShowLearningTracker(true)} title="Learning Tracker">🎓</button>
             <button className="icon-btn" onClick={() => setShowTravelPlanner(true)} title="Travel Planner">✈️</button>
+            <button className="icon-btn" onClick={() => setShowWatchlist(true)} title="Watchlist">🍿</button>
           </div>
         </div>
 
