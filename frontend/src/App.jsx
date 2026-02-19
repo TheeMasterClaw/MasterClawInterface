@@ -67,6 +67,7 @@ import MindfulMoments from './components/MindfulMoments';
 import AchievementVault from './components/AchievementVault';
 import ChallengeTracker from './components/ChallengeTracker';
 import BrainDump from './components/BrainDump';
+import SprintPlanner from './components/SprintPlanner';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -142,6 +143,7 @@ export default function App() {
   const [showAchievementVault, setShowAchievementVault] = useState(false);
   const [showChallengeTracker, setShowChallengeTracker] = useState(false);
   const [showBrainDump, setShowBrainDump] = useState(false);
+  const [showSprintPlanner, setShowSprintPlanner] = useState(false);
 
   // Load theme on mount
   useEffect(() => {
@@ -291,6 +293,7 @@ export default function App() {
         onAchievementVaultClick={() => setShowAchievementVault(true)}
         onChallengeTrackerClick={() => setShowChallengeTracker(true)}
         onBrainDumpClick={() => setShowBrainDump(true)}
+        onSprintPlannerClick={() => setShowSprintPlanner(true)}
       />
 
       {showSettings && (
@@ -739,6 +742,13 @@ export default function App() {
         <BrainDump
           isOpen={showBrainDump}
           onClose={() => setShowBrainDump(false)}
+        />
+      )}
+
+      {showSprintPlanner && (
+        <SprintPlanner
+          isOpen={showSprintPlanner}
+          onClose={() => setShowSprintPlanner(false)}
         />
       )}
 

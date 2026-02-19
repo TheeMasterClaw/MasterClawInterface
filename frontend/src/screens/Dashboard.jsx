@@ -50,6 +50,7 @@ import ReminderManager from '../components/ReminderManager';
 import ConversationHistory from '../components/ConversationHistory';
 import ReflectionStudio from '../components/ReflectionStudio';
 import AchievementVault from '../components/AchievementVault';
+import SprintPlanner from '../components/SprintPlanner';
 import './Dashboard.css';
 
 // Browser detection
@@ -110,6 +111,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showConversationHistory, setShowConversationHistory] = useState(false);
   const [showReflectionStudio, setShowReflectionStudio] = useState(false);
   const [showAchievementVault, setShowAchievementVault] = useState(false);
+  const [showSprintPlanner, setShowSprintPlanner] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -368,6 +370,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowConversationHistory(false);
         setShowReflectionStudio(false);
         setShowAchievementVault(false);
+        setShowSprintPlanner(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -830,6 +833,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/sprint' || userText === '/sprints' || userText === '/agile') {
+      setShowSprintPlanner(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Sprint Planner'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1142,6 +1157,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'achievements':
           case 'rewards':
             setShowAchievementVault(true);
+            break;
+          case 'sprint':
+          case 'sprints':
+          case 'agile':
+            setShowSprintPlanner(true);
             break;
         }
         break;
@@ -1504,6 +1524,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showSprintPlanner && (
+        <SprintPlanner
+          isOpen={showSprintPlanner}
+          onClose={() => setShowSprintPlanner(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1573,6 +1600,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/reminder</strong> – Open Smart Reminder Manager</li>
                   <li><strong>/history</strong> – Open Conversation History</li>
                   <li><strong>/achievements</strong> – Open Achievement Vault</li>
+                  <li><strong>/sprint</strong> – Open Sprint Planner</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1639,6 +1667,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowReflectionRoulette(true)} title="Reflection Roulette">🎲</button>
             <button className="icon-btn" onClick={() => setShowCodePlayground(true)} title="Code Playground">💻</button>
             <button className="icon-btn" onClick={() => setShowReminderManager(true)} title="Smart Reminders">⏰</button>
+            <button className="icon-btn" onClick={() => setShowSprintPlanner(true)} title="Sprint Planner">🏃</button>
           </div>
         </div>
 

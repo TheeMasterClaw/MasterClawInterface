@@ -48,6 +48,7 @@ const COMMANDS = [
   { id: 'reminder', label: 'Smart Reminders', icon: '⏰', shortcut: '/reminder', action: 'panel', target: 'reminder' },
   { id: 'conversation-history', label: 'Conversation History', icon: '💬', shortcut: '/history', action: 'panel', target: 'history' },
   { id: 'theme-dark', label: 'Switch to Dark Theme', icon: '🌙', shortcut: 'theme dark', action: 'theme', value: 'dark' },
+  { id: 'sprint-planner', label: 'Sprint Planner', icon: '🏃', shortcut: '/sprint', action: 'panel', target: 'sprint' },
   { id: 'theme-light', label: 'Switch to Light Theme', icon: '☀️', shortcut: 'theme light', action: 'theme', value: 'light' },
   { id: 'voice', label: 'Voice Input', icon: '🎤', shortcut: 'voice', action: 'voice' },
 ];

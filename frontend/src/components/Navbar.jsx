@@ -67,7 +67,8 @@ export default function Navbar({
   onMindfulMomentsClick,
   onAchievementVaultClick,
   onChallengeTrackerClick,
-  onBrainDumpClick
+  onBrainDumpClick,
+  onSprintPlannerClick
 }) {
   return (
     <nav className="navbar">
@@ -522,6 +523,13 @@ export default function Navbar({
               title="Brain Dump"
             >
               🧠
+            </button>
+            <button
+              className="navbar-btn navbar-btn-sprint"
+              onClick={onSprintPlannerClick}
+              title="Sprint Planner"
+            >
+              🏃
             </button>
             <button
               className="navbar-btn navbar-btn-settings"
