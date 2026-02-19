@@ -64,6 +64,7 @@ import MealPlanner from '../components/MealPlanner';
 import ReadingTracker from '../components/ReadingTracker';
 import SubscriptionManager from '../components/SubscriptionManager';
 import GiftIdeas from '../components/GiftIdeas';
+import RoutineBuilder from '../components/RoutineBuilder';
 import './Dashboard.css';
 
 // Browser detection
@@ -135,6 +136,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showReadingTracker, setShowReadingTracker] = useState(false);
   const [showSubscriptionManager, setShowSubscriptionManager] = useState(false);
   const [showGiftIdeas, setShowGiftIdeas] = useState(false);
+  const [showRoutineBuilder, setShowRoutineBuilder] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -404,6 +406,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowReadingTracker(false);
         setShowSubscriptionManager(false);
         setShowGiftIdeas(false);
+        setShowRoutineBuilder(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -976,6 +979,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/routine' || userText === '/routines') {
+      setShowRoutineBuilder(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Routine Builder'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1343,6 +1358,10 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'gifts':
           case 'present':
             setShowGiftIdeas(true);
+            break;
+          case 'routine':
+          case 'routines':
+            setShowRoutineBuilder(true);
             break;
         }
         break;
@@ -1782,6 +1801,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showRoutineBuilder && (
+        <RoutineBuilder
+          isOpen={showRoutineBuilder}
+          onClose={() => setShowRoutineBuilder(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1862,6 +1888,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/read</strong> – Open Reading Tracker</li>
                   <li><strong>/subs</strong> – Open Subscription Manager</li>
                   <li><strong>/gift</strong> – Open Gift Ideas</li>
+                  <li><strong>/routine</strong> – Open Routine Builder</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1939,6 +1966,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowReadingTracker(true)} title="Reading Tracker">📖</button>
             <button className="icon-btn" onClick={() => setShowSubscriptionManager(true)} title="Subscriptions">💳</button>
             <button className="icon-btn" onClick={() => setShowGiftIdeas(true)} title="Gift Ideas">🎁</button>
+            <button className="icon-btn" onClick={() => setShowRoutineBuilder(true)} title="Routine Builder">⏰</button>
           </div>
         </div>
 

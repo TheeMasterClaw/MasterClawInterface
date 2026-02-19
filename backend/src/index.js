@@ -26,6 +26,7 @@ import readingRouter from './routes/reading.js';
 import subscriptionsRouter from './routes/subscriptions.js';
 import giftsRouter from './routes/gifts.js';
 import habitsRouter from './routes/habits.js';
+import routinesRouter from './routes/routines.js';
 import { errorHandler, sanitizeBody, authenticateApiToken } from './middleware/security.js';
 import { requestTimeout, timeoutFor } from './middleware/timeout.js';
 import { auditLogMiddleware, getRecentAuditLogs, getAuditStats, logSecurityEvent, logCspViolation, SecurityEventType, Severity } from './middleware/auditLog.js';
@@ -233,6 +234,7 @@ app.use('/reading', readingRouter);
 app.use('/subscriptions', subscriptionsRouter);
 app.use('/gifts', giftsRouter);
 app.use('/habits', habitsRouter);
+app.use('/routines', routinesRouter);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -375,7 +377,7 @@ app.get('/', (req, res) => {
   res.json({
     message: 'MC Backend API',
     status: 'running',
-    endpoints: ['/tasks', '/calendar', '/time', '/tts', '/health', '/chat', '/skills', '/snippets', '/projects', '/resources', '/contacts', '/today', '/learning', '/travel', '/watchlist', '/meals', '/reading', '/subscriptions', '/gifts', '/habits'],
+    endpoints: ['/tasks', '/calendar', '/time', '/tts', '/health', '/chat', '/skills', '/snippets', '/projects', '/resources', '/contacts', '/today', '/learning', '/travel', '/watchlist', '/meals', '/reading', '/subscriptions', '/gifts', '/habits', '/routines'],
     realtime: 'socket.io enabled',
     security: {
       rateLimiting: true,

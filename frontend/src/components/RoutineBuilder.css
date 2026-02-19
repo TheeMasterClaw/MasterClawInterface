@@ -1,0 +1,583 @@
+/**
+ * Routine Builder Styles
+ * Create and track daily routines
+ */
+
+.routine-builder-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.routine-builder-panel {
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 800px;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+/* Header */
+.routine-builder-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-icon {
+  font-size: 32px;
+}
+
+.header-title h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(90deg, #3498db 0%, #2980b9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-stats {
+  font-size: 0.85rem;
+  color: #8892b0;
+  padding: 4px 12px;
+  background: rgba(52, 152, 219, 0.1);
+  border-radius: 20px;
+  margin-left: 8px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.close-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 71, 87, 0.8);
+  transform: rotate(90deg);
+}
+
+/* Buttons */
+.btn-primary {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+}
+
+.btn-primary.small {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+}
+
+.btn-secondary {
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Stats */
+.routine-stats {
+  display: flex;
+  gap: 16px;
+  padding: 16px 24px;
+  background: rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  min-width: 140px;
+}
+
+.stat-card.today {
+  flex: 2;
+  background: rgba(52, 152, 219, 0.1);
+  border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.stat-card.best {
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #8892b0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.stat-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.stat-percent {
+  font-size: 1.1rem;
+  color: #3498db;
+  font-weight: 600;
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3498db, #2980b9);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Filter Tabs */
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  overflow-x: auto;
+  flex-wrap: nowrap;
+}
+
+.filter-tab {
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #8892b0;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.filter-tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.filter-tab.active {
+  background: rgba(52, 152, 219, 0.2);
+  border-color: rgba(52, 152, 219, 0.5);
+  color: #3498db;
+}
+
+/* Content */
+.routine-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+/* Loading & Empty States */
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #8892b0;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px 0;
+  color: #fff;
+  font-size: 1.3rem;
+}
+
+.empty-state p {
+  margin: 0 0 20px 0;
+  max-width: 300px;
+}
+
+/* Form */
+.routine-form {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.routine-form h3 {
+  margin: 0 0 16px 0;
+  color: #fff;
+}
+
+.routine-form input,
+.routine-form select,
+.routine-form textarea {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.routine-form input[type="color"] {
+  height: 50px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.routine-form input:focus,
+.routine-form select:focus,
+.routine-form textarea:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Steps Section */
+.steps-section {
+  margin: 16px 0;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.steps-section h4 {
+  margin: 0 0 12px 0;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.step-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 20px 30px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.step-row input {
+  margin: 0;
+}
+
+.step-row input[type="number"] {
+  text-align: center;
+}
+
+.step-min {
+  color: #8892b0;
+  font-size: 0.9rem;
+}
+
+.remove-step {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-step:hover {
+  background: rgba(231, 76, 60, 0.4);
+}
+
+.add-step-btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #8892b0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-step-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* Routines List */
+.routines-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.routine-card {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  border-left: 4px solid var(--routine-color);
+  transition: all 0.2s ease;
+}
+
+.routine-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.routine-card.completed {
+  background: rgba(46, 204, 113, 0.05);
+}
+
+.routine-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.complete-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--routine-color);
+  background: transparent;
+  color: var(--routine-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.complete-btn:hover {
+  background: var(--routine-color);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.complete-btn.checked {
+  background: var(--routine-color);
+  color: #fff;
+}
+
+.routine-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.routine-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.routine-header-row h4 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.duration-badge {
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: #8892b0;
+  white-space: nowrap;
+}
+
+.routine-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.type-tag {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.streak-badge {
+  padding: 2px 8px;
+  background: rgba(231, 76, 60, 0.15);
+  border-radius: 10px;
+  font-size: 0.8rem;
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+.weekly-rate {
+  font-size: 0.8rem;
+  color: #5a6275;
+}
+
+.routine-desc {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  color: #5a6275;
+}
+
+.steps-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.step-tag {
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  color: #8892b0;
+}
+
+.routine-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: flex-end;
+}
+
+.routine-actions button {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  color: #8892b0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.routine-actions button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .routine-builder-panel {
+    height: 100vh;
+    border-radius: 0;
+  }
+  
+  .routine-stats {
+    flex-direction: column;
+  }
+  
+  .routine-main {
+    flex-direction: column;
+  }
+  
+  .routine-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .step-row {
+    grid-template-columns: 1fr 60px 20px 30px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
