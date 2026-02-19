@@ -92,10 +92,13 @@ export async function processChatMessage({ message, saveHistory = true }) {
       throw error;
     }
 
+    console.error(`[ChatGateway] Failed to send to ${gatewayUrl}:`, error.message);
+
     const errorResponse = {
       error: 'Failed to send message to MC',
-      text: `Error: ${error.message}`,
-      debug: process.env.NODE_ENV === 'development'
+      text: `Error: ${error.message} (Target: ${gatewayUrl})`,
+      debug: process.env.NODE_ENV === 'development',
+      target: gatewayUrl
     };
 
     if (saveHistory) {
