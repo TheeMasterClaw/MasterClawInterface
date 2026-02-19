@@ -66,7 +66,8 @@ export default function Navbar({
   onReflectionStudioClick,
   onMindfulMomentsClick,
   onAchievementVaultClick,
-  onChallengeTrackerClick
+  onChallengeTrackerClick,
+  onBrainDumpClick
 }) {
   return (
     <nav className="navbar">
@@ -514,6 +515,13 @@ export default function Navbar({
               title="Challenge Tracker"
             >
               🎯
+            </button>
+            <button
+              className="navbar-btn navbar-btn-brain-dump"
+              onClick={onBrainDumpClick}
+              title="Brain Dump"
+            >
+              🧠
             </button>
             <button
               className="navbar-btn navbar-btn-settings"
