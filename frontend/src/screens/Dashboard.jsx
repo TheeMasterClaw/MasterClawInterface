@@ -65,6 +65,7 @@ import ReadingTracker from '../components/ReadingTracker';
 import SubscriptionManager from '../components/SubscriptionManager';
 import GiftIdeas from '../components/GiftIdeas';
 import RoutineBuilder from '../components/RoutineBuilder';
+import GoalTracker from '../components/GoalTracker';
 import './Dashboard.css';
 
 // Browser detection
@@ -137,6 +138,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showSubscriptionManager, setShowSubscriptionManager] = useState(false);
   const [showGiftIdeas, setShowGiftIdeas] = useState(false);
   const [showRoutineBuilder, setShowRoutineBuilder] = useState(false);
+  const [showGoalTracker, setShowGoalTracker] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -407,6 +409,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowSubscriptionManager(false);
         setShowGiftIdeas(false);
         setShowRoutineBuilder(false);
+        setShowGoalTracker(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -991,6 +994,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/goal' || userText === '/goals') {
+      setShowGoalTracker(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Goal Tracker'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1362,6 +1377,10 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'routine':
           case 'routines':
             setShowRoutineBuilder(true);
+            break;
+          case 'goal':
+          case 'goals':
+            setShowGoalTracker(true);
             break;
         }
         break;
@@ -1808,6 +1827,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showGoalTracker && (
+        <GoalTracker
+          isOpen={showGoalTracker}
+          onClose={() => setShowGoalTracker(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1889,6 +1915,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/subs</strong> – Open Subscription Manager</li>
                   <li><strong>/gift</strong> – Open Gift Ideas</li>
                   <li><strong>/routine</strong> – Open Routine Builder</li>
+                  <li><strong>/goal</strong> – Open Goal Tracker</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1967,6 +1994,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowSubscriptionManager(true)} title="Subscriptions">💳</button>
             <button className="icon-btn" onClick={() => setShowGiftIdeas(true)} title="Gift Ideas">🎁</button>
             <button className="icon-btn" onClick={() => setShowRoutineBuilder(true)} title="Routine Builder">⏰</button>
+            <button className="icon-btn" onClick={() => setShowGoalTracker(true)} title="Goal Tracker">🏆</button>
           </div>
         </div>
 
