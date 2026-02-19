@@ -49,6 +49,7 @@ import CodePlayground from '../components/CodePlayground';
 import ReminderManager from '../components/ReminderManager';
 import ConversationHistory from '../components/ConversationHistory';
 import ReflectionStudio from '../components/ReflectionStudio';
+import AchievementVault from '../components/AchievementVault';
 import './Dashboard.css';
 
 // Browser detection
@@ -108,6 +109,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showReminderManager, setShowReminderManager] = useState(false);
   const [showConversationHistory, setShowConversationHistory] = useState(false);
   const [showReflectionStudio, setShowReflectionStudio] = useState(false);
+  const [showAchievementVault, setShowAchievementVault] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -364,6 +366,8 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowCodePlayground(false);
         setShowReminderManager(false);
         setShowConversationHistory(false);
+        setShowReflectionStudio(false);
+        setShowAchievementVault(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -814,6 +818,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/achievements' || userText === '/vault' || userText === '/rewards') {
+      setShowAchievementVault(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Achievement Vault'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1122,6 +1138,10 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'studio':
           case 'mindfulness':
             setShowReflectionStudio(true);
+            break;
+          case 'achievements':
+          case 'rewards':
+            setShowAchievementVault(true);
             break;
         }
         break;
@@ -1477,6 +1497,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showAchievementVault && (
+        <AchievementVault
+          isOpen={showAchievementVault}
+          onClose={() => setShowAchievementVault(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1545,6 +1572,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/detox</strong> – Open Digital Detox Tracker</li>
                   <li><strong>/reminder</strong> – Open Smart Reminder Manager</li>
                   <li><strong>/history</strong> – Open Conversation History</li>
+                  <li><strong>/achievements</strong> – Open Achievement Vault</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>

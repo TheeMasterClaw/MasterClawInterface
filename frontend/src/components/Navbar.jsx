@@ -64,7 +64,8 @@ export default function Navbar({
   onReminderClick,
   onConversationHistoryClick,
   onReflectionStudioClick,
-  onMindfulMomentsClick
+  onMindfulMomentsClick,
+  onAchievementVaultClick
 }) {
   return (
     <nav className="navbar">
@@ -498,6 +499,13 @@ export default function Navbar({
               title="Reflection Studio"
             >
               🧘
+            </button>
+            <button
+              className="navbar-btn navbar-btn-achievement-vault"
+              onClick={onAchievementVaultClick}
+              title="Achievement Vault"
+            >
+              🏆
             </button>
             <button
               className="navbar-btn navbar-btn-settings"
