@@ -60,6 +60,7 @@ import TodayView from '../components/TodayView';
 import LearningTracker from '../components/LearningTracker';
 import TravelPlanner from '../components/TravelPlanner';
 import Watchlist from '../components/Watchlist';
+import MealPlanner from '../components/MealPlanner';
 import './Dashboard.css';
 
 // Browser detection
@@ -127,6 +128,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showLearningTracker, setShowLearningTracker] = useState(false);
   const [showTravelPlanner, setShowTravelPlanner] = useState(false);
   const [showWatchlist, setShowWatchlist] = useState(false);
+  const [showMealPlanner, setShowMealPlanner] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -392,6 +394,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowLearningTracker(false);
         setShowTravelPlanner(false);
         setShowWatchlist(false);
+        setShowMealPlanner(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -916,6 +919,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/meal' || userText === '/food' || userText === '/nutrition') {
+      setShowMealPlanner(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Meal Planner'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1263,6 +1278,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'movie':
           case 'tv':
             setShowWatchlist(true);
+            break;
+          case 'meal':
+          case 'food':
+          case 'nutrition':
+            setShowMealPlanner(true);
             break;
         }
         break;
@@ -1674,6 +1694,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showMealPlanner && (
+        <MealPlanner
+          isOpen={showMealPlanner}
+          onClose={() => setShowMealPlanner(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1750,6 +1777,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/learn</strong> – Open Learning Tracker</li>
                   <li><strong>/travel</strong> – Open Travel Planner</li>
                   <li><strong>/watch</strong> – Open Watchlist</li>
+                  <li><strong>/meal</strong> – Open Meal Planner</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1823,6 +1851,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowLearningTracker(true)} title="Learning Tracker">🎓</button>
             <button className="icon-btn" onClick={() => setShowTravelPlanner(true)} title="Travel Planner">✈️</button>
             <button className="icon-btn" onClick={() => setShowWatchlist(true)} title="Watchlist">🍿</button>
+            <button className="icon-btn" onClick={() => setShowMealPlanner(true)} title="Meal Planner">🥗</button>
           </div>
         </div>
 
