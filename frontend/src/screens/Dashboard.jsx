@@ -61,6 +61,7 @@ import LearningTracker from '../components/LearningTracker';
 import TravelPlanner from '../components/TravelPlanner';
 import Watchlist from '../components/Watchlist';
 import MealPlanner from '../components/MealPlanner';
+import ReadingTracker from '../components/ReadingTracker';
 import './Dashboard.css';
 
 // Browser detection
@@ -129,6 +130,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showTravelPlanner, setShowTravelPlanner] = useState(false);
   const [showWatchlist, setShowWatchlist] = useState(false);
   const [showMealPlanner, setShowMealPlanner] = useState(false);
+  const [showReadingTracker, setShowReadingTracker] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -395,6 +397,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         setShowTravelPlanner(false);
         setShowWatchlist(false);
         setShowMealPlanner(false);
+        setShowReadingTracker(false);
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -931,6 +934,18 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       return;
     }
 
+    if (userText === '/read' || userText === '/reading' || userText === '/book') {
+      setShowReadingTracker(true);
+      setIsTyping(false);
+      setAvatarState('idle');
+      logActivity({
+        type: 'command',
+        title: 'Command executed',
+        description: 'Opened Reading Tracker'
+      });
+      return;
+    }
+
     if (userText === '/clear' || userText === '/cls') {
       try {
         await fetch(API.chat.history, { method: 'DELETE' });
@@ -1283,6 +1298,11 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
           case 'food':
           case 'nutrition':
             setShowMealPlanner(true);
+            break;
+          case 'read':
+          case 'reading':
+          case 'book':
+            setShowReadingTracker(true);
             break;
         }
         break;
@@ -1701,6 +1721,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
         />
       )}
 
+      {showReadingTracker && (
+        <ReadingTracker
+          isOpen={showReadingTracker}
+          onClose={() => setShowReadingTracker(false)}
+        />
+      )}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1778,6 +1805,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
                   <li><strong>/travel</strong> – Open Travel Planner</li>
                   <li><strong>/watch</strong> – Open Watchlist</li>
                   <li><strong>/meal</strong> – Open Meal Planner</li>
+                  <li><strong>/read</strong> – Open Reading Tracker</li>
                   <li><strong>/clear</strong> – Clear chat history</li>
                   <li><strong>/help</strong> – Show this help</li>
                 </ul>
@@ -1852,6 +1880,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
             <button className="icon-btn" onClick={() => setShowTravelPlanner(true)} title="Travel Planner">✈️</button>
             <button className="icon-btn" onClick={() => setShowWatchlist(true)} title="Watchlist">🍿</button>
             <button className="icon-btn" onClick={() => setShowMealPlanner(true)} title="Meal Planner">🥗</button>
+            <button className="icon-btn" onClick={() => setShowReadingTracker(true)} title="Reading Tracker">📖</button>
           </div>
         </div>
 
