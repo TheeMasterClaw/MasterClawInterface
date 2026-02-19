@@ -24,6 +24,10 @@ import { createSocketServer } from './socket.js';
 dotenv.config();
 
 const app = express();
+
+// Trust proxy headers from Railway/load balancer (required for express-rate-limit)
+app.set('trust proxy', 1);
+
 const PORT = process.env.PORT || 3001;
 
 // Security Audit: Log all requests for security monitoring
@@ -92,10 +96,21 @@ app.use(limiter);
 const ALLOWED_ORIGINS = [
   'https://master-claw-interface.vercel.app',
   'https://master-claw-interface-git-main-rex-deus-projects.vercel.app',
+  'https://master-claw-interface-fcsw1431m-yeeeee.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:4173',
 ];
+
+// Helper to check if origin is allowed (including Vercel preview deployments)
+function isOriginAllowed(origin) {
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
+  
+  // Allow Vercel preview deployments (they have random hashes)
+  if (origin?.match(/^https:\/\/master-claw-interface-[a-z0-9]+-yeeeee\.vercel\.app$/)) return true;
+  
+  return false;
+}
 
 // Add FRONTEND_URL env var origins if provided
 if (process.env.FRONTEND_URL) {
@@ -113,7 +128,7 @@ const corsOptions = {
     // Allow requests with no origin (non-browser clients, curl, etc.)
     if (!origin) return callback(null, true);
     
-    if (ALLOWED_ORIGINS.includes(origin)) {
+    if (isOriginAllowed(origin)) {
       return callback(null, true);
     }
     

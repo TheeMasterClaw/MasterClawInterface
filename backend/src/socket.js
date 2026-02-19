@@ -11,10 +11,21 @@ import {
 const ALLOWED_ORIGINS = [
   'https://master-claw-interface.vercel.app',
   'https://master-claw-interface-git-main-rex-deus-projects.vercel.app',
+  'https://master-claw-interface-fcsw1431m-yeeeee.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:4173',
 ];
+
+// Helper to check if origin is allowed (including Vercel preview deployments)
+function isOriginAllowed(origin) {
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
+  
+  // Allow Vercel preview deployments (they have random hashes)
+  if (origin?.match(/^https:\/\/master-claw-interface-[a-z0-9]+-yeeeee\.vercel\.app$/)) return true;
+  
+  return false;
+}
 
 // Add FRONTEND_URL env var origins if provided
 if (process.env.FRONTEND_URL) {
