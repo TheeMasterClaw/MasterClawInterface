@@ -74,6 +74,7 @@ import MindfulMoments from './MindfulMoments';
 import AchievementVault from './AchievementVault';
 import ChallengeTracker from './ChallengeTracker';
 import BrainDump from './BrainDump';
+import { ServiceWorkerRegistration } from './ServiceWorkerRegistration';
 import SprintPlanner from './SprintPlanner';
 import ResourceLibrary from './ResourceLibrary';
 import AdminDebugPanel from './AdminDebugPanel';
@@ -379,6 +380,7 @@ export default function ClientLayout({ children }) {
             {showAdminDebug && <AdminDebugPanel isOpen={showAdminDebug} onClose={() => closeOverlay('adminDebug')} />}
 
             <GlobalShortcuts />
+            <ServiceWorkerRegistration />
             {children}
         </div>
     );

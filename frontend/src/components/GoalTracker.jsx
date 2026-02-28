@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './GoalTracker.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 const CATEGORIES = [
   { id: 'personal', name: 'Personal', icon: '👤', color: '#3498db' },

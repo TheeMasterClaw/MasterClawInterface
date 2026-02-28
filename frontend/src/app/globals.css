@@ -52668,3 +52668,236 @@ body.theme-light .milestone-item {
     transform: translateY(0);
   }
 }
+/* ============================================
+   MOBILE RESPONSIVE STYLES - Added 2026-02-28
+   ============================================ */
+
+/* Mobile-first base styles */
+@media (max-width: 768px) {
+  /* Container adjustments */
+  .app {
+    padding-top: 56px;
+  }
+  
+  /* Reduce padding on mobile */
+  body {
+    padding: 0;
+    overflow-x: hidden;
+  }
+  
+  /* Touch-friendly tap targets */
+  button, 
+  .clickable,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Prevent text selection on UI elements */
+  .no-select {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  
+  /* Smooth scrolling for mobile */
+  .scrollable {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Mobile navigation adjustments */
+  .navbar {
+    height: 56px;
+    padding: 0 12px;
+  }
+  
+  /* Avatar size adjustments for mobile */
+  .avatar--medium {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .avatar--large {
+    width: 200px;
+    height: 200px;
+  }
+  
+  /* Modal adjustments for mobile */
+  .modal-overlay .modal {
+    width: 95%;
+    max-height: 90vh;
+    border-radius: 16px;
+  }
+  
+  /* Panel adjustments for mobile */
+  .panel-overlay .panel {
+    max-width: 100%;
+    max-height: 95vh;
+    border-radius: 20px 20px 0 0;
+    margin: 0;
+  }
+  
+  /* Chat input adjustments */
+  .chat-input-container {
+    padding: 8px 12px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  
+  /* Grid adjustments */
+  .stats-dashboard {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 12px 16px;
+  }
+  
+  .content-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 12px 16px;
+  }
+  
+  /* Form adjustments */
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  /* Filter tabs scrollable on mobile */
+  .filter-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .filter-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Calendar grid adjustments */
+  .calendar-grid {
+    gap: 4px;
+  }
+  
+  /* Card grids */
+  .challenges-grid,
+  .quotes-grid,
+  .snippets-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Full-width buttons on mobile */
+  .btn-primary,
+  .btn-secondary,
+  .add-win-btn {
+    width: 100%;
+  }
+  
+  /* Reduce font sizes slightly */
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1.1rem; }
+  
+  /* Message bubbles */
+  .message-bubble {
+    max-width: 90%;
+    padding: 10px 14px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 380px) {
+  .avatar--medium {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .briefing-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .decision-journal-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .stats-dashboard {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .challenges-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Safe area support for notched devices */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Landscape mode on mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .panel-overlay .panel {
+    max-height: 85vh;
+  }
+  
+  .avatar--medium {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* Dark mode preference (already dark by default, but add media query for future) */
+@media (prefers-color-scheme: light) {
+  /* Keep dark mode as default, but respect system preference if set */
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .button,
+  .btn-primary,
+  .btn-secondary {
+    border-width: 2px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .navbar,
+  .modal-overlay,
+  .panel-overlay {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+}
