@@ -242,9 +242,8 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       try {
         const settings = JSON.parse(localStorage.getItem('mc-settings') || '{}');
         const gatewayUrl = settings.gatewayUrl || getApiUrl();
-        const gatewayToken = settings.gatewayToken || process.env.NEXT_PUBLIC_GATEWAY_TOKEN || '';
 
-        const client = new GatewayClient(gatewayUrl, gatewayToken, {
+        const client = new GatewayClient(gatewayUrl, '', {
           maxReconnectAttempts: 10,
           reconnectDelay: 2000
         });

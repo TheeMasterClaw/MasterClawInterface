@@ -135,27 +135,25 @@ docker-compose up -d
 
 ---
 
-### Option 3: OpenClaw Integration (Recommended)
+### Option 3: OpenClaw Integration (Federated Skills)
 
-MC can integrate with OpenClaw gateway for:
-- Federated task/memory storage
-- Cross-device sync
-- Enhanced voice capabilities
+MC integrates with OpenClaw using a **federated, opt-in skill pattern**:
+- Agents connect *inbound* via Socket.IO — no stored tokens
+- Skills are registered voluntarily and can be revoked
+- Discover connection details at `GET /manifest.json`
 
-#### Setup
-1. Install OpenClaw on your machine
-2. Configure gateway token in `.env`
-3. MC will automatically sync to OpenClaw backend
-
-```env
-OPENCLAW_GATEWAY_URL=http://localhost:3000
-OPENCLAW_GATEWAY_TOKEN=your-token-here
-```
+#### How It Works
+1. An OpenClaw skill connects to MasterClaw's Socket.IO server
+2. It emits `skill:register` with `{ name, description, trigger: 'chat' }`
+3. It listens for `skill:execute` events and responds with `skill:result`
 
 #### Architecture
 ```
-MC Web App ← → OpenClaw Gateway ← → Storage
+OpenClaw Skill ──opt-in──▶ MasterClaw Socket.IO (skill:register)
+               ◀──invoke──  MasterClaw (skill:execute)
 ```
+
+> No gateway tokens. No stored credentials. Agents authenticate explicitly and can disconnect at any time.
 
 ---
 
@@ -227,11 +225,8 @@ ELEVENLABS_VOICE_ID=...
 VITE_GATEWAY_URL=https://your-railway-app.up.railway.app
 ```
 
-**OpenClaw Integration** (optional)
-```env
-OPENCLAW_GATEWAY_URL=http://gateway:3000
-OPENCLAW_GATEWAY_TOKEN=...
-```
+**OpenClaw Integration** (federated, no tokens)
+Agents connect inbound via Socket.IO. See Option 3 above.
 
 ---
 

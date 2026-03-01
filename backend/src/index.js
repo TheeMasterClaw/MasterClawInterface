@@ -28,6 +28,7 @@ import giftsRouter from './routes/gifts.js';
 import habitsRouter from './routes/habits.js';
 import routinesRouter from './routes/routines.js';
 import goalsRouter from './routes/goals.js';
+import manifestRouter from './routes/manifest.js';
 import { errorHandler, sanitizeBody, authenticateApiToken } from './middleware/security.js';
 import { requestTimeout, timeoutFor } from './middleware/timeout.js';
 import { auditLogMiddleware, getRecentAuditLogs, getAuditStats, logSecurityEvent, logCspViolation, SecurityEventType, Severity } from './middleware/auditLog.js';
@@ -118,6 +119,8 @@ const ALLOWED_ORIGINS = [
   'https://master-claw-interface.vercel.app',
   'https://master-claw-interface-git-main-rex-deus-projects.vercel.app',
   'https://master-claw-interface-fcsw1431m-yeeeee.vercel.app',
+  'https://www.offmarketproperties.xyz',
+  'https://offmarketproperties.xyz',
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:4173',
@@ -237,6 +240,7 @@ app.use('/gifts', giftsRouter);
 app.use('/habits', habitsRouter);
 app.use('/routines', routinesRouter);
 app.use('/goals', goalsRouter);
+app.use('/manifest.json', manifestRouter);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

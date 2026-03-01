@@ -1,17 +1,13 @@
-// API Configuration - lazy evaluation to avoid SSR issues
+// API Configuration for Next.js
 const getApiBase = () => {
-  let url = 'http://localhost:3001';
-  
-  if (typeof import.meta !== 'undefined' && process.env) {
-    // Prefer NEXT_PUBLIC_API_URL for HTTP requests, fall back to NEXT_PUBLIC_GATEWAY_URL
-    url = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_GATEWAY_URL || url;
-  }
+  // Use NEXT_PUBLIC_API_URL for client-side, fallback to localhost
+  const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
   
   // Convert WebSocket URLs to HTTP for fetch requests
   if (url.startsWith('wss://')) {
-    url = url.replace('wss://', 'https://');
+    return url.replace('wss://', 'https://');
   } else if (url.startsWith('ws://')) {
-    url = url.replace('ws://', 'http://');
+    return url.replace('ws://', 'http://');
   }
   
   return url;

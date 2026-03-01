@@ -1,89 +1,24 @@
 import { createChatMessage } from '../db.js';
 import { listSkills, findSkillByTrigger, invokeSkill } from './skillRegistry.js';
-import { io } from 'socket.io-client';
-
-// Socket.IO client for OpenClaw gateway
-let gatewaySocket = null;
-let gatewayConnected = false;
-let messageQueue = [];
-let responseCallbacks = new Map();
 
 /**
- * Initialize connection to OpenClaw gateway
+ * Chat Gateway — Federated Skill Pattern
+ *
+ * Instead of connecting outbound to an external OpenClaw gateway with a stored
+ * token, we rely on agents that voluntarily connect INBOUND via Socket.IO and
+ * register a "chat" skill.  Free-form messages are routed to whichever agent
+ * registered that skill; if none is connected the user gets a clear message.
  */
-export function initGatewayConnection() {
-  const gatewayUrl = process.env.OPENCLAW_GATEWAY_URL;
-  const gatewayToken = process.env.OPENCLAW_GATEWAY_TOKEN;
 
-  if (!gatewayUrl || !gatewayToken) {
-    console.log('[ChatGateway] Gateway not configured');
-    return false;
-  }
+// Reference to the Socket.IO server (set by socket.js at startup)
+let ioServer = null;
 
-  // Convert http to ws for Socket.IO
-  let wsUrl = gatewayUrl;
-  if (wsUrl.startsWith('https://')) {
-    wsUrl = wsUrl.replace('https://', 'wss://');
-  } else if (wsUrl.startsWith('http://')) {
-    wsUrl = wsUrl.replace('http://', 'ws://');
-  }
-
-  console.log(`[ChatGateway] Connecting to ${wsUrl}...`);
-
-  gatewaySocket = io(wsUrl, {
-    transports: ['websocket', 'polling'],
-    auth: {
-      token: gatewayToken
-    },
-    reconnection: true,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 2000
-  });
-
-  gatewaySocket.on('connect', () => {
-    console.log('[ChatGateway] Connected to OpenClaw gateway');
-    gatewayConnected = true;
-
-    // Send any queued messages
-    while (messageQueue.length > 0) {
-      const msg = messageQueue.shift();
-      sendToGateway(msg);
-    }
-  });
-
-  gatewaySocket.on('disconnect', () => {
-    console.log('[ChatGateway] Disconnected from OpenClaw gateway');
-    gatewayConnected = false;
-  });
-
-  gatewaySocket.on('connect_error', (err) => {
-    console.error('[ChatGateway] Connection error:', err.message);
-    gatewayConnected = false;
-  });
-
-  // Handle responses from OpenClaw
-  gatewaySocket.on('message', (data) => {
-    console.log('[ChatGateway] Received response:', data);
-
-    // Find and execute the callback for this message
-    const callback = responseCallbacks.get(data.requestId || data.id);
-    if (callback) {
-      callback(data);
-      responseCallbacks.delete(data.requestId || data.id);
-    }
-  });
-
-  return true;
-}
-
-function sendToGateway(messageData) {
-  if (!gatewaySocket || !gatewayConnected) {
-    messageQueue.push(messageData);
-    return false;
-  }
-
-  gatewaySocket.emit('message', messageData);
-  return true;
+/**
+ * Provide the Socket.IO server instance so we can emit to skill providers.
+ * Called once from socket.js after the io server is created.
+ */
+export function setIOServer(io) {
+  ioServer = io;
 }
 
 export async function processChatMessage({ message, saveHistory = true }) {
@@ -101,6 +36,7 @@ export async function processChatMessage({ message, saveHistory = true }) {
     });
   }
 
+  // 1. Try slash commands first
   const commandResult = await handleSlashCommand(message.trim());
   if (commandResult) {
     if (saveHistory) {
@@ -114,16 +50,16 @@ export async function processChatMessage({ message, saveHistory = true }) {
     return commandResult;
   }
 
-  // Try to send via gateway
-  const gatewayUrl = process.env.OPENCLAW_GATEWAY_URL;
-  const gatewayToken = process.env.OPENCLAW_GATEWAY_TOKEN;
+  // 2. Look for a registered "chat" skill (an agent that opted in)
+  const chatSkill = findSkillByTrigger('chat');
 
-  if (!gatewayToken) {
+  if (!chatSkill || chatSkill.status !== 'active') {
     const response = {
-      error: 'OpenClaw gateway not configured',
-      text: 'MC is offline. Configure OPENCLAW_GATEWAY_TOKEN in environment.',
-      debug: { gatewayUrl, hasToken: false }
+      error: 'No chat agent connected',
+      text: '🔌 No agent is connected. Install an OpenClaw skill that registers a "chat" handler, or connect a bot via Socket.IO.',
+      debug: { registeredSkills: listSkills().map(s => s.trigger) }
     };
+
     if (saveHistory) {
       createChatMessage({
         type: 'mc',
@@ -132,104 +68,142 @@ export async function processChatMessage({ message, saveHistory = true }) {
         error: true
       });
     }
+
     const err = new Error(response.text);
-    err.statusCode = 500;
+    err.statusCode = 503;
     err.payload = response;
     throw err;
   }
 
-  // Initialize connection if not already connected
-  if (!gatewaySocket) {
-    initGatewayConnection();
-  }
+  // 3. Route to the chat skill's socket
+  if (chatSkill.socketId && ioServer) {
+    const requestId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-  // Generate request ID
-  const requestId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        const response = {
+          error: 'Agent timeout',
+          text: '⏳ The connected agent took too long to respond. Please try again.',
+          debug: { requestId, agent: chatSkill.name }
+        };
 
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      responseCallbacks.delete(requestId);
+        if (saveHistory) {
+          createChatMessage({
+            type: 'mc',
+            content: response.text,
+            role: 'assistant',
+            error: true
+          });
+        }
 
-      const response = {
-        error: 'Gateway timeout',
-        text: 'MC took too long to respond. Please try again.',
-        debug: { gatewayUrl, requestId }
-      };
+        const err = new Error(response.text);
+        err.statusCode = 504;
+        err.payload = response;
+        reject(err);
+      }, 30000); // 30 second timeout
 
-      if (saveHistory) {
-        createChatMessage({
-          type: 'mc',
-          content: response.text,
-          role: 'assistant',
-          error: true
-        });
+      const targetSocket = ioServer.sockets.sockets.get(chatSkill.socketId);
+      if (!targetSocket) {
+        clearTimeout(timeout);
+        const response = {
+          error: 'Agent disconnected',
+          text: '🔌 The chat agent disconnected. Please wait for it to reconnect.',
+          debug: { socketId: chatSkill.socketId }
+        };
+
+        if (saveHistory) {
+          createChatMessage({
+            type: 'mc',
+            content: response.text,
+            role: 'assistant',
+            error: true
+          });
+        }
+
+        const err = new Error(response.text);
+        err.statusCode = 503;
+        err.payload = response;
+        reject(err);
+        return;
       }
 
-      const err = new Error(response.text);
-      err.statusCode = 504;
-      err.payload = response;
-      reject(err);
-    }, 30000); // 30 second timeout
+      // Listen for the response from the agent
+      const responseHandler = (data) => {
+        if (data.requestId === requestId) {
+          clearTimeout(timeout);
+          targetSocket.off('skill:result', responseHandler);
 
-    // Store callback for when response comes back
-    responseCallbacks.set(requestId, (data) => {
-      clearTimeout(timeout);
+          const responseText = data.result?.text || data.result?.message || data.result || 'Message delivered';
 
-      const responseText = data.message || data.response || data.text || 'Message delivered to MC';
+          if (saveHistory) {
+            createChatMessage({
+              type: 'mc',
+              content: typeof responseText === 'string' ? responseText : JSON.stringify(responseText),
+              role: 'assistant',
+              agentResponse: true
+            });
+          }
+
+          resolve({
+            status: 'sent',
+            text: typeof responseText === 'string' ? responseText : JSON.stringify(responseText),
+            message,
+            agent: chatSkill.name
+          });
+        }
+      };
+
+      targetSocket.on('skill:result', responseHandler);
+
+      // Send the message to the agent
+      targetSocket.emit('skill:execute', {
+        trigger: 'chat',
+        params: { message, requestId },
+        requesterId: null, // No specific requester socket — this came from the API/chat
+        requestId
+      });
+    });
+  }
+
+  // 4. If the skill has an HTTP endpoint instead
+  if (chatSkill.endpoint) {
+    try {
+      const result = await invokeSkill('chat', { message });
+      const responseText = result.result?.text || result.result?.message || JSON.stringify(result.result || {});
 
       if (saveHistory) {
         createChatMessage({
           type: 'mc',
           content: responseText,
           role: 'assistant',
-          gatewayResponse: true
+          agentResponse: true
         });
       }
 
-      resolve({
+      return {
         status: 'sent',
         text: responseText,
-        message
-      });
-    });
-
-    // Send message to gateway
-    const sent = sendToGateway({
-      requestId,
-      message,
-      label: 'MasterClawInterface',
-      timestamp: new Date().toISOString()
-    });
-
-    if (!sent) {
-      clearTimeout(timeout);
-      responseCallbacks.delete(requestId);
-
-      const response = {
-        error: 'Gateway not connected',
-        text: 'MC is currently offline. Please try again later.',
-        debug: { gatewayUrl, connected: gatewayConnected }
+        message,
+        agent: chatSkill.name
       };
-
+    } catch (err) {
       if (saveHistory) {
         createChatMessage({
           type: 'mc',
-          content: response.text,
+          content: `Agent error: ${err.message}`,
           role: 'assistant',
           error: true
         });
       }
-
-      const err = new Error(response.text);
-      err.statusCode = 503;
-      err.payload = response;
-      reject(err);
+      throw err;
     }
-  });
-}
+  }
 
-// Initialize on module load
-initGatewayConnection();
+  // Should not reach here, but just in case
+  const err = new Error('Chat skill has no handler configured');
+  err.statusCode = 500;
+  throw err;
+}
 
 // Slash command handler
 async function handleSlashCommand(message) {
@@ -535,22 +509,27 @@ function parseEventInput(input) {
   };
 }
 
+/**
+ * Get the status of connected agents and registered skills.
+ * Replaces the old gateway status function.
+ */
 export function getGatewayStatus() {
-  const gatewayUrl = process.env.OPENCLAW_GATEWAY_URL;
+  const skills = listSkills({ status: 'active' });
+  const chatSkill = findSkillByTrigger('chat');
+
   return {
-    connected: gatewayConnected,
-    url: gatewayUrl ? gatewayUrl.replace(/:\/\/[^@]+@/, '://***@') : null, // Mask credentials if any
-    queueLength: messageQueue.length,
-    socketId: gatewaySocket?.id,
-    transport: gatewaySocket?.io?.engine?.transport?.name
+    connected: !!chatSkill,
+    agents: skills.length,
+    skills: skills.map(s => ({ name: s.name, trigger: s.trigger, socketId: s.socketId })),
+    chatAgent: chatSkill ? { name: chatSkill.name, socketId: chatSkill.socketId } : null
   };
 }
 
+/**
+ * Force reconnect is no longer applicable in the federated model.
+ * Agents connect inbound — we can't force them to reconnect.
+ * Returns status information instead.
+ */
 export function forceReconnect() {
-  if (gatewaySocket) {
-    gatewaySocket.disconnect();
-    gatewaySocket.connect();
-    return true;
-  }
-  return initGatewayConnection();
+  return getGatewayStatus();
 }

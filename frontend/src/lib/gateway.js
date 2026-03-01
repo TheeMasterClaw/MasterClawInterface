@@ -12,7 +12,6 @@ export class GatewayClient {
 
     this.url = this.normalizeHttpUrl(options.url || this.getBridgeUrl());
     this.sessionId = options.sessionId || this.generateSessionId();
-    this.token = options.token || this.getToken();
 
     this.socket = null;
     this.isConnected = false;
@@ -63,10 +62,6 @@ export class GatewayClient {
     }
   }
 
-  getToken() {
-    return process.env.NEXT_PUBLIC_GATEWAY_TOKEN || '';
-  }
-
   connect() {
     return new Promise((resolve, reject) => {
       if (this.socket?.connected) {
@@ -89,7 +84,6 @@ export class GatewayClient {
         // Enable credentials for CORS
         withCredentials: true,
         auth: {
-          token: this.token,
           sessionId: this.sessionId
         }
       });

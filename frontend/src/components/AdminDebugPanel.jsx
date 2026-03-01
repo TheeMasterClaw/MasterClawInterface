@@ -12,7 +12,6 @@ export default function AdminDebugPanel({ isOpen, onClose }) {
     const [gatewayStatus, setGatewayStatus] = useState(null);
     const [backendStatus, setBackendStatus] = useState('checking');
     const [lastCheck, setLastCheck] = useState(null);
-    const [reconnecting, setReconnecting] = useState(false);
 
     // Auto-refresh timer
     useEffect(() => {
@@ -28,7 +27,7 @@ export default function AdminDebugPanel({ isOpen, onClose }) {
                     setBackendStatus('error');
                 }
 
-                // Check Gateway
+                // Check Gateway (now returns agent/skill info)
                 const gatewayRes = await fetch(`${API_URL}/system/gateway`);
                 if (gatewayRes.ok) {
                     const status = await gatewayRes.json();
@@ -48,35 +47,20 @@ export default function AdminDebugPanel({ isOpen, onClose }) {
         return () => clearInterval(timer);
     }, [isOpen]);
 
-    const handleReconnect = async () => {
-        if (reconnecting) return;
-        setReconnecting(true);
-
-        try {
-            await fetch(`${API_URL}/system/gateway/reconnect`, { method: 'POST' });
-            await new Promise(r => setTimeout(r, 1000)); // Wait a sec
-            // Trigger a check immediately after
-            const gatewayRes = await fetch(`${API_URL}/system/gateway`);
-            if (gatewayRes.ok) {
-                const status = await gatewayRes.json();
-                setGatewayStatus(status);
-            }
-        } catch (err) {
-            console.error('Reconnect failed:', err);
-        } finally {
-            setReconnecting(false);
-        }
-    };
-
-    const copyConfig = () => {
+    const copySocketConfig = () => {
         const config = {
-            gatewayUrl: API_URL.replace('http', 'ws'),
-            gatewayToken: "YOUR_OPENCLAW_GATEWAY_TOKEN_HERE",
-            botName: "Clawbot"
+            socketUrl: API_URL.replace('http', 'ws'),
+            socketPath: '/socket.io',
+            auth: { agentId: 'your-agent-name' },
+            skillExample: {
+                name: 'MyChatHandler',
+                description: 'Handles chat messages',
+                trigger: 'chat'
+            }
         };
 
         navigator.clipboard.writeText(JSON.stringify(config, null, 2));
-        alert('Config template copied! Fill in the token from your backend .env file.');
+        alert('Socket config copied! Use this to connect your agent.');
     };
 
     if (!isOpen) return null;
@@ -103,7 +87,7 @@ export default function AdminDebugPanel({ isOpen, onClose }) {
                         className={`debug-tab ${activeTab === 'bot' ? 'active' : ''}`}
                         onClick={() => setActiveTab('bot')}
                     >
-                        🤖 Bot Setup
+                        🤖 Agent Setup
                     </button>
                 </div>
 
@@ -122,44 +106,34 @@ export default function AdminDebugPanel({ isOpen, onClose }) {
                             </div>
 
                             <div className="status-card">
-                                <h3>Clawnest Gateway</h3>
+                                <h3>Connected Agents</h3>
                                 <div className={`status-indicator ${gatewayStatus?.connected ? 'connected' : 'disconnected'}`}>
                                     <span className="dot"></span>
                                     <span className="label">
-                                        {gatewayStatus?.connected ? 'CONNECTED' : 'DISCONNECTED'}
+                                        {gatewayStatus?.connected ? `${gatewayStatus.agents} AGENT(S)` : 'NO AGENTS'}
                                     </span>
                                 </div>
 
                                 {gatewayStatus && (
                                     <div className="gateway-details">
+                                        {gatewayStatus.chatAgent && (
+                                            <div className="detail-row">
+                                                <span>Chat Agent:</span>
+                                                <code>{gatewayStatus.chatAgent.name}</code>
+                                            </div>
+                                        )}
                                         <div className="detail-row">
-                                            <span>Target URL:</span>
-                                            <code>{gatewayStatus.url || 'Not Configured'}</code>
+                                            <span>Registered Skills:</span>
+                                            <span>{gatewayStatus.skills?.length || 0}</span>
                                         </div>
-                                        <div className="detail-row">
-                                            <span>Transport:</span>
-                                            <span>{gatewayStatus.transport || '-'}</span>
-                                        </div>
-                                        <div className="detail-row">
-                                            <span>Queue:</span>
-                                            <span>{gatewayStatus.queueLength} messages</span>
-                                        </div>
-                                        <div className="detail-row">
-                                            <span>Socket ID:</span>
-                                            <code>{gatewayStatus.socketId || '-'}</code>
-                                        </div>
+                                        {gatewayStatus.skills?.map((s, i) => (
+                                            <div className="detail-row" key={i}>
+                                                <span>  /{s.trigger}</span>
+                                                <code>{s.name}</code>
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
-
-                                <div className="actions">
-                                    <button
-                                        className="btn-reconnect"
-                                        onClick={handleReconnect}
-                                        disabled={reconnecting}
-                                    >
-                                        {reconnecting ? 'Reconnecting...' : '🔄 Force Reconnect'}
-                                    </button>
-                                </div>
                             </div>
 
                             <div className="last-check">
@@ -172,24 +146,33 @@ export default function AdminDebugPanel({ isOpen, onClose }) {
                         <div className="bot-setup-view">
                             <div className="instruction-step">
                                 <span className="step-num">1</span>
-                                <p>Ensure your <strong>MasterClaw Backend</strong> is running and accessible.</p>
+                                <p>Connect your agent to MasterClaw via <strong>Socket.IO</strong>. No tokens needed — agents opt-in voluntarily.</p>
                             </div>
 
                             <div className="instruction-step">
                                 <span className="step-num">2</span>
-                                <p>Configure your <strong>Clawbot</strong> with the following settings:</p>
+                                <p>Register skills by emitting <code>skill:register</code>:</p>
                                 <div className="code-block">
                                     <pre>{JSON.stringify({
-                                        gatewayUrl: API_URL.replace('http', 'ws'),
-                                        gatewayToken: "See backend .env"
+                                        event: 'skill:register',
+                                        payload: {
+                                            name: 'MyChatHandler',
+                                            description: 'Handles free-form chat messages',
+                                            trigger: 'chat'
+                                        }
                                     }, null, 2)}</pre>
                                 </div>
-                                <button className="btn-copy" onClick={copyConfig}>📋 Copy JSON Template</button>
+                                <button className="btn-copy" onClick={copySocketConfig}>📋 Copy Socket Config</button>
                             </div>
 
                             <div className="instruction-step">
                                 <span className="step-num">3</span>
-                                <p>The token must match <code>OPENCLAW_GATEWAY_TOKEN</code> in your backend <code>.env</code> file.</p>
+                                <p>Listen for <code>skill:execute</code> events to handle invocations, then emit <code>skill:result</code> with the response.</p>
+                            </div>
+
+                            <div className="instruction-step">
+                                <span className="step-num">4</span>
+                                <p>Fetch <code>/manifest.json</code> from this backend to discover available skills and connection details.</p>
                             </div>
                         </div>
                     )}
