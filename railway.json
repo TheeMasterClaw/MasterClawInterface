@@ -1,21 +1,7 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": "echo 'No build needed'",
-    "nixpacksPlan": {
-      "phases": {
-        "setup": {
-          "nixPkgs": ["nodejs_20"]
-        },
-        "install": {
-          "cmds": ["cd backend && npm install"]
-        },
-        "build": {
-          "cmds": ["echo 'No build step required for JS backend'"]
-        }
-      }
-    }
+    "builder": "NIXPACKS"
   },
   "deploy": {
     "startCommand": "cd backend && node src/index.js",
