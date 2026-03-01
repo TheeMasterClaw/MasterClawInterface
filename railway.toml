@@ -3,4 +3,7 @@ builder = "nixpacks"
 buildCommand = "cd backend && npm install"
 
 [start]
-cmd = "cd backend && npm start"
+cmd = "cd backend && node src/index.js"
+
+[deploy]
+startCommand = "cd backend && node src/index.js"

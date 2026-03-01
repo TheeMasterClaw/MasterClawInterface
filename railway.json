@@ -1,8 +1,26 @@
 {
-  "buildCommand": "cd backend && npm install",
-  "startCommand": "cd backend && npm start",
-  "environmentVariables": {
-    "NODE_ENV": "production",
-    "PORT": "3001"
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "nixpacksPlan": {
+      "phases": {
+        "setup": {
+          "nixPkgs": ["nodejs"]
+        },
+        "install": {
+          "cmds": ["cd backend && npm install"]
+        },
+        "build": {
+          "cmds": ["cd backend && echo 'No build step required'"]
+        }
+      }
+    }
+  },
+  "deploy": {
+    "startCommand": "cd backend && node src/index.js",
+    "healthcheckPath": "/health",
+    "healthcheckTimeout": 30,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 3
   }
 }
