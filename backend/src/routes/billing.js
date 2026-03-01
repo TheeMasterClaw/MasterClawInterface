@@ -4,10 +4,11 @@ import { getDb, updateDb, genId } from '../db.js';
 
 const router = Router();
 
-// Initialize Stripe with secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2023-10-16',
-});
+// Initialize Stripe only if key is provided
+const stripeEnabled = !!process.env.STRIPE_SECRET_KEY;
+const stripe = stripeEnabled 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' })
+  : null;
 
 const PRICE_IDS = {
   premium: {
@@ -82,6 +83,12 @@ router.get('/status', async (req, res) => {
  * POST /api/billing/checkout
  */
 router.post('/checkout', async (req, res) => {
+  if (!stripeEnabled) {
+    return res.status(503).json({ 
+      error: 'Billing not configured. Set STRIPE_SECRET_KEY environment variable.' 
+    });
+  }
+  
   try {
     const { tier, billingPeriod } = req.body;
     const userId = req.user?.id || 'anonymous';
@@ -155,6 +162,12 @@ router.post('/checkout', async (req, res) => {
  * POST /api/billing/portal
  */
 router.post('/portal', async (req, res) => {
+  if (!stripeEnabled) {
+    return res.status(503).json({ 
+      error: 'Billing not configured. Set STRIPE_SECRET_KEY environment variable.' 
+    });
+  }
+  
   try {
     const userId = req.user?.id || 'anonymous';
     const db = getDb();
@@ -181,6 +194,12 @@ router.post('/portal', async (req, res) => {
  * POST /api/billing/webhook
  */
 router.post('/webhook', async (req, res) => {
+  if (!stripeEnabled) {
+    return res.status(503).json({ 
+      error: 'Billing not configured' 
+    });
+  }
+  
   const sig = req.headers['stripe-signature'];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
   
@@ -224,6 +243,8 @@ router.post('/webhook', async (req, res) => {
 });
 
 async function handleCheckoutCompleted(session) {
+  if (!stripeEnabled) return;
+  
   const userId = session.metadata?.userId;
   const tier = session.metadata?.tier;
   
@@ -247,6 +268,8 @@ async function handleCheckoutCompleted(session) {
 }
 
 async function handlePaymentSucceeded(invoice) {
+  if (!stripeEnabled) return;
+  
   const subscriptionId = invoice.subscription;
   if (!subscriptionId) return;
   
@@ -268,6 +291,8 @@ async function handlePaymentSucceeded(invoice) {
 }
 
 async function handlePaymentFailed(invoice) {
+  if (!stripeEnabled) return;
+  
   const subscriptionId = invoice.subscription;
   if (!subscriptionId) return;
   
@@ -287,6 +312,8 @@ async function handlePaymentFailed(invoice) {
 }
 
 async function handleSubscriptionCancelled(subscription) {
+  if (!stripeEnabled) return;
+  
   const userId = subscription.metadata?.userId;
   if (!userId) return;
   
@@ -305,6 +332,8 @@ async function handleSubscriptionCancelled(subscription) {
 }
 
 async function handleSubscriptionUpdated(subscription) {
+  if (!stripeEnabled) return;
+  
   const userId = subscription.metadata?.userId;
   if (!userId) return;
   
