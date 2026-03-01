@@ -14,17 +14,29 @@ const ALLOWED_ORIGINS = [
   'https://master-claw-interface-fcsw1431m-yeeeee.vercel.app',
   'https://www.offmarketproperties.xyz',
   'https://offmarketproperties.xyz',
+  'https://masterclaw-interface.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:4173',
+  'http://localhost:3001',
+  // Allow skill connections from any origin (for OpenClaw skills)
+  '*',
 ];
 
 // Helper to check if origin is allowed (including Vercel preview deployments)
 function isOriginAllowed(origin) {
+  // Allow all origins for skill connections during development
+  if (process.env.NODE_ENV === 'development' || process.env.ALLOW_ALL_ORIGINS === 'true') {
+    return true;
+  }
+  
+  if (!origin) return true; // Allow non-browser clients (skills)
+  if (ALLOWED_ORIGINS.includes('*')) return true;
   if (ALLOWED_ORIGINS.includes(origin)) return true;
 
   // Allow Vercel preview deployments (they have random hashes)
   if (origin?.match(/^https:\/\/master-claw-interface-[a-z0-9]+-yeeeee\.vercel\.app$/)) return true;
+  if (origin?.match(/^https:\/\/masterclaw-interface-[a-z0-9]+-yeeeee\.vercel\.app$/)) return true;
 
   return false;
 }
