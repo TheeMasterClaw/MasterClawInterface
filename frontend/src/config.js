@@ -1,5 +1,9 @@
 // API Configuration for Next.js
 const getApiBase = () => {
+  // Hardcode production backend URL for now
+  if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
+    return 'https://web-production-e0d96.up.railway.app';
+  }
   // Use NEXT_PUBLIC_API_URL for client-side, fallback to localhost
   const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
   

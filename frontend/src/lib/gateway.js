@@ -27,6 +27,11 @@ export class GatewayClient {
   }
 
   getBridgeUrl() {
+    // Hardcode production URL for non-localhost
+    if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
+      return 'https://web-production-e0d96.up.railway.app';
+    }
+    
     let url = process.env.NEXT_PUBLIC_GATEWAY_URL ||
       process.env.NEXT_PUBLIC_API_URL ||
       'http://localhost:3001';
