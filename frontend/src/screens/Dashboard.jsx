@@ -139,6 +139,7 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
   const [showGiftIdeas, setShowGiftIdeas] = useState(false);
   const [showRoutineBuilder, setShowRoutineBuilder] = useState(false);
   const [showGoalTracker, setShowGoalTracker] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -1925,13 +1926,13 @@ export default function Dashboard({ mode, avatar, onConnectionStatusChange }) {
       )}
 
       <div className="dashboard-layout">
-        <div className="dashboard-sidebar">
+        <div className={`dashboard-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
           <div className="sidebar-brand">
             <span className="sidebar-brand__label">MASTERCLAW</span>
             <span className="sidebar-brand__sub">Neural Console</span>
           </div>
 
-          <div className="mc-avatar-sidebar">
+          <div className={`mc-avatar-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`} onClick={() => setSidebarCollapsed(!sidebarCollapsed)} title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
             {AvatarWithState}
           </div>
 

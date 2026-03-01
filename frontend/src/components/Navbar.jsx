@@ -1,5 +1,105 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useRef, useEffect } from 'react';
 import './Navbar.css';
+
+// Define app categories with their icons
+const appCategories = [
+  {
+    name: 'Quick Access',
+    apps: [
+      { id: 'quickCapture', icon: '⚡', label: 'Quick Capture' },
+      { id: 'today', icon: '📅', label: 'Today View' },
+      { id: 'focus', icon: '🎯', label: 'Focus Timer' },
+      { id: 'habit', icon: '✅', label: 'Habit Tracker' },
+    ]
+  },
+  {
+    name: 'Productivity',
+    apps: [
+      { id: 'tasks', icon: '☑️', label: 'Tasks' },
+      { id: 'briefing', icon: '📅', label: 'Daily Briefing' },
+      { id: 'meeting', icon: '🤝', label: 'Meeting Companion' },
+      { id: 'projects', icon: '📊', label: 'Project Dashboard' },
+      { id: 'goals', icon: '🏆', label: 'Goal Planner' },
+      { id: 'taskboard', icon: '📋', label: 'Task Board' },
+      { id: 'priority', icon: '📊', label: 'Priority Matrix' },
+      { id: 'time', icon: '⏱️', label: 'Time Tracker' },
+    ]
+  },
+  {
+    name: 'Knowledge',
+    apps: [
+      { id: 'notes', icon: '📝', label: 'Notes' },
+      { id: 'journal', icon: '📔', label: 'Journal' },
+      { id: 'snippets', icon: '📦', label: 'Snippets' },
+      { id: 'garden', icon: '🌱', label: 'Knowledge Garden' },
+      { id: 'reading', icon: '📚', label: 'Reading List' },
+      { id: 'learning', icon: '🎓', label: 'Learning Path' },
+      { id: 'skills', icon: '🎯', label: 'Skill Tracker' },
+      { id: 'prompts', icon: '📚', label: 'Prompt Library' },
+    ]
+  },
+  {
+    name: 'Wellness',
+    apps: [
+      { id: 'mood', icon: '🧠', label: 'Mood Tracker' },
+      { id: 'breathing', icon: '🫁', label: 'Breathing' },
+      { id: 'mindful', icon: '🧘', label: 'Mindful Moments' },
+      { id: 'gratitude', icon: '🙏', label: 'Gratitude Log' },
+      { id: 'wins', icon: '🏆', label: 'Daily Wins' },
+      { id: 'workout', icon: '💪', label: 'Workout' },
+      { id: 'sleep', icon: '🌙', label: 'Sleep Tracker' },
+      { id: 'meals', icon: '🍎', label: 'Meal Tracker' },
+      { id: 'energy', icon: '⚡', label: 'Energy Tracker' },
+      { id: 'detox', icon: '🧘', label: 'Digital Detox' },
+    ]
+  },
+  {
+    name: 'Creative',
+    apps: [
+      { id: 'whiteboard', icon: '🎨', label: 'Whiteboard' },
+      { id: 'vision', icon: '🖼️', label: 'Vision Board' },
+      { id: 'inspiration', icon: '✨', label: 'Inspiration Wall' },
+      { id: 'ideas', icon: '💡', label: 'Idea Incubator' },
+      { id: 'timecapsule', icon: '⏳', label: 'Time Capsule' },
+      { id: 'roulette', icon: '🎲', label: 'Reflection Roulette' },
+      { id: 'code', icon: '💻', label: 'Code Playground' },
+      { id: 'voice', icon: '🎙️', label: 'Voice Memos' },
+    ]
+  },
+  {
+    name: 'Life',
+    apps: [
+      { id: 'vault', icon: '🔐', label: 'Password Vault' },
+      { id: 'balance', icon: '⚖️', label: 'Life Balance' },
+      { id: 'network', icon: '🌐', label: 'Relationships' },
+      { id: 'deepwork', icon: '🎯', label: 'Deep Work' },
+      { id: 'travel', icon: '🧳', label: 'Travel Planner' },
+      { id: 'content', icon: '🎬', label: 'Content Tracker' },
+      { id: 'subscriptions', icon: '💳', label: 'Subscriptions' },
+      { id: 'expenses', icon: '💰', label: 'Expense Tracker' },
+      { id: 'contacts', icon: '👥', label: 'Contacts' },
+    ]
+  },
+  {
+    name: 'System',
+    apps: [
+      { id: 'system', icon: '🖥️', label: 'System Monitor' },
+      { id: 'health', icon: '🏥', label: 'Health Monitor' },
+      { id: 'productivity', icon: '📈', label: 'Analytics' },
+      { id: 'activity', icon: '📊', label: 'Activity Log' },
+      { id: 'quest', icon: '🗡️', label: 'Quest Log' },
+      { id: 'achievements', icon: '🏆', label: 'Achievements' },
+      { id: 'challenges', icon: '🎯', label: 'Challenges' },
+      { id: 'braindump', icon: '🧠', label: 'Brain Dump' },
+      { id: 'sprint', icon: '🏃', label: 'Sprint Planner' },
+      { id: 'resources', icon: '📚', label: 'Resources' },
+      { id: 'weekly', icon: '🗓️', label: 'Weekly Review' },
+      { id: 'settings', icon: '⚙️', label: 'Settings' },
+    ]
+  },
+];
 
 export default function Navbar({ 
   phase,
@@ -74,6 +174,98 @@ export default function Navbar({
   onTodayViewClick,
   onAppsClick
 }) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Map app IDs to click handlers
+  const clickHandlers = {
+    tasks: () => {},
+    quickCapture: onQuickCaptureClick,
+    briefing: onDailyBriefingClick,
+    meeting: onMeetingCompanionClick,
+    system: onSystemMonitorClick,
+    whiteboard: onWhiteboardClick,
+    goals: onGoalPlannerClick,
+    projects: onProjectDashboardClick,
+    vision: onVisionBoardClick,
+    vault: onPasswordVaultClick,
+    balance: onLifeBalanceWheelClick,
+    network: onRelationshipNetworkClick,
+    deepwork: onDeepWorkTrackerClick,
+    snippets: onSnippetsClick,
+    garden: onKnowledgeGardenClick,
+    quest: onQuestLogClick,
+    gratitude: onGratitudeLogClick,
+    wins: onDailyWinsClick,
+    priority: onPriorityMatrixClick,
+    taskboard: onTaskBoardClick,
+    roulette: onReflectionRouletteClick,
+    detox: onDigitalDetoxTrackerClick,
+    travel: onTravelPlannerClick,
+    prompts: onPromptLibraryClick,
+    content: onContentTrackerClick,
+    reading: onReadingListClick,
+    journal: onJournalClick,
+    timecapsule: onTimeCapsuleClick,
+    notes: onNotesClick,
+    productivity: onProductivityClick,
+    breathing: onBreathingClick,
+    mindful: onMindfulMomentsClick,
+    mood: onMoodClick,
+    time: onTimeClick,
+    quote: onQuoteClick,
+    habit: onHabitClick,
+    weather: onWeatherClick,
+    focus: onFocusClick,
+    activity: onActivityClick,
+    links: onLinksClick,
+    health: onHealthClick,
+    skills: onSkillTrackerClick,
+    weekly: onWeeklyReviewClick,
+    ideas: onIdeaIncubatorClick,
+    workout: onWorkoutTrackerClick,
+    meals: onMealTrackerClick,
+    study: onStudyPlannerClick,
+    learning: onLearningPathClick,
+    voice: onVoiceMemosClick,
+    sleep: onSleepTrackerClick,
+    expenses: onExpenseTrackerClick,
+    subscriptions: onSubscriptionTrackerClick,
+    energy: onEnergyTrackerClick,
+    inspiration: onInspirationWallClick,
+    code: onCodePlaygroundClick,
+    reminder: onReminderClick,
+    conversation: onConversationHistoryClick,
+    reflection: onReflectionStudioClick,
+    achievements: onAchievementVaultClick,
+    challenges: onChallengeTrackerClick,
+    braindump: onBrainDumpClick,
+    sprint: onSprintPlannerClick,
+    resources: onResourceLibraryClick,
+    contacts: onContactManagerClick,
+    today: onTodayViewClick,
+    settings: onSettingsClick,
+  };
+
+  const handleAppClick = (appId) => {
+    const handler = clickHandlers[appId];
+    if (handler) {
+      handler();
+      setDropdownOpen(false);
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-content">
@@ -98,9 +290,10 @@ export default function Navbar({
         <div className="navbar-center">
         </div>
 
-        {/* Right section - Tool buttons */}
+        {/* Right section */}
         {phase !== 'dashboard' && (
-          <div className="navbar-right">
+          <div className="navbar-right" ref={dropdownRef}>
+            {/* Apps Button */}
             <button
               className="navbar-btn navbar-btn-apps"
               onClick={onAppsClick}
@@ -109,469 +302,40 @@ export default function Navbar({
             >
               🐾
             </button>
-            <div className="navbar-divider" />
-            <button
-              className="navbar-btn navbar-btn-quick-capture"
-              onClick={onQuickCaptureClick}
-              title="Quick Capture"
-            >
-              ⚡
-            </button>
-            <button
-              className="navbar-btn navbar-btn-briefing"
-              onClick={onDailyBriefingClick}
-              title="Daily Briefing"
-            >
-              📅
-            </button>
-            <button
-              className="navbar-btn navbar-btn-meeting"
-              onClick={onMeetingCompanionClick}
-              title="Meeting Companion"
-            >
-              🤝
-            </button>
-            <button
-              className="navbar-btn navbar-btn-system"
-              onClick={onSystemMonitorClick}
-              title="System Monitor"
-            >
-              🖥️
-            </button>
-            <button
-              className="navbar-btn navbar-btn-whiteboard"
-              onClick={onWhiteboardClick}
-              title="Whiteboard"
-            >
-              🎨
-            </button>
-            <button
-              className="navbar-btn navbar-btn-goals"
-              onClick={onGoalPlannerClick}
-              title="Goal Planner"
-            >
-              🏆
-            </button>
-            <button
-              className="navbar-btn navbar-btn-projects"
-              onClick={onProjectDashboardClick}
-              title="Project Dashboard"
-            >
-              📊
-            </button>
-            <button
-              className="navbar-btn navbar-btn-vision"
-              onClick={onVisionBoardClick}
-              title="Vision Board"
-            >
-              🖼️
-            </button>
-            <button
-              className="navbar-btn navbar-btn-vault"
-              onClick={onPasswordVaultClick}
-              title="Password Vault"
-            >
-              🔐
-            </button>
-            <button
-              className="navbar-btn navbar-btn-balance"
-              onClick={onLifeBalanceWheelClick}
-              title="Life Balance Wheel"
-            >
-              ⚖️
-            </button>
-            <button
-              className="navbar-btn navbar-btn-network"
-              onClick={onRelationshipNetworkClick}
-              title="Relationship Network"
-            >
-              🌐
-            </button>
-            <button
-              className="navbar-btn navbar-btn-deepwork"
-              onClick={onDeepWorkTrackerClick}
-              title="Deep Work Tracker"
-            >
-              🎯
-            </button>
-            <button
-              className="navbar-btn navbar-btn-snippets"
-              onClick={onSnippetsClick}
-              title="Snippets Vault"
-            >
-              📦
-            </button>
-            <button
-              className="navbar-btn navbar-btn-garden"
-              onClick={onKnowledgeGardenClick}
-              title="Knowledge Garden"
-            >
-              🌱
-            </button>
-            <button
-              className="navbar-btn navbar-btn-quest"
-              onClick={onQuestLogClick}
-              title="Quest Log"
-            >
-              🗡️
-            </button>
-            <button
-              className="navbar-btn navbar-btn-gratitude"
-              onClick={onGratitudeLogClick}
-              title="Gratitude Log"
-            >
-              🙏
-            </button>
-            <button
-              className="navbar-btn navbar-btn-daily-wins"
-              onClick={onDailyWinsClick}
-              title="Daily Wins"
-            >
-              🏆
-            </button>
-            <button
-              className="navbar-btn navbar-btn-priority-matrix"
-              onClick={onPriorityMatrixClick}
-              title="Priority Matrix"
-            >
-              📊
-            </button>
-            <button
-              className="navbar-btn navbar-btn-taskboard"
-              onClick={onTaskBoardClick}
-              title="Task Board"
-            >
-              📋
-            </button>
-            <button
-              className="navbar-btn navbar-btn-roulette"
-              onClick={onReflectionRouletteClick}
-              title="Reflection Roulette"
-            >
-              🎲
-            </button>
-            <button
-              className="navbar-btn navbar-btn-detox"
-              onClick={onDigitalDetoxTrackerClick}
-              title="Digital Detox Tracker"
-            >
-              🧘
-            </button>
-            <button
-              className="navbar-btn navbar-btn-travel"
-              onClick={onTravelPlannerClick}
-              title="Travel Planner"
-            >
-              🧳
-            </button>
-            <button
-              className="navbar-btn navbar-btn-prompts"
-              onClick={onPromptLibraryClick}
-              title="Prompt Library"
-            >
-              📚
-            </button>
-            <button
-              className="navbar-btn navbar-btn-content"
-              onClick={onContentTrackerClick}
-              title="Content Tracker"
-            >
-              🎬
-            </button>
-            <button
-              className="navbar-btn navbar-btn-reading"
-              onClick={onReadingListClick}
-              title="Reading List"
-            >
-              📚
-            </button>
-            <button
-              className="navbar-btn navbar-btn-journal"
-              onClick={onJournalClick}
-              title="Journal"
-            >
-              📔
-            </button>
-            <button
-              className="navbar-btn navbar-btn-timecapsule"
-              onClick={onTimeCapsuleClick}
-              title="Time Capsule"
-            >
-              ⏳
-            </button>
-            <button
-              className="navbar-btn navbar-btn-notes"
-              onClick={onNotesClick}
-              title="Notes"
-            >
-              📝
-            </button>
-            <button
-              className="navbar-btn navbar-btn-productivity"
-              onClick={onProductivityClick}
-              title="Productivity Analytics"
-            >
-              📈
-            </button>
-            <button
-              className="navbar-btn navbar-btn-breathing"
-              onClick={onBreathingClick}
-              title="Breathing Exercise"
-            >
-              🫁
-            </button>
-            <button
-              className="navbar-btn navbar-btn-mindful"
-              onClick={onMindfulMomentsClick}
-              title="Mindful Moments"
-            >
-              🧘
-            </button>
-            <button
-              className="navbar-btn navbar-btn-mood"
-              onClick={onMoodClick}
-              title="Mood Tracker"
-            >
-              🧠
-            </button>
-            <button
-              className="navbar-btn navbar-btn-time"
-              onClick={onTimeClick}
-              title="Time Tracker"
-            >
-              ⏱️
-            </button>
-            <button
-              className="navbar-btn navbar-btn-quote"
-              onClick={onQuoteClick}
-              title="Daily Quote"
-            >
-              💬
-            </button>
-            <button
-              className="navbar-btn navbar-btn-habit"
-              onClick={onHabitClick}
-              title="Habit Tracker"
-            >
-              ✅
-            </button>
-            <button
-              className="navbar-btn navbar-btn-weather"
-              onClick={onWeatherClick}
-              title="Weather"
-            >
-              🌤️
-            </button>
-            <button
-              className="navbar-btn navbar-btn-focus"
-              onClick={onFocusClick}
-              title="Focus Timer"
-            >
-              🎯
-            </button>
-            <button
-              className="navbar-btn navbar-btn-activity"
-              onClick={onActivityClick}
-              title="Activity Log"
-            >
-              📊
-            </button>
-            <button
-              className="navbar-btn navbar-btn-links"
-              onClick={onLinksClick}
-              title="Quick Links"
-            >
-              🔗
-            </button>
-            <button
-              className="navbar-btn navbar-btn-health"
-              onClick={onHealthClick}
-              title="Health Monitor"
-            >
-              🏥
-            </button>
-            <button
-              className="navbar-btn navbar-btn-ambient"
-              onClick={onAmbientMixerClick}
-              title="Ambient Sound Mixer"
-            >
-              🎧
-            </button>
-            <button
-              className="navbar-btn navbar-btn-skills"
-              onClick={onSkillTrackerClick}
-              title="Skill Tracker"
-            >
-              🎯
-            </button>
-            <button
-              className="navbar-btn navbar-btn-weekly-review"
-              onClick={onWeeklyReviewClick}
-              title="Weekly Review"
-            >
-              🗓️
-            </button>
-            <button
-              className="navbar-btn navbar-btn-idea-incubator"
-              onClick={onIdeaIncubatorClick}
-              title="Idea Incubator"
-            >
-              💡
-            </button>
-            <button
-              className="navbar-btn navbar-btn-workout"
-              onClick={onWorkoutTrackerClick}
-              title="Workout Tracker"
-            >
-              💪
-            </button>
-            <button
-              className="navbar-btn navbar-btn-meal"
-              onClick={onMealTrackerClick}
-              title="Meal Tracker"
-            >
-              🍎
-            </button>
-            <button
-              className="navbar-btn navbar-btn-study"
-              onClick={onStudyPlannerClick}
-              title="Study Planner"
-            >
-              📚
-            </button>
-            <button
-              className="navbar-btn navbar-btn-learning-path"
-              onClick={onLearningPathClick}
-              title="Learning Path"
-            >
-              🎓
-            </button>
-            <button
-              className="navbar-btn navbar-btn-voice"
-              onClick={onVoiceMemosClick}
-              title="Voice Memos"
-            >
-              🎙️
-            </button>
-            <button
-              className="navbar-btn navbar-btn-sleep"
-              onClick={onSleepTrackerClick}
-              title="Sleep Tracker"
-            >
-              🌙
-            </button>
-            <button
-              className="navbar-btn navbar-btn-expense"
-              onClick={onExpenseTrackerClick}
-              title="Expense Tracker"
-            >
-              💰
-            </button>
-            <button
-              className="navbar-btn navbar-btn-subscription"
-              onClick={onSubscriptionTrackerClick}
-              title="Subscription Tracker"
-            >
-              💳
-            </button>
-            <button
-              className="navbar-btn navbar-btn-energy"
-              onClick={onEnergyTrackerClick}
-              title="Energy Tracker"
-            >
-              ⚡
-            </button>
-            <button
-              className="navbar-btn navbar-btn-inspiration"
-              onClick={onInspirationWallClick}
-              title="Inspiration Wall"
-            >
-              ✨
-            </button>
-            <button
-              className="navbar-btn navbar-btn-code-playground"
-              onClick={onCodePlaygroundClick}
-              title="Code Playground"
-            >
-              💻
-            </button>
-            <button
-              className="navbar-btn navbar-btn-reminder"
-              onClick={onReminderClick}
-              title="Smart Reminders"
-            >
-              ⏰
-            </button>
-            <button
-              className="navbar-btn navbar-btn-conversation-history"
-              onClick={onConversationHistoryClick}
-              title="Conversation History"
-            >
-              💬
-            </button>
-            <button
-              className="navbar-btn navbar-btn-reflection-studio"
-              onClick={onReflectionStudioClick}
-              title="Reflection Studio"
-            >
-              🧘
-            </button>
-            <button
-              className="navbar-btn navbar-btn-achievement-vault"
-              onClick={onAchievementVaultClick}
-              title="Achievement Vault"
-            >
-              🏆
-            </button>
-            <button
-              className="navbar-btn navbar-btn-challenge-tracker"
-              onClick={onChallengeTrackerClick}
-              title="Challenge Tracker"
-            >
-              🎯
-            </button>
-            <button
-              className="navbar-btn navbar-btn-brain-dump"
-              onClick={onBrainDumpClick}
-              title="Brain Dump"
-            >
-              🧠
-            </button>
-            <button
-              className="navbar-btn navbar-btn-sprint"
-              onClick={onSprintPlannerClick}
-              title="Sprint Planner"
-            >
-              🏃
-            </button>
-            <button
-              className="navbar-btn navbar-btn-resources"
-              onClick={onResourceLibraryClick}
-              title="Resource Library"
-            >
-              📚
-            </button>
-            <button
-              className="navbar-btn navbar-btn-contacts"
-              onClick={onContactManagerClick}
-              title="Contact Manager"
-            >
-              👥
-            </button>
-            <button
-              className="navbar-btn navbar-btn-today"
-              onClick={onTodayViewClick}
-              title="Today View"
-            >
-              📅
-            </button>
-            <button
-              className="navbar-btn navbar-btn-settings"
-              onClick={onSettingsClick}
-              title="Settings"
-            >
-              ⚙️
-            </button>
+
+            {/* Dropdown Menu Button */}
+            <button
+              className="navbar-btn navbar-btn-dropdown"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              title="Quick Apps"
+              style={{ background: 'rgba(99, 102, 241, 0.2)' }}
+            >
+              📱 {dropdownOpen ? '▲' : '▼'}
+            </button>
+
+            {/* Dropdown Menu */}
+            {dropdownOpen && (
+              <div className="navbar-dropdown">
+                {appCategories.map((category) => (
+                  <div key={category.name} className="dropdown-category">
+                    <div className="dropdown-category-header">{category.name}</div>
+                    <div className="dropdown-apps">
+                      {category.apps.map((app) => (
+                        <button
+                          key={app.id}
+                          className="dropdown-app-item"
+                          onClick={() => handleAppClick(app.id)}
+                          title={app.label}
+                        >
+                          <span className="dropdown-app-icon">{app.icon}</span>
+                          <span className="dropdown-app-label">{app.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
