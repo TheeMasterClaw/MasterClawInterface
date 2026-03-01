@@ -1,0 +1,46 @@
+# =============================================================================
+# MasterClawInterface — Caddy Reverse Proxy
+# =============================================================================
+# Replace YOUR_DOMAIN with your actual domain (e.g., mc.example.com)
+# For local-only use, replace YOUR_DOMAIN with:   localhost
+#
+# Caddy auto-provisions HTTPS via Let's Encrypt for real domains.
+# For localhost it uses a self-signed certificate.
+# =============================================================================
+
+www.offmarketproperties.xyz, offmarketproperties.xyz {
+	# ── API & WebSocket → Express backend (:3001) ──
+	# All backend REST routes + Socket.IO
+	@backend {
+		path /tasks* /calendar* /time* /tts* /chat* /skills* /snippets*
+		path /system* /projects* /resources* /contacts* /today* /learning*
+		path /travel* /watchlist* /meals* /reading* /subscriptions*
+		path /gifts* /habits* /routines* /goals* /skills-tracker*
+		path /health /socket.io* /security* /socket-test /manifest.json
+	}
+
+	reverse_proxy @backend backend:3001 {
+		# WebSocket support for Socket.IO
+		header_up Connection {>Connection}
+		header_up Upgrade {>Upgrade}
+	}
+
+	# ── Frontend static files ──
+	# Serve the Next.js static export from /srv/frontend
+	root * /srv/frontend
+	try_files {path} {path}.html /index.html
+	file_server
+
+	# ── Security headers ──
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options SAMEORIGIN
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+
+	# ── Logging ──
+	log {
+		output stdout
+		format console
+	}
+}

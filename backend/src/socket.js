@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import { processChatMessage } from './services/chatGateway.js';
+import { setIOServer } from './services/chatGateway.js';
 import {
   registerSkill,
   listSkills,
@@ -12,6 +12,8 @@ const ALLOWED_ORIGINS = [
   'https://master-claw-interface.vercel.app',
   'https://master-claw-interface-git-main-rex-deus-projects.vercel.app',
   'https://master-claw-interface-fcsw1431m-yeeeee.vercel.app',
+  'https://www.offmarketproperties.xyz',
+  'https://offmarketproperties.xyz',
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:4173',
@@ -20,10 +22,10 @@ const ALLOWED_ORIGINS = [
 // Helper to check if origin is allowed (including Vercel preview deployments)
 function isOriginAllowed(origin) {
   if (ALLOWED_ORIGINS.includes(origin)) return true;
-  
+
   // Allow Vercel preview deployments (they have random hashes)
   if (origin?.match(/^https:\/\/master-claw-interface-[a-z0-9]+-yeeeee\.vercel\.app$/)) return true;
-  
+
   return false;
 }
 
@@ -57,6 +59,10 @@ export function createSocketServer(httpServer) {
     }
   });
 
+  // Provide the IO server to the chat gateway so it can route
+  // messages to skill providers (federated, inbound agents).
+  setIOServer(io);
+
   // Log connection errors for debugging
   io.engine.on('connection_error', (err) => {
     console.log('[Socket.IO] Connection error:', {
@@ -67,13 +73,20 @@ export function createSocketServer(httpServer) {
   });
 
   io.on('connection', (socket) => {
+    const agentId = socket.handshake.auth?.agentId || null;
     console.log(`🔌 Socket connected: ${socket.id}`, {
       origin: socket.handshake.headers.origin,
       transport: socket.conn.transport.name,
-      address: socket.handshake.address
+      address: socket.handshake.address,
+      agentId
     });
 
     socket.emit('gateway:status', { status: 'connected' });
+
+    // Notify all clients that an agent connected
+    if (agentId) {
+      io.emit('agent:connected', { socketId: socket.id, agentId });
+    }
 
     socket.on('chat:message', async (payload = {}, ack) => {
       try {
@@ -164,6 +177,12 @@ export function createSocketServer(httpServer) {
         console.log(`🧩 Removed ${removed} skill(s) from disconnected socket ${socket.id}`);
         io.emit('skill:unregistered', { socketId: socket.id, count: removed });
       }
+
+      // Notify all clients that an agent disconnected
+      if (agentId) {
+        io.emit('agent:disconnected', { socketId: socket.id, agentId, reason });
+      }
+
       console.log(`🔌 Socket disconnected (${socket.id}): ${reason}`);
     });
   });

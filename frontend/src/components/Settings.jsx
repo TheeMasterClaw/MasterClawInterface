@@ -8,9 +8,6 @@ import { useUIStore } from '../lib/store';
 const DEFAULT_GATEWAY_URL = typeof process.env !== 'undefined' && process.env.NEXT_PUBLIC_GATEWAY_URL
   ? process.env.NEXT_PUBLIC_GATEWAY_URL
   : '';
-const DEFAULT_GATEWAY_TOKEN = typeof process.env !== 'undefined' && process.env.NEXT_PUBLIC_GATEWAY_TOKEN
-  ? process.env.NEXT_PUBLIC_GATEWAY_TOKEN
-  : '';
 
 // Check if we're in browser
 const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
@@ -21,7 +18,6 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
     ttsProvider: 'openai',
     ttsVoice: 'alloy',
     gatewayUrl: '',
-    gatewayToken: '',
     theme: 'dark',
     notifications: true
   });
@@ -72,7 +68,6 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
         ttsProvider: 'openai',
         ttsVoice: 'alloy',
         gatewayUrl: '',
-        gatewayToken: '',
         theme: 'dark',
         notifications: true
       });
@@ -87,8 +82,7 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
 
   const getEffectiveValue = (key) => {
     const defaults = {
-      gatewayUrl: DEFAULT_GATEWAY_URL,
-      gatewayToken: DEFAULT_GATEWAY_TOKEN
+      gatewayUrl: DEFAULT_GATEWAY_URL
     };
     return settings[key] || defaults[key] || '';
   };
@@ -174,19 +168,6 @@ export default function Settings({ onClose, onSave, connectionStatus = 'unknown'
               />
               <small>
                 {settings.gatewayUrl ? 'Custom URL set' : `Using default: ${DEFAULT_GATEWAY_URL || 'none'}`}
-              </small>
-            </div>
-
-            <div className="settings-field">
-              <label>Gateway Token</label>
-              <input
-                type="password"
-                value={settings.gatewayToken}
-                onChange={(e) => handleChange('gatewayToken', e.target.value)}
-                placeholder={DEFAULT_GATEWAY_TOKEN ? '••••••••' : "Your gateway token"}
-              />
-              <small>
-                {settings.gatewayToken ? 'Custom token set' : (DEFAULT_GATEWAY_TOKEN ? 'Using default token' : 'No token configured')}
               </small>
             </div>
 

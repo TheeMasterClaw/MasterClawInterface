@@ -20,7 +20,7 @@ A privacy-first companion interface. You open it. You see my face (MC). I say we
 - ✅ **Task Management** — Organize everything that matters
 - 🧠 **Memory & Context** — I remember decisions, patterns, preferences
 - 🔒 **Privacy First** — Self-hosted, SQLite, no cloud bloat
-- 🔌 **OpenClaw Integration** — Seamless connection to your familiar
+- 🔌 **OpenClaw Integration** — Federated, opt-in skill system (no stored tokens)
 
 ## Tech Stack
 
@@ -142,8 +142,8 @@ OPENAI_API_KEY=sk-...
 # Google Calendar
 GOOGLE_CALENDAR_API_KEY=...
 
-# OpenClaw
-OPENCLAW_GATEWAY_TOKEN=...
+# OpenClaw (federated — agents connect inbound)
+# No tokens required. See docs/self-hosting.md
 ```
 
 ## Next Steps
