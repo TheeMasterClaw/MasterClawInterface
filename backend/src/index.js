@@ -117,6 +117,9 @@ app.use(limiter);
 // CORS Configuration
 // =============================================================================
 const ALLOWED_ORIGINS = [
+  'https://masterclaw-interface.vercel.app',
+  'https://masterclaw-interface-git-main-rex-deus-projects.vercel.app',
+  'https://masterclaw-interface-fcsw1431m-yeeeee.vercel.app',
   'https://master-claw-interface.vercel.app',
   'https://master-claw-interface-git-main-rex-deus-projects.vercel.app',
   'https://master-claw-interface-fcsw1431m-yeeeee.vercel.app',
@@ -133,8 +136,8 @@ function isOriginAllowed(origin) {
   if (ALLOWED_ORIGINS.includes(origin)) return true;
 
   // Allow Vercel preview deployments (they have random hashes)
-  // Updated regex to be more flexible for all Vercel preview URLs matching the pattern
-  if (origin?.match(/^https:\/\/master-claw-interface-.*-yeeeee\.vercel\.app$/)) return true;
+  // Match both masterclaw-interface and master-claw-interface patterns
+  if (origin?.match(/^https:\/\/master-?claw-interface-.*-yeeeee\.vercel\.app$/)) return true;
 
   return false;
 }
