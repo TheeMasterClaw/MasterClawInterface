@@ -71,7 +71,8 @@ export default function Navbar({
   onSprintPlannerClick,
   onResourceLibraryClick,
   onContactManagerClick,
-  onTodayViewClick
+  onTodayViewClick,
+  onAppsClick
 }) {
   return (
     <nav className="navbar">
@@ -100,6 +101,15 @@ export default function Navbar({
         {/* Right section - Tool buttons */}
         {phase !== 'dashboard' && (
           <div className="navbar-right">
+            <button
+              className="navbar-btn navbar-btn-apps"
+              onClick={onAppsClick}
+              title="All Apps (Cmd+K)"
+              style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', fontWeight: 'bold' }}
+            >
+              🐾
+            </button>
+            <div className="navbar-divider" />
             <button
               className="navbar-btn navbar-btn-quick-capture"
               onClick={onQuickCaptureClick}

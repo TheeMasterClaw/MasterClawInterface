@@ -79,6 +79,7 @@ import SprintPlanner from './SprintPlanner';
 import ResourceLibrary from './ResourceLibrary';
 import AdminDebugPanel from './AdminDebugPanel';
 import AgentConnect from './AgentConnect';
+import AppLauncher from './AppLauncher';
 
 // Config
 // Config
@@ -98,6 +99,91 @@ export default function ClientLayout({ children }) {
 
     // Local state for non-shared items
     const [hasGreeted, setHasGreeted] = useState(false);
+    const [showAppLauncher, setShowAppLauncher] = useState(false);
+
+    // App launch handler - maps app IDs to overlay toggles
+    const handleLaunchApp = (appId) => {
+        const overlayMap = {
+            'tasks': 'taskPanel',
+            'calendar': 'calendar',
+            'goals': 'goal',
+            'habits': 'habitTracker',
+            'routines': 'routines',
+            'focus': 'focusTimer',
+            'time': 'timeTracker',
+            'sprint': 'sprint',
+            'taskBoard': 'taskBoard',
+            'priority': 'priority',
+            'quickCapture': 'quickCapture',
+            'reminders': 'reminders',
+            'skills': 'skills',
+            'reading': 'reading',
+            'study': 'study',
+            'learningPath': 'learning',
+            'knowledge': 'knowledge',
+            'resources': 'resources',
+            'snippets': 'snippets',
+            'prompts': 'prompts',
+            'code': 'code',
+            'achievements': 'achievements',
+            'challenges': 'challenges',
+            'weeklyReview': 'weekly',
+            'workout': 'workout',
+            'sleep': 'sleep',
+            'water': 'water',
+            'meals': 'meals',
+            'mood': 'moodTracker',
+            'energy': 'energy',
+            'breathing': 'breathing',
+            'mindful': 'mindful',
+            'gratitude': 'gratitude',
+            'lifeBalance': 'balance',
+            'detox': 'detox',
+            'health': 'health',
+            'brainDump': 'brainDump',
+            'journal': 'journal',
+            'ideas': 'ideas',
+            'inspiration': 'inspiration',
+            'whiteboard': 'whiteboard',
+            'vision': 'vision',
+            'timeCapsule': 'capsule',
+            'reflection': 'reflection',
+            'reflectionRoulette': 'roulette',
+            'notes': 'notes',
+            'voiceMemos': 'voice',
+            'travel': 'travel',
+            'expenses': 'expenses',
+            'subscriptions': 'subscriptions',
+            'relationships': 'network',
+            'gifts': 'gifts',
+            'contacts': 'contacts',
+            'decisions': 'decision',
+            'meetings': 'meeting',
+            'passwords': 'vault',
+            'content': 'content',
+            'watchlist': 'watchlist',
+            'ambient': 'ambient',
+            'projects': 'projects',
+            'deepWork': 'deepWork',
+            'dailyWins': 'dailyWins',
+            'briefing': 'briefing',
+            'activity': 'activityLog',
+            'analytics': 'productivity',
+            'questLog': 'quest',
+            'conversation': 'history',
+            'quickLinks': 'quickLinks',
+            'weather': 'weather',
+            'system': 'system',
+            'agentConnect': 'agentConnect',
+            'settings': 'settings',
+            'adminDebug': 'adminDebug',
+        };
+        
+        const overlayKey = overlayMap[appId];
+        if (overlayKey) {
+            toggleOverlay(overlayKey);
+        }
+    };
 
     // Derived state for code compatibility
     const showSettings = overlays.settings;
@@ -168,7 +254,25 @@ export default function ClientLayout({ children }) {
     const showResourceLibrary = overlays.resources;
     const showAdminDebug = overlays.adminDebug;
 
-    // Load theme on mount
+    // Keyboard shortcut for App Launcher (Cmd+K or Ctrl+K)
+    useEffect(() => {
+        if (!isBrowser) return;
+
+        const handleKeyDown = (e) => {
+            // Cmd+K or Ctrl+K to open launcher
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                setShowAppLauncher(prev => !prev);
+            }
+            // Escape to close launcher
+            if (e.key === 'Escape' && showAppLauncher) {
+                setShowAppLauncher(false);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [showAppLauncher]);
     useEffect(() => {
         if (!isBrowser) return;
 
@@ -294,6 +398,7 @@ export default function ClientLayout({ children }) {
                 onBrainDumpClick={() => toggleOverlay('brainDump')}
                 onSprintPlannerClick={() => toggleOverlay('sprint')}
                 onResourceLibraryClick={() => toggleOverlay('resources')}
+                onAppsClick={() => setShowAppLauncher(true)}
             />
 
             {showSettings && (
@@ -383,6 +488,14 @@ export default function ClientLayout({ children }) {
             <AgentConnect />
             <GlobalShortcuts />
             <ServiceWorkerRegistration />
+            
+            {/* App Launcher - Press Cmd+K to open */}
+            <AppLauncher 
+                isOpen={showAppLauncher}
+                onClose={() => setShowAppLauncher(false)}
+                onLaunchApp={handleLaunchApp}
+            />
+            
             {children}
         </div>
     );
