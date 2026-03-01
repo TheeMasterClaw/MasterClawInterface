@@ -77,6 +77,7 @@ import BrainDump from './BrainDump';
 import SprintPlanner from './SprintPlanner';
 import ResourceLibrary from './ResourceLibrary';
 import AdminDebugPanel from './AdminDebugPanel';
+import AgentConnect from './AgentConnect';
 
 // Config
 // Config
@@ -378,6 +379,7 @@ export default function ClientLayout({ children }) {
             {showResourceLibrary && <ResourceLibrary isOpen={showResourceLibrary} onClose={() => closeOverlay('resources')} />}
             {showAdminDebug && <AdminDebugPanel isOpen={showAdminDebug} onClose={() => closeOverlay('adminDebug')} />}
 
+            <AgentConnect />
             <GlobalShortcuts />
             {children}
         </div>
