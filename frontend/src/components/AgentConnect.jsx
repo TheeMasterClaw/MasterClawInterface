@@ -8,20 +8,22 @@ export default function AgentConnect() {
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('agents');
     const [agentStatus, setAgentStatus] = useState(null);
+    const [swarmStatus, setSwarmStatus] = useState(null);
     const [copied, setCopied] = useState(null);
     const [pulseRing, setPulseRing] = useState(false);
 
-    // Fetch agent status periodically when panel is open
+    // Fetch agent + swarm status periodically when panel is open
     useEffect(() => {
         const fetchStatus = async () => {
             try {
-                const res = await fetch(`${API_URL}/system/gateway`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setAgentStatus(data);
-                }
+                const [agentRes, swarmRes] = await Promise.all([
+                    fetch(`${API_URL}/system/gateway`),
+                    fetch(`${API_URL}/swarm/status`),
+                ]);
+                if (agentRes.ok) setAgentStatus(await agentRes.json());
+                if (swarmRes.ok) setSwarmStatus(await swarmRes.json());
             } catch (err) {
-                console.error('Failed to fetch agent status:', err);
+                console.error('Failed to fetch status:', err);
             }
         };
 
@@ -46,51 +48,84 @@ export default function AgentConnect() {
         });
     }, []);
 
+    // ── Swarm bridge actions ──
+    const swarmConnect = async () => {
+        try {
+            await fetch(`${API_URL}/swarm/connect`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+        } catch (err) {
+            console.error('Swarm connect failed:', err);
+        }
+    };
+
+    const swarmDisconnect = async () => {
+        try {
+            await fetch(`${API_URL}/swarm/disconnect`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+        } catch (err) {
+            console.error('Swarm disconnect failed:', err);
+        }
+    };
+
+    // ── Skill Folder manifest ──
     const skillFolderManifest = JSON.stringify({
         "skill.json": {
             name: "MyOpenClawSkill",
             version: "1.0.0",
-            description: "An OpenClaw skill for MasterClaw",
+            description: "OpenClaw skill — connects via Swarm WebSocket Bridge to MasterClaw",
             runtime: "node",
             entry: "index.js",
             triggers: ["chat"],
             connection: {
-                url: typeof window !== 'undefined' ? window.location.origin : API_URL,
-                transport: "websocket",
-                path: "/socket.io"
+                type: "swarm-bridge",
+                hub: "wss://swarm.perkos.xyz",
+                fallback: {
+                    url: typeof window !== 'undefined' ? window.location.origin : API_URL,
+                    transport: "websocket",
+                    path: "/socket.io"
+                }
             }
         }
     }, null, 2);
 
+    // ── Boilerplate code for OpenClaw skill ──
     const skillBoilerplate = `import { io } from 'socket.io-client';
 
-// ── Connect to MasterClaw ──
-const socket = io('${typeof window !== 'undefined' ? window.location.origin : API_URL}', {
+// ── Configuration ──
+const GATEWAY_URL = '${typeof window !== 'undefined' ? window.location.origin : API_URL}';
+const AGENT_ID = 'my-openclaw-agent';    // Give your agent a unique ID
+
+// ── Connect to MasterClaw Gateway ──
+const socket = io(GATEWAY_URL, {
   transports: ['websocket'],
-  auth: { agentId: 'my-openclaw-skill' }
+  auth: { agentId: AGENT_ID }
 });
 
 socket.on('connect', () => {
-  console.log('🤖 Connected to MasterClaw');
+  console.log('🤖 Connected to MasterClaw Gateway');
 
-  // Register your skill
+  // Register the "chat" skill — this makes your agent
+  // the primary chat handler. Messages typed in the
+  // MasterClaw chat window will be routed to you.
   socket.emit('skill:register', {
-    name: 'My Chat Handler',
+    name: 'OpenClaw Chat Agent',
     description: 'Handles chat messages via OpenClaw',
     trigger: 'chat'
   }, (ack) => {
-    if (ack.ok) console.log('✅ Skill registered');
+    if (ack.ok) console.log('✅ Chat skill registered — you are live!');
     else console.error('❌ Registration failed:', ack.error);
   });
 });
 
-// Handle incoming messages
+// ── Handle incoming chat messages ──
 socket.on('skill:execute', ({ trigger, params, requesterId, requestId }) => {
-  console.log('📩 Received:', params.message);
+  const userMessage = params.message;
+  console.log('📩 User said:', userMessage);
 
-  // Process the message and respond
-  const reply = \`You said: \${params.message}\`;
+  // ───────────────────────────────────────────────────
+  // 🔧 YOUR LOGIC HERE — call an LLM, query a DB, etc.
+  // ───────────────────────────────────────────────────
+  const reply = \`You said: \${userMessage}\`;
 
+  // Send the response back to the chat window
   socket.emit('skill:result', {
     requesterId,
     requestId,
@@ -99,12 +134,23 @@ socket.on('skill:execute', ({ trigger, params, requesterId, requestId }) => {
   });
 });
 
+// ── Handle Swarm channel messages (if bridge is active) ──
+socket.on('swarm:message', (msg) => {
+  console.log(\`🌐 [Swarm \${msg.swarm_channel_id}] \${msg.sender.name}: \${msg.text}\`);
+  // Process swarm messages here if needed
+});
+
 socket.on('disconnect', (reason) => {
   console.log('🔌 Disconnected:', reason);
-});`;
+  // socket.io auto-reconnects by default
+});
+
+console.log('⏳ Connecting to', GATEWAY_URL, '...');`;
 
     const agentCount = agentStatus?.agents || 0;
     const isConnected = agentStatus?.connected || false;
+    const swarmEnabled = swarmStatus?.enabled || false;
+    const swarmState = swarmStatus?.state || 'disconnected';
 
     return (
         <>
@@ -169,12 +215,18 @@ socket.on('disconnect', (reason) => {
                             >
                                 <span className="tab-icon">💻</span> Quick Start
                             </button>
+                            <button
+                                className={`agent-tab ${activeTab === 'swarm' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('swarm')}
+                            >
+                                <span className="tab-icon">🌐</span> Swarm
+                            </button>
                         </div>
 
                         {/* Content */}
                         <div className="agent-content">
 
-                            {/* Agents Tab */}
+                            {/* ── Agents Tab ── */}
                             {activeTab === 'agents' && (
                                 <div className="agents-list">
                                     {isConnected && agentStatus.skills?.length > 0 ? (
@@ -204,21 +256,30 @@ socket.on('disconnect', (reason) => {
                                         <div className="empty-state">
                                             <div className="empty-icon">🤖</div>
                                             <h3>No agents connected</h3>
-                                            <p>Connect an OpenClaw skill or bot to get started. Use the <strong>Skill Folder</strong> tab to get the shared folder template.</p>
+                                            <p>Connect an OpenClaw skill or bot to get started. Use the <strong>Quick Start</strong> tab for step-by-step instructions.</p>
                                             <button
                                                 className="btn-primary"
-                                                onClick={() => setActiveTab('connect')}
+                                                onClick={() => setActiveTab('code')}
                                             >
-                                                Get Skill Folder →
+                                                Quick Start →
                                             </button>
                                         </div>
                                     )}
                                 </div>
                             )}
 
-                            {/* Skill Folder Tab */}
+                            {/* ── Skill Folder Tab ── */}
                             {activeTab === 'connect' && (
                                 <div className="connect-view">
+                                    <div className="info-card">
+                                        <div className="info-icon">🚀</div>
+                                        <div>
+                                            <strong>OpenClaw Skill Connection</strong>
+                                            <p>Share this skill folder with any OpenClaw agent. They install it, run it, and it automatically connects to your MasterClaw and starts handling chat.</p>
+                                            <p className="dimmed">No tokens needed — agents opt-in voluntarily and can disconnect anytime.</p>
+                                        </div>
+                                    </div>
+
                                     <div className="folder-tree">
                                         <div className="folder-header">
                                             <span className="folder-icon">📁</span>
@@ -252,19 +313,10 @@ socket.on('disconnect', (reason) => {
                                         </button>
                                     </div>
 
-                                    <div className="info-card">
-                                        <div className="info-icon">💡</div>
-                                        <div>
-                                            <strong>How it works</strong>
-                                            <p>Share this skill folder with any OpenClaw agent. They install it, run it, and it automatically connects to your MasterClaw.</p>
-                                            <p className="dimmed">No tokens needed — agents opt-in voluntarily and can disconnect anytime.</p>
-                                        </div>
-                                    </div>
-
                                     <div className="section-label">Connection Details</div>
                                     <div className="connection-details">
                                         <div className="detail-item">
-                                            <span className="detail-label">Socket URL</span>
+                                            <span className="detail-label">Gateway URL</span>
                                             <div className="detail-value-wrap">
                                                 <code>{typeof window !== 'undefined' ? window.location.origin : API_URL}</code>
                                                 <button
@@ -276,12 +328,24 @@ socket.on('disconnect', (reason) => {
                                             </div>
                                         </div>
                                         <div className="detail-item">
+                                            <span className="detail-label">Transport</span>
+                                            <code>WebSocket (Socket.IO)</code>
+                                        </div>
+                                        <div className="detail-item">
                                             <span className="detail-label">Path</span>
                                             <code>/socket.io</code>
                                         </div>
                                         <div className="detail-item">
                                             <span className="detail-label">Auth</span>
                                             <span className="no-auth-badge">🔓 No token required</span>
+                                        </div>
+                                        <div className="detail-item">
+                                            <span className="detail-label">Chat Trigger</span>
+                                            <code>chat</code>
+                                        </div>
+                                        <div className="detail-item">
+                                            <span className="detail-label">Swarm Hub</span>
+                                            <code>wss://swarm.perkos.xyz</code>
                                         </div>
                                         <div className="detail-item">
                                             <span className="detail-label">Manifest</span>
@@ -300,9 +364,17 @@ socket.on('disconnect', (reason) => {
                                 </div>
                             )}
 
-                            {/* Quick Start Tab */}
+                            {/* ── Quick Start Tab ── */}
                             {activeTab === 'code' && (
                                 <div className="code-view">
+                                    <div className="info-card">
+                                        <div className="info-icon">💬</div>
+                                        <div>
+                                            <strong>Connect & Start Chatting</strong>
+                                            <p>This boilerplate connects your OpenClaw agent to MasterClaw and registers a <code>chat</code> handler. Messages typed in the chat window are routed to your agent in real-time.</p>
+                                        </div>
+                                    </div>
+
                                     <div className="steps-flow">
                                         <div className="step-card">
                                             <div className="step-number">1</div>
@@ -349,8 +421,95 @@ socket.on('disconnect', (reason) => {
                                                         {copied === 'run' ? '✓' : '📋'}
                                                     </button>
                                                 </div>
-                                                <p className="step-note">Your agent will appear in the Agents tab automatically ✨</p>
+                                                <p className="step-note">Your agent will appear in the <strong>Agents</strong> tab and start receiving chat messages ✨</p>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* ── Swarm Tab ── */}
+                            {activeTab === 'swarm' && (
+                                <div className="swarm-view">
+                                    {/* Status Banner */}
+                                    <div className={`swarm-banner ${swarmEnabled ? swarmState : 'disabled'}`}>
+                                        <div className="swarm-banner-icon">
+                                            {swarmState === 'live' ? '🟢' :
+                                                swarmState === 'connected' || swarmState === 'backfilling' ? '🟡' :
+                                                    swarmState === 'reconnecting' ? '🔄' :
+                                                        swarmEnabled ? '🔴' : '⚪'}
+                                        </div>
+                                        <div>
+                                            <strong>
+                                                {!swarmEnabled ? 'Swarm Bridge Not Configured' :
+                                                    swarmState === 'live' ? 'Swarm Bridge Live' :
+                                                        swarmState === 'backfilling' ? 'Catching Up…' :
+                                                            swarmState === 'connecting' ? 'Connecting…' :
+                                                                swarmState === 'reconnecting' ? `Reconnecting (attempt ${swarmStatus?.reconnectAttempt || '?'})…` :
+                                                                    'Swarm Bridge Disconnected'}
+                                            </strong>
+                                            <p>
+                                                {!swarmEnabled
+                                                    ? 'Set SWARM_HUB_URL and SWARM_AGENT_ID env vars to enable.'
+                                                    : swarmState === 'live'
+                                                        ? 'Real-time message streaming from Swarm Hub.'
+                                                        : `State: ${swarmState}`
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Bridge Details */}
+                                    {swarmEnabled && (
+                                        <>
+                                            <div className="section-label">Bridge Info</div>
+                                            <div className="connection-details">
+                                                <div className="detail-item">
+                                                    <span className="detail-label">Hub URL</span>
+                                                    <code>{swarmStatus?.hubUrl || '—'}</code>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <span className="detail-label">Agent ID</span>
+                                                    <code>{swarmStatus?.agentId || '—'}</code>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <span className="detail-label">State</span>
+                                                    <span className={`swarm-state-badge ${swarmState}`}>{swarmState}</span>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <span className="detail-label">Last Message</span>
+                                                    <code>{swarmStatus?.lastTimestamp ? new Date(swarmStatus.lastTimestamp).toLocaleTimeString() : 'none'}</code>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <span className="detail-label">Auth Key</span>
+                                                    <span className={swarmStatus?.hasAuthKey ? 'no-auth-badge' : 'swarm-warn-badge'}>
+                                                        {swarmStatus?.hasAuthKey ? '🔑 Loaded' : '⚠️ Not loaded'}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {/* Controls */}
+                                            <div className="swarm-controls">
+                                                {swarmState === 'disconnected' || swarmState === 'error' ? (
+                                                    <button className="btn-primary" onClick={swarmConnect}>
+                                                        Connect to Swarm Hub
+                                                    </button>
+                                                ) : (
+                                                    <button className="btn-secondary" onClick={swarmDisconnect}>
+                                                        Disconnect
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {/* Architecture info */}
+                                    <div className="info-card" style={{ marginTop: '1.25rem' }}>
+                                        <div className="info-icon">🏗️</div>
+                                        <div>
+                                            <strong>WebSocket Bridge Architecture</strong>
+                                            <p>The Swarm bridge opens one persistent outbound WebSocket to the Hub. Messages are streamed in real-time and injected into the chat pipeline — agents respond naturally without knowing the source channel.</p>
+                                            <p className="dimmed">Auto-reconnects with exponential backoff. Cursor-based resume prevents message loss.</p>
                                         </div>
                                     </div>
                                 </div>

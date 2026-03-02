@@ -30,6 +30,7 @@ import routinesRouter from './routes/routines.js';
 import goalsRouter from './routes/goals.js';
 import manifestRouter from './routes/manifest.js';
 import billingRouter from './routes/billing.js';
+import { swarmRouter } from './routes/swarm.js';
 import { errorHandler, sanitizeBody, authenticateApiToken } from './middleware/security.js';
 import { requestTimeout, timeoutFor } from './middleware/timeout.js';
 import { auditLogMiddleware, getRecentAuditLogs, getAuditStats, logSecurityEvent, logCspViolation, SecurityEventType, Severity } from './middleware/auditLog.js';
@@ -246,6 +247,7 @@ app.use('/routines', routinesRouter);
 app.use('/goals', goalsRouter);
 app.use('/manifest.json', manifestRouter);
 app.use('/billing', billingRouter);
+app.use('/swarm', swarmRouter);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

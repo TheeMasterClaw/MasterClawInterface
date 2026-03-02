@@ -6,6 +6,8 @@ import {
   removeSkillsBySocket,
   invokeSkill,
 } from './services/skillRegistry.js';
+import { initSwarmBridge, getSwarmBridge } from './services/swarmBridge.js';
+import { mapSwarmToInbound, extractMessageText } from './services/swarmMapper.js';
 
 // Shared allowed origins - must match backend CORS config
 const ALLOWED_ORIGINS = [
@@ -29,7 +31,7 @@ function isOriginAllowed(origin) {
   if (process.env.NODE_ENV === 'development' || process.env.ALLOW_ALL_ORIGINS === 'true') {
     return true;
   }
-  
+
   if (!origin) return true; // Allow non-browser clients (skills)
   if (ALLOWED_ORIGINS.includes('*')) return true;
   if (ALLOWED_ORIGINS.includes(origin)) return true;
@@ -198,6 +200,65 @@ export function createSocketServer(httpServer) {
       console.log(`🔌 Socket disconnected (${socket.id}): ${reason}`);
     });
   });
+
+  // =========================================================================
+  // Swarm WebSocket Bridge — outbound connection to Swarm Hub
+  // =========================================================================
+  const bridge = initSwarmBridge();
+  if (bridge) {
+    // When the bridge receives a Swarm message, inject it into the chat pipeline
+    bridge.on('message', (swarmMsg) => {
+      try {
+        const inbound = mapSwarmToInbound(swarmMsg);
+        const messageText = extractMessageText(inbound);
+
+        if (messageText) {
+          // Broadcast that a Swarm message arrived (for frontend display)
+          io.emit('swarm:message', {
+            channel: 'swarm',
+            sender: inbound.sender,
+            text: messageText,
+            timestamp: inbound.message.timestamp,
+            swarm_channel_id: inbound.swarm_channel_id,
+            swarm_message_id: inbound.swarm_message_id,
+          });
+
+          console.log(`[Swarm] Message from ${inbound.sender.name}: ${messageText.slice(0, 80)}…`);
+        }
+      } catch (err) {
+        console.error('[Swarm] Failed to process message:', err);
+      }
+    });
+
+    bridge.on('connected', () => {
+      io.emit('swarm:status', { state: 'connected' });
+    });
+
+    bridge.on('live', () => {
+      io.emit('swarm:status', { state: 'live' });
+      console.log('[Swarm] Bridge is live — streaming real-time messages');
+    });
+
+    bridge.on('disconnected', ({ code, reason }) => {
+      io.emit('swarm:status', { state: 'disconnected', code, reason });
+    });
+
+    bridge.on('reconnecting', ({ attempt, delay }) => {
+      io.emit('swarm:status', { state: 'reconnecting', attempt, delay });
+    });
+
+    bridge.on('error', (err) => {
+      console.error('[Swarm] Bridge error:', err.message);
+      io.emit('swarm:status', { state: 'error', error: err.message });
+    });
+
+    // Auto-connect on startup
+    bridge.connect().catch((err) => {
+      console.error('[Swarm] Initial connect failed:', err.message);
+    });
+
+    console.log('🌐 Swarm bridge initialised');
+  }
 
   return io;
 }

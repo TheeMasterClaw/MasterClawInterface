@@ -664,6 +664,127 @@
     color: #8b949e;
 }
 
+/* ── Swarm Tab ── */
+.swarm-view {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.swarm-banner {
+    display: flex;
+    gap: 0.875rem;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.25rem;
+    border: 1px solid;
+}
+
+.swarm-banner.live {
+    background: rgba(76, 217, 100, 0.08);
+    border-color: rgba(76, 217, 100, 0.2);
+}
+
+.swarm-banner.connected,
+.swarm-banner.backfilling {
+    background: rgba(234, 179, 8, 0.08);
+    border-color: rgba(234, 179, 8, 0.2);
+}
+
+.swarm-banner.reconnecting {
+    background: rgba(251, 146, 60, 0.08);
+    border-color: rgba(251, 146, 60, 0.2);
+}
+
+.swarm-banner.disconnected,
+.swarm-banner.error {
+    background: rgba(248, 113, 113, 0.06);
+    border-color: rgba(248, 113, 113, 0.15);
+}
+
+.swarm-banner.disabled {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.swarm-banner-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.swarm-banner strong {
+    color: #e6edf3;
+    font-size: 0.9rem;
+}
+
+.swarm-banner p {
+    margin: 0.25rem 0 0;
+    font-size: 0.8rem;
+    color: #8b949e;
+}
+
+.swarm-state-badge {
+    font-size: 0.72rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.swarm-state-badge.live {
+    background: rgba(76, 217, 100, 0.15);
+    color: #4cd964;
+}
+
+.swarm-state-badge.connected,
+.swarm-state-badge.backfilling {
+    background: rgba(234, 179, 8, 0.15);
+    color: #eab308;
+}
+
+.swarm-state-badge.reconnecting {
+    background: rgba(251, 146, 60, 0.15);
+    color: #fb923c;
+}
+
+.swarm-state-badge.disconnected,
+.swarm-state-badge.error {
+    background: rgba(248, 113, 113, 0.1);
+    color: #f87171;
+}
+
+.swarm-warn-badge {
+    font-size: 0.75rem;
+    color: #eab308;
+    background: rgba(234, 179, 8, 0.08);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.swarm-controls {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.06);
+    color: #e6edf3;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
 /* ── Responsive ── */
 @media (max-width: 520px) {
     .agent-panel {
@@ -675,5 +796,9 @@
         right: 1.25rem;
         width: 48px;
         height: 48px;
+    }
+
+    .agent-tabs {
+        flex-wrap: wrap;
     }
 }
