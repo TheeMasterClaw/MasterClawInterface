@@ -1,9 +1,7 @@
-const CACHE_NAME = 'masterclaw-v1';
+const CACHE_NAME = 'masterclaw-v2';
 const STATIC_ASSETS = [
   '/',
-  '/index.html',
-  '/manifest.json',
-  '/favicon.ico'
+  '/manifest.json'
 ];
 
 // Install event - cache static assets
@@ -12,7 +10,12 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('[Service Worker] Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
+        // Use individual cache.add calls so one failure doesn't block others
+        return Promise.allSettled(
+          STATIC_ASSETS.map(url => cache.add(url).catch(err => {
+            console.warn(`[Service Worker] Failed to cache ${url}:`, err);
+          }))
+        );
       })
       .catch((err) => {
         console.error('[Service Worker] Cache failed:', err);
@@ -42,10 +45,10 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
-  
+
   // Skip API calls
   if (event.request.url.includes('/api/')) return;
-  
+
   // Skip Socket.io
   if (event.request.url.includes('socket.io')) return;
 
@@ -55,7 +58,7 @@ self.addEventListener('fetch', (event) => {
       if (cached) {
         return cached;
       }
-      
+
       return fetch(event.request)
         .then((response) => {
           // Cache successful GET requests
@@ -80,7 +83,7 @@ self.addEventListener('fetch', (event) => {
 // Push notification support
 self.addEventListener('push', (event) => {
   if (!event.data) return;
-  
+
   const data = event.data.json();
   const options = {
     body: data.body,
@@ -91,7 +94,7 @@ self.addEventListener('push', (event) => {
     actions: data.actions || [],
     data: data.data || {}
   };
-  
+
   event.waitUntil(
     self.registration.showNotification(data.title || 'MasterClaw', options)
   );
@@ -100,7 +103,7 @@ self.addEventListener('push', (event) => {
 // Notification click handler
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  
+
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then((clientList) => {
       // Focus existing window if open
