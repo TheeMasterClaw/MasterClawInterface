@@ -66,22 +66,21 @@ export default function AgentConnect() {
     };
 
     // ── Skill Folder manifest ──
+    const GATEWAY_URL = 'https://web-production-e0d96.up.railway.app';
+    
     const skillFolderManifest = JSON.stringify({
         "skill.json": {
             name: "MyOpenClawSkill",
             version: "1.0.0",
-            description: "OpenClaw skill — connects via Swarm WebSocket Bridge to MasterClaw",
+            description: "OpenClaw skill — connects directly to MasterClaw backend",
             runtime: "node",
             entry: "index.js",
             triggers: ["chat"],
             connection: {
-                type: "swarm-bridge",
-                hub: "wss://swarm.perkos.xyz",
-                fallback: {
-                    url: typeof window !== 'undefined' ? window.location.origin : API_URL,
-                    transport: "websocket",
-                    path: "/socket.io"
-                }
+                type: "direct",
+                url: GATEWAY_URL,
+                transport: "websocket",
+                path: "/socket.io"
             }
         }
     }, null, 2);
@@ -90,17 +89,20 @@ export default function AgentConnect() {
     const skillBoilerplate = `import { io } from 'socket.io-client';
 
 // ── Configuration ──
-const GATEWAY_URL = '${typeof window !== 'undefined' ? window.location.origin : API_URL}';
+const GATEWAY_URL = '${GATEWAY_URL}';
 const AGENT_ID = 'my-openclaw-agent';    // Give your agent a unique ID
 
 // ── Connect to MasterClaw Gateway ──
 const socket = io(GATEWAY_URL, {
-  transports: ['websocket'],
+  transports: ['websocket', 'polling'],
+  path: '/socket.io',
+  withCredentials: true,
   auth: { agentId: AGENT_ID }
 });
 
 socket.on('connect', () => {
   console.log('🤖 Connected to MasterClaw Gateway');
+  console.log('Socket ID:', socket.id);
 
   // Register the "chat" skill — this makes your agent
   // the primary chat handler. Messages typed in the
@@ -108,41 +110,42 @@ socket.on('connect', () => {
   socket.emit('skill:register', {
     name: 'OpenClaw Chat Agent',
     description: 'Handles chat messages via OpenClaw',
-    trigger: 'chat'
+    trigger: 'chat',
+    parameters: [{ name: 'message', type: 'string', required: true }],
+    socketId: socket.id
   }, (ack) => {
-    if (ack.ok) console.log('✅ Chat skill registered — you are live!');
-    else console.error('❌ Registration failed:', ack.error);
+    if (ack?.ok) console.log('✅ Chat skill registered — you are live!');
+    else console.error('❌ Registration failed:', ack?.error || 'Unknown error');
   });
 });
 
 // ── Handle incoming chat messages ──
-socket.on('skill:execute', ({ trigger, params, requesterId, requestId }) => {
-  const userMessage = params.message;
-  console.log('📩 User said:', userMessage);
+socket.on('chat:message', (data) => {
+  const { message, conversationId, timestamp } = data;
+  console.log('📩 User said:', message);
 
   // ───────────────────────────────────────────────────
   // 🔧 YOUR LOGIC HERE — call an LLM, query a DB, etc.
   // ───────────────────────────────────────────────────
-  const reply = \`You said: \${userMessage}\`;
+  const reply = \`🤖 You said: \${message}\`;
 
   // Send the response back to the chat window
-  socket.emit('skill:result', {
-    requesterId,
-    requestId,
-    trigger,
-    result: { text: reply }
+  socket.emit('chat:response', {
+    type: 'assistant',
+    content: reply,
+    agent: 'OpenClaw Agent',
+    conversationId,
+    timestamp: Date.now()
   });
-});
-
-// ── Handle Swarm channel messages (if bridge is active) ──
-socket.on('swarm:message', (msg) => {
-  console.log(\`🌐 [Swarm \${msg.swarm_channel_id}] \${msg.sender.name}: \${msg.text}\`);
-  // Process swarm messages here if needed
 });
 
 socket.on('disconnect', (reason) => {
   console.log('🔌 Disconnected:', reason);
   // socket.io auto-reconnects by default
+});
+
+socket.on('connect_error', (err) => {
+  console.error('❌ Connection error:', err.message);
 });
 
 console.log('⏳ Connecting to', GATEWAY_URL, '...');`;
@@ -318,10 +321,10 @@ console.log('⏳ Connecting to', GATEWAY_URL, '...');`;
                                         <div className="detail-item">
                                             <span className="detail-label">Gateway URL</span>
                                             <div className="detail-value-wrap">
-                                                <code>{typeof window !== 'undefined' ? window.location.origin : API_URL}</code>
+                                                <code>{GATEWAY_URL}</code>
                                                 <button
                                                     className={`copy-mini ${copied === 'url' ? 'copied' : ''}`}
-                                                    onClick={() => copyToClipboard(typeof window !== 'undefined' ? window.location.origin : API_URL, 'url')}
+                                                    onClick={() => copyToClipboard(GATEWAY_URL, 'url')}
                                                 >
                                                     {copied === 'url' ? '✓' : '📋'}
                                                 </button>
@@ -344,8 +347,8 @@ console.log('⏳ Connecting to', GATEWAY_URL, '...');`;
                                             <code>chat</code>
                                         </div>
                                         <div className="detail-item">
-                                            <span className="detail-label">Swarm Hub</span>
-                                            <code>wss://swarm.perkos.xyz</code>
+                                            <span className="detail-label">Connection Type</span>
+                                            <code>Direct WebSocket</code>
                                         </div>
                                         <div className="detail-item">
                                             <span className="detail-label">Manifest</span>
