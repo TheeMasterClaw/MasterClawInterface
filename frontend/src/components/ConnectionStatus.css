@@ -1,0 +1,152 @@
+@import '../styles/design-system.css';
+
+.connection-status-wrapper {
+  position: relative;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--mc-radius-full);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all var(--mc-transition-fast);
+  background: var(--mc-bg-card);
+}
+
+.connection-status:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--mc-shadow-sm);
+}
+
+.connection-status.connected {
+  background: var(--mc-success-light);
+  color: var(--mc-success);
+}
+
+.connection-status.disconnected {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--mc-error);
+  animation: pulse-attention 2s infinite;
+}
+
+@keyframes pulse-attention {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% { 
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
+  }
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.connection-status.connected .status-dot {
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.status-text {
+  white-space: nowrap;
+}
+
+.connect-hint {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin-left: 4px;
+}
+
+/* Dropdown */
+.connection-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: var(--mc-bg-card);
+  border: 1px solid var(--mc-border);
+  border-radius: var(--mc-radius-lg);
+  box-shadow: var(--mc-shadow-lg);
+  z-index: 1000;
+}
+
+.dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--mc-border);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--mc-text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all var(--mc-transition-fast);
+}
+
+.close-btn:hover {
+  background: var(--mc-bg-hover);
+  color: var(--mc-text);
+}
+
+.dropdown-content {
+  padding: 16px;
+}
+
+.agent-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--mc-bg-elevated);
+  border-radius: var(--mc-radius-md);
+  margin-bottom: 12px;
+}
+
+.agent-icon {
+  font-size: 1.5rem;
+}
+
+.agent-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.agent-status {
+  font-size: 0.75rem;
+  color: var(--mc-text-muted);
+}
+
+.dropdown-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.mc-btn-sm {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+}
