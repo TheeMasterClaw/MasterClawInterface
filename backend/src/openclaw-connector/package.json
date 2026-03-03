@@ -1,0 +1,17 @@
+{
+  "name": "my-app-connector",
+  "version": "1.0.0",
+  "description": "Connect OpenClaw agent to your custom app via WebSocket",
+  "main": "connector.js",
+  "scripts": {
+    "start": "node connector.js",
+    "test:server": "node example-server.js",
+    "test": "npm run test:server"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
