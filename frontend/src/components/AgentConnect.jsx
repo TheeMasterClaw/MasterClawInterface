@@ -78,7 +78,7 @@ export default function AgentConnect() {
             triggers: ["chat"],
             connection: {
                 type: "direct",
-                url: GATEWAY_URL,
+                url: "https://web-production-e0d96.up.railway.app",
                 transport: "websocket",
                 path: "/socket.io"
             }
@@ -89,7 +89,7 @@ export default function AgentConnect() {
     const skillBoilerplate = `import { io } from 'socket.io-client';
 
 // ── Configuration ──
-const GATEWAY_URL = '${GATEWAY_URL}';
+const GATEWAY_URL = 'https://web-production-e0d96.up.railway.app';
 const AGENT_ID = 'my-openclaw-agent';    // Give your agent a unique ID
 
 // ── Connect to MasterClaw Gateway ──
@@ -321,10 +321,10 @@ console.log('⏳ Connecting to', GATEWAY_URL, '...');`;
                                         <div className="detail-item">
                                             <span className="detail-label">Gateway URL</span>
                                             <div className="detail-value-wrap">
-                                                <code>{GATEWAY_URL}</code>
+                                                <code>https://web-production-e0d96.up.railway.app</code>
                                                 <button
                                                     className={`copy-mini ${copied === 'url' ? 'copied' : ''}`}
-                                                    onClick={() => copyToClipboard(GATEWAY_URL, 'url')}
+                                                    onClick={() => copyToClipboard("https://web-production-e0d96.up.railway.app", 'url')}
                                                 >
                                                     {copied === 'url' ? '✓' : '📋'}
                                                 </button>
